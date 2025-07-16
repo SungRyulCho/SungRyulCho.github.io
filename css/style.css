@@ -271,6 +271,12 @@ button:focus {
   color: var(--color-primary);
 }
 
+.job img {
+  width: 50px;
+  height: auto;
+  border-radius: 4px;
+}
+
 .job__period {
   color: var(--color-primary);
   font-size: 0.8rem;
