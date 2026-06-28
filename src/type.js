@@ -1,23 +1,3 @@
 "use strict";
 
-new TypeIt(".home__title__strong", {
-  loop: true,
-  speed: 150,
-})
-  .move(-12)
-  .type("Amazing ")
-  .pause(1000)
-  .move(null, { to: "END" })
-  .delete() //|
-  .type("Front-end Engineer")
-  .pause(1000)
-  .move(-9) //
-  .delete(9) //
-  .type("Back-end")
-  .pause(1000)
-  .delete(8)
-  .type("Full-stack")
-  .pause(1000)
-  .move(9)
-  .delete()
-  .go();
+// 채용 지원용 포트폴리오는 핵심 직무 문구가 즉시 보이도록 정적 제목을 사용합니다.

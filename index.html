@@ -1,473 +1,409 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="ko">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <!-- SEO -->
-    <title>Alan's Portfolio - Software Engineer</title>
+    <title>조성률 | Backend Portfolio</title>
     <meta
       name="description"
-      content="Portfolio of Alan, a world-class software engineer."
+      content="Java Spring Boot, PostgreSQL, Redis 기반 백엔드 개발자 조성률의 포트폴리오입니다."
     />
-    <meta name="author" content="Alan" />
+    <meta name="author" content="조성률" />
     <link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
-    <!-- OG (Open Graph Data) -->
-    <meta property="og:title" content="알렌의 포트폴리오" />
+    <meta property="og:title" content="조성률 Backend Portfolio" />
     <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://sungryulcho.github.io/" />
     <meta
-      property="og:url"
-      content="https://sungryulcho.github.io/portfolio/"
+      property="og:description"
+      content="동시성 제어, 인증/인가, 쿼리 최적화, 운영형 MVP 개선 경험을 정리한 백엔드 포트폴리오입니다."
     />
-    <meta
-      property="og:image"
-      content="https://sungryulcho.github.io/portfolio/images/og.webp"
-    />
-    <!-- Google Fonts -->
+    <meta property="og:image" content="https://sungryulcho.github.io/images/profile.png" />
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap"
       rel="stylesheet"
     />
-    <!-- Font Awsome -->
     <script
       src="https://kit.fontawesome.com/18c8ec7879.js"
       crossorigin="anonymous"
     ></script>
-    <!-- Typeit -->
-    <script src="https://unpkg.com/typeit@8.7.1/dist/index.umd.js"></script>
     <link rel="stylesheet" href="css/style.css" />
-    <!-- javascript -->
     <script type="module" src="src/main.js" defer></script>
     <script type="module" src="src/projects.js" defer></script>
     <script type="module" src="src/active_menu.js" defer></script>
-    <script type="module" src="src/type.js" defer></script>
   </head>
   <body>
-    <!-- Header -->
     <header class="header">
       <div class="header__logo">
-        <img class="header__logo__img" src="images/favicon.ico" alt="logo" />
-        <h1 class="header__logo_title"><a href="#">Alan</a></h1>
+        <img class="header__logo__img" src="images/favicon.ico" alt="" />
+        <h1 class="header__logo_title"><a href="#home">조성률</a></h1>
       </div>
-      <nav class="header__nav">
+      <nav class="header__nav" aria-label="주요 섹션">
         <ul class="header__menu">
-          <li><a class="header__menu__item active" href="#home">Home</a></li>
-          <li><a class="header__menu__item" href="#about">About</a></li>
-          <li><a class="header__menu__item" href="#skills">Skills</a></li>
-          <li><a class="header__menu__item" href="#work">Work</a></li>
-          <li>
-            <a class="header__menu__item" href="#testimonial">Testimonials</a>
-          </li>
-          <li><a class="header__menu__item" href="#contact">Contact</a></li>
+          <li><a class="header__menu__item active" href="#home">홈</a></li>
+          <li><a class="header__menu__item" href="#about">소개</a></li>
+          <li><a class="header__menu__item" href="#skills">기술</a></li>
+          <li><a class="header__menu__item" href="#work">프로젝트</a></li>
+          <li><a class="header__menu__item" href="#evidence">검증 근거</a></li>
+          <li><a class="header__menu__item" href="#contact">연락처</a></li>
         </ul>
       </nav>
-      <button class="header__toggle" aria-label="navigation menu toggle">
+      <button class="header__toggle" aria-label="메뉴 열기">
         <i class="fa-solid fa-bars"></i>
       </button>
     </header>
-    <!-- Main -->
+
     <main>
-      <!-- Home -->
-      <section id="home">
-        <div class="home__container">
-          <img
-            class="home__avatar"
-            src="images/profile.png"
-            alt="Alan's profile"
-          />
-          <h2 class="home__title" aria-label="Hello, I'm Dream Coder Alan">
-            Hello<br />
-            I&#39;m
-            <strong class="home__title__strong">Dream Coder</strong> , Alan
-          </h2>
-          <p class="home__description">
-            I specialize in crafting innovative software solutions with
-            precision and passion.
-          </p>
-          <a class="home__contact" href="#contact">Get in Touch</a>
+      <section id="home" class="hero">
+        <div class="home__container hero__inner">
+          <div class="hero__content">
+            <p class="eyebrow">Backend Developer Portfolio</p>
+            <h2 class="home__title">
+              데이터 정합성과 운영 안정성을 우선하는
+              <strong class="home__title__strong">백엔드 개발자</strong>
+            </h2>
+            <p class="home__description">
+              Java/Spring Boot, PostgreSQL, Redis 기반으로 동시성 제어와 인증/인가,
+              쿼리 개선을 구현했습니다. 제품 관점에서는 Emori MVP를 직접 만들고
+              배포하며 사용자 흐름과 운영 지표를 개선했습니다.
+            </p>
+            <div class="hero__actions">
+              <a class="button button--primary" href="#work">프로젝트 보기</a>
+              <a
+                class="button button--secondary"
+                href="https://github.com/SungRyulCho"
+                target="_blank"
+                rel="noopener"
+              >
+                GitHub
+              </a>
+            </div>
+          </div>
+          <div class="hero__profile" aria-label="조성률 프로필 요약">
+            <img
+              class="home__avatar"
+              src="images/profile.png"
+              alt="조성률 프로필 이미지"
+            />
+            <div>
+              <p class="profile__name">조성률</p>
+              <p class="profile__text">
+                Java 21 · Spring Boot 3 · PostgreSQL · Redis · AWS
+              </p>
+            </div>
+          </div>
         </div>
       </section>
-      <!-- About -->
+
       <section id="about" class="section max-container">
-        <h2 class="title">About Me</h2>
+        <p class="eyebrow">About</p>
+        <h2 class="title">문제를 데이터 흐름과 운영 상태로 바라봅니다</h2>
         <p class="description">
-          I hold a degree in Computer Engineering and have certifications in
-          Information Processing and Information Security.
+          단순히 기능을 만드는 것보다, 어떤 데이터가 언제 저장되고 어떤 예외가
+          사용자 경험을 깨뜨리는지 끝까지 추적하는 개발 방식을 선호합니다.
         </p>
-        <ul class="majors">
-          <li class="major">
-            <i class="fa-brands fa-html5 major__icon"></i>
-            <p class="major__title">Front-end</p>
-            <p>HTML, CSS, JavaScript, TypeScript, React, Vue, Web APIs</p>
+        <ul class="focus-grid">
+          <li class="focus-card">
+            <i class="fa-solid fa-lock focus-card__icon"></i>
+            <h3>동시성 제어</h3>
+            <p>
+              Redisson 분산 락과 트랜잭션 분리로 동일 카드 중복 저장 문제를
+              제어했습니다.
+            </p>
           </li>
-          <li class="major">
-            <i class="fa-solid fa-mobile major__icon"></i>
-            <p class="major__title">Mobile</p>
-            <p>Android, iOS, React Native, Flutter, Java, Swift, Kotlin</p>
+          <li class="focus-card">
+            <i class="fa-solid fa-shield-halved focus-card__icon"></i>
+            <h3>인증/인가</h3>
+            <p>
+              JWT, Refresh Token, Redis 블랙리스트, 관리자 로그인 제한 흐름을
+              구현했습니다.
+            </p>
           </li>
-          <li class="major">
-            <i class="fa-solid fa-server major__icon"></i>
-            <p class="major__title">Back-end</p>
-            <p>Java, JavaScript, Go, Node.js, REST APIs, GraphQL</p>
+          <li class="focus-card">
+            <i class="fa-solid fa-database focus-card__icon"></i>
+            <h3>쿼리와 API</h3>
+            <p>
+              최신 카드 조회를 윈도우 함수 기반 벌크 쿼리로 개선하고 API 응답
+              구조를 정리했습니다.
+            </p>
+          </li>
+          <li class="focus-card">
+            <i class="fa-solid fa-chart-line focus-card__icon"></i>
+            <h3>제품형 MVP</h3>
+            <p>
+              Emori에서 음성 입력, 감정 카드, 매칭/히스토리, 관리자 지표 화면을
+              배포했습니다.
+            </p>
           </li>
         </ul>
-        <ul class="jobs">
-          <li class="job">
-            <img src="images/jobs/coupang.png" alt="coupang.png" />
-            <div>
-              <p class="job__name">Data Analyst at Coupang</p>
-              <p class="job__period">January 2024 - December 2024</p>
-            </div>
+        <ul class="timeline">
+          <li>
+            <span>2026.08 예정</span>
+            <strong>한양사이버대학교 컴퓨터공학과 졸업 예정</strong>
           </li>
-          <li class="job">
-            <img src="images/jobs/hanyang.png" alt="hanyang.png" />
-            <div>
-              <p class="job__name">Hanyang Cyber University</p>
-              <p class="job__period">March 2022 - Present</p>
-            </div>
+          <li>
+            <span>2025.09 - 2026.03</span>
+            <strong>원티드 포텐업 백엔드 과정</strong>
+          </li>
+          <li>
+            <span>2024.01 - 2024.12</span>
+            <strong>쿠팡 COE 데이터 운영</strong>
           </li>
         </ul>
       </section>
-      <!-- Skills -->
-      <section id="skills" class="section">
+
+      <section id="skills" class="section section--tint">
         <div class="max-container">
-          <h2 class="title">Skills & Expertise</h2>
-          <p class="description">Technical Skills & Personal Attributes</p>
-          <p>
-            I have experience in every phase of the software development
-            lifecycle and a passion for new technologies. I excel in both team
-            environments and independent projects, and I’m skilled in planning,
-            time management, and performing under pressure.
+          <p class="eyebrow">Skills</p>
+          <h2 class="title">지원 직무와 바로 연결되는 기술 스택</h2>
+          <p class="description">
+            사용 경험을 과장하지 않고, 실제 프로젝트에서 설명 가능한 기술을
+            중심으로 정리했습니다.
           </p>
           <div class="skills">
-            <section class="skills__coding">
-              <h3 class="skills__title">Coding Skills</h3>
-              <ul>
-                <li class="bar">
-                  <div class="bar__metadata">
-                    <span>HTML</span><span>98%</span>
-                  </div>
-                  <div class="bar__bg">
-                    <div class="bar__value" style="width: 98%"></div>
-                  </div>
-                </li>
-                <li class="bar">
-                  <div class="bar__metadata">
-                    <span>CSS</span><span>90%</span>
-                  </div>
-                  <div class="bar__bg">
-                    <div class="bar__value" style="width: 90%"></div>
-                  </div>
-                </li>
-                <li class="bar">
-                  <div class="bar__metadata">
-                    <span>JavaScript</span><span>90%</span>
-                  </div>
-                  <div class="bar__bg">
-                    <div class="bar__value" style="width: 90%"></div>
-                  </div>
-                </li>
-                <li class="bar">
-                  <div class="bar__metadata">
-                    <span>TypeScript</span><span>80%</span>
-                  </div>
-                  <div class="bar__bg">
-                    <div class="bar__value" style="width: 80%"></div>
-                  </div>
-                </li>
-                <li class="bar">
-                  <div class="bar__metadata">
-                    <span>React</span><span>79%</span>
-                  </div>
-                  <div class="bar__bg">
-                    <div class="bar__value" style="width: 79%"></div>
-                  </div>
-                </li>
-                <li class="bar">
-                  <div class="bar__metadata">
-                    <span>Node.js</span><span>68%</span>
-                  </div>
-                  <div class="bar__bg">
-                    <div class="bar__value" style="width: 68%"></div>
-                  </div>
-                </li>
+            <section class="skill-card">
+              <h3>Backend</h3>
+              <ul class="chips">
+                <li>Java 21</li>
+                <li>Spring Boot 3</li>
+                <li>Spring MVC</li>
+                <li>Spring Security</li>
+                <li>JPA</li>
+                <li>REST API</li>
+                <li>OAuth2 Login</li>
+                <li>JWT</li>
               </ul>
             </section>
-            <section class="skills__tools">
-              <h3 class="skills__title">Tools</h3>
-              <ul>
-                <li>Visual Studio Code</li>
-                <li>IntelliJ IDEA</li>
-                <li>Android Studio</li>
-                <li>Xcode</li>
-                <li>Sketch</li>
+            <section class="skill-card">
+              <h3>Database & Infra</h3>
+              <ul class="chips">
+                <li>PostgreSQL</li>
+                <li>Redis</li>
+                <li>Redisson</li>
+                <li>Flyway</li>
+                <li>Docker</li>
+                <li>AWS EC2</li>
+                <li>S3</li>
+                <li>CodeDeploy</li>
               </ul>
             </section>
-            <section class="skills__etc">
-              <h3 class="skills__title">Others</h3>
-              <ul>
-                <li>Git</li>
-                <li>Scrum Master</li>
-                <li>Mathematics</li>
+            <section class="skill-card">
+              <h3>Quality & Collaboration</h3>
+              <ul class="chips">
+                <li>JUnit 5</li>
+                <li>Mockito</li>
+                <li>SpringBootTest</li>
+                <li>Swagger/OpenAPI</li>
+                <li>GitHub Actions</li>
+                <li>Jira</li>
+                <li>Notion</li>
               </ul>
             </section>
           </div>
         </div>
       </section>
-      <!-- Work -->
+
       <section id="work" class="section">
         <div class="max-container">
-          <h2 class="title">My Work</h2>
-          <p class="description">Projects</p>
+          <p class="eyebrow">Projects</p>
+          <h2 class="title">대표 프로젝트</h2>
+          <p class="description">
+            백엔드 구현 역량은 DEKK에서, 제품 검증과 운영 관점은 Emori에서
+            보여줄 수 있습니다.
+          </p>
           <ul class="categories">
             <li>
               <button class="category category--selected" data-category="all">
-                All <span class="category__count">8</span>
+                전체 <span class="category__count">3</span>
               </button>
             </li>
             <li>
-              <button class="category" data-category="front-end">
-                Front-end <span class="category__count">4</span>
+              <button class="category" data-category="backend">
+                백엔드 <span class="category__count">1</span>
               </button>
             </li>
             <li>
-              <button class="category" data-category="back-end">
-                Back-end <span class="category__count">2</span>
+              <button class="category" data-category="product">
+                제품 MVP <span class="category__count">1</span>
               </button>
             </li>
             <li>
-              <button class="category" data-category="mobile">
-                Mobile <span class="category__count">2</span>
+              <button class="category" data-category="data">
+                데이터 운영 <span class="category__count">1</span>
               </button>
             </li>
           </ul>
           <ul class="projects">
-            <li class="project" data-type="front-end">
-              <a href="#" target="_blank">
-                <img
-                  src="images/projects/project1.webp"
-                  alt="Project 1"
-                  class="project__img"
-                />
-                <div class="project__metadata">
-                  <h3 class="project__title">Project #1</h3>
+            <li class="project" data-type="backend">
+              <article class="project-card">
+                <div>
+                  <span class="project-card__label">DEKK-BE</span>
+                  <h3>발견한 상품을 카드와 덱으로 저장하는 커머스 백엔드</h3>
                   <p>
-                    A responsive clone project showcasing clean HTML structure
-                    and CSS styling.
+                    공유 덱, 초대 링크, 게스트 참여, 카드 저장, 관리자 보안
+                    흐름을 구현했습니다. 특히 같은 카드를 동시에 저장하는
+                    경쟁 조건을 Redisson 락과 트랜잭션 분리로 제어했습니다.
                   </p>
                 </div>
-              </a>
+                <ul class="project-card__facts">
+                  <li>100개 동시 요청 기준 최종 저장 1건 검증</li>
+                  <li>덱 목록 평균 응답 839ms에서 553ms로 개선</li>
+                  <li>관리자 로그인 실패 제한, 토큰 블랙리스트 적용</li>
+                </ul>
+                <div class="project-card__links">
+                  <a
+                    href="https://github.com/potenup-dekk/DEKK-BE"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    GitHub
+                  </a>
+                  <a
+                    href="https://potenup-dekk.github.io/"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    기술 기록
+                  </a>
+                </div>
+              </article>
             </li>
-            <li class="project" data-type="front-end">
-              <a href="#" target="_blank">
-                <img
-                  src="images/projects/project2.webp"
-                  alt="Project 2"
-                  class="project__img"
-                />
-                <div class="project__metadata">
-                  <h3 class="project__title">Project #2</h3>
+            <li class="project" data-type="product">
+              <article class="project-card">
+                <div>
+                  <span class="project-card__label">Emori</span>
+                  <h3>AI 감정 카드를 주고받는 시장검증용 MVP</h3>
                   <p>
-                    An interactive clone project emphasizing modern design
-                    principles using HTML and CSS.
+                    한국에 사는 외국인과 한국인이 오늘의 질문에 음성으로
+                    답하고, AI가 정리한 감정 카드를 주고받으며 대화 전 서로의
+                    하루와 감정을 이해하도록 돕는 서비스입니다.
                   </p>
                 </div>
-              </a>
+                <ul class="project-card__facts">
+                  <li>언어 선택, 회원가입, 프로필, 매칭, 3일 루프 구현</li>
+                  <li>음성 녹음, 전사, 번역, 감정 카드 미리보기 흐름 개선</li>
+                  <li>관리자 대시보드로 신고, 피드백, AI 비용, 품질 큐 확인</li>
+                </ul>
+                <div class="project-card__links">
+                  <a
+                    href="https://emori-app.vercel.app"
+                    target="_blank"
+                    rel="noopener"
+                  >
+                    서비스 보기
+                  </a>
+                </div>
+              </article>
             </li>
-            <li class="project" data-type="back-end">
-              <a href="#" target="_blank">
-                <img
-                  src="images/projects/project3.webp"
-                  alt="Project 3"
-                  class="project__img"
-                />
-                <div class="project__metadata">
-                  <h3 class="project__title">Project #3</h3>
+            <li class="project" data-type="data">
+              <article class="project-card">
+                <div>
+                  <span class="project-card__label">Coupang COE</span>
+                  <h3>데이터 정합성 기반 운영 개선 경험</h3>
                   <p>
-                    A backend-integrated clone project that combines RESTful API
-                    calls with a basic HTML/CSS layout.
+                    SQL과 Excel 기반으로 운영 데이터를 점검하고, 반복되는 오류를
+                    문서화하며 협업 부서가 바로 확인할 수 있는 기준을 만들었습니다.
                   </p>
                 </div>
-              </a>
-            </li>
-            <li class="project" data-type="mobile">
-              <a href="#" target="_blank">
-                <img
-                  src="images/projects/project4.webp"
-                  alt="Project 4"
-                  class="project__img"
-                />
-                <div class="project__metadata">
-                  <h3 class="project__title">Project #4</h3>
-                  <p>
-                    A mobile-first clone project designed for intuitive user
-                    interaction and fast loading times.
-                  </p>
-                </div>
-              </a>
-            </li>
-            <li class="project" data-type="front-end">
-              <a href="#" target="_blank">
-                <img
-                  src="images/projects/project5.webp"
-                  alt="Project 5"
-                  class="project__img"
-                />
-                <div class="project__metadata">
-                  <h3 class="project__title">Project #5</h3>
-                  <p>
-                    A visually engaging clone project highlighting advanced CSS
-                    animations and layouts.
-                  </p>
-                </div>
-              </a>
-            </li>
-            <li class="project" data-type="back-end">
-              <a href="#" target="_blank">
-                <img
-                  src="images/projects/project6.webp"
-                  alt="Project 6"
-                  class="project__img"
-                />
-                <div class="project__metadata">
-                  <h3 class="project__title">Project #6</h3>
-                  <p>
-                    A full-stack clone project that merges dynamic server-side
-                    logic with a sleek HTML/CSS front-end.
-                  </p>
-                </div>
-              </a>
-            </li>
-            <li class="project" data-type="mobile">
-              <a href="#" target="_blank">
-                <img
-                  src="images/projects/project7.webp"
-                  alt="Project 7"
-                  class="project__img"
-                />
-                <div class="project__metadata">
-                  <h3 class="project__title">Project #7</h3>
-                  <p>
-                    A cross-platform mobile clone project focused on performance
-                    and modern UI design.
-                  </p>
-                </div>
-              </a>
-            </li>
-            <li class="project" data-type="front-end">
-              <a href="#" target="_blank">
-                <img
-                  src="images/projects/project8.webp"
-                  alt="Project 8"
-                  class="project__img"
-                />
-                <div class="project__metadata">
-                  <h3 class="project__title">Project #8</h3>
-                  <p>
-                    An all-encompassing clone project that leverages HTML, CSS,
-                    and a touch of JavaScript for dynamic effects.
-                  </p>
-                </div>
-              </a>
+                <ul class="project-card__facts">
+                  <li>상품 운영 데이터 정합성 점검</li>
+                  <li>반복 이슈의 원인과 처리 기준 문서화</li>
+                  <li>운영 지표를 기반으로 개선 우선순위 판단</li>
+                </ul>
+              </article>
             </li>
           </ul>
         </div>
       </section>
-      <!-- Testimonials -->
-      <section id="testimonial" class="section max-container">
-        <h2 class="title">Testimonials</h2>
-        <p class="description">Hear what others say about my work</p>
-        <ul class="testimonials">
-          <li class="testimonial">
-            <img
-              src="images/testimonials/people1.webp"
-              alt="James Kim"
-              class="testimonial__img"
-            />
-            <div class="testimonial__bubble">
+
+      <section id="evidence" class="section section--dark">
+        <div class="max-container">
+          <p class="eyebrow">Evidence</p>
+          <h2 class="title">면접에서 구체적으로 설명할 수 있는 근거</h2>
+          <div class="evidence-grid">
+            <article>
+              <h3>동시성 문제 해결</h3>
               <p>
-                Alan's expertise and dedication shine through in every project.
-                His innovative approach and problem-solving skills have truly
-                impressed our team.
+                카드 저장의 exists -> count -> save 흐름에서 발생할 수 있는
+                중복 저장을 분산 락과 별도 트랜잭션으로 제어했습니다.
               </p>
+            </article>
+            <article>
+              <h3>쿼리 개선</h3>
               <p>
-                <a href="#" class="testimonial__bubble__name">James Kim</a>
-                / Google
+                덱 목록에서 반복 조회하던 최신 카드 조회를 윈도우 함수 기반
+                벌크 쿼리로 바꿔 응답 시간을 줄였습니다.
               </p>
-            </div>
-          </li>
-          <li class="testimonial">
-            <img
-              src="images/testimonials/people2.webp"
-              alt="David Jang"
-              class="testimonial__img"
-            />
-            <div class="testimonial__bubble">
+            </article>
+            <article>
+              <h3>보안 흐름</h3>
               <p>
-                Working with Alan has been a pleasure. His clear communication
-                and commitment to quality make him a standout engineer.
+                Refresh Token 삭제, Redis 블랙리스트, 관리자 로그인 실패 제한,
+                정지 계정 처리 같은 운영 예외를 구현했습니다.
               </p>
+            </article>
+            <article>
+              <h3>사용자 경험 관점</h3>
               <p>
-                <a href="#" class="testimonial__bubble__name">David Jang</a>
-                / Samsung
+                Emori에서 매칭, 알림, 히스토리, 카드 수신 문제를 사용자 입장에서
+                재현하고 화면 흐름과 운영 데이터를 함께 개선했습니다.
               </p>
-            </div>
-          </li>
-          <li class="testimonial">
-            <img
-              src="images/testimonials/people3.webp"
-              alt="Anna Jin"
-              class="testimonial__img"
-            />
-            <div class="testimonial__bubble">
-              <p>
-                Alan consistently delivers exceptional results. His technical
-                acumen and collaborative spirit make him an invaluable asset.
-              </p>
-              <p>
-                <a href="#" class="testimonial__bubble__name">Anna Jin</a>
-                / Samsung
-              </p>
-            </div>
-          </li>
-        </ul>
+            </article>
+          </div>
+        </div>
       </section>
-      <!-- Arrow up -->
+
       <aside>
-        <a class="arrow-up" href="#home" title="Back to Top">
+        <a class="arrow-up" href="#home" title="맨 위로">
           <i class="fa-solid fa-arrow-up"></i>
         </a>
       </aside>
     </main>
-    <!-- Footer -->
+
     <footer id="contact" class="section">
-      <div class="max-container">
-        <h2 class="title">Let's Connect</h2>
-        <p class="description">Email: hahahoho5811@gmail.com</p>
+      <div class="max-container contact">
+        <p class="eyebrow">Contact</p>
+        <h2 class="title">조성률</h2>
+        <p class="description">hahahoho5811@gmail.com</p>
         <ul class="contact__links">
           <li>
             <a
               class="contact__link"
               href="https://github.com/SungRyulCho"
               target="_blank"
-              title="My GitHub Profile"
+              rel="noopener"
+              title="GitHub"
             >
               <i class="fa-brands fa-github"></i>
+              <span>GitHub</span>
             </a>
           </li>
           <li>
             <a
               class="contact__link"
-              href="https://www.linkedin.com/in/sungryul-cho-848612346/"
+              href="https://github.com/potenup-dekk/DEKK-BE"
               target="_blank"
-              title="My LinkedIn Profile"
+              rel="noopener"
+              title="DEKK Backend Repository"
             >
-              <i class="fa-brands fa-linkedin"></i>
+              <i class="fa-solid fa-code-branch"></i>
+              <span>DEKK-BE</span>
+            </a>
+          </li>
+          <li>
+            <a
+              class="contact__link"
+              href="https://emori-app.vercel.app"
+              target="_blank"
+              rel="noopener"
+              title="Emori MVP"
+            >
+              <i class="fa-solid fa-microphone-lines"></i>
+              <span>Emori</span>
             </a>
           </li>
         </ul>
-        <p>© Alan, Software Engineer - All rights reserved</p>
       </div>
     </footer>
   </body>
