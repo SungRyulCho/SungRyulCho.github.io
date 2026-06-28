@@ -1,0 +1,50 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="800" height="600" viewBox="0 0 800 600" role="img" aria-labelledby="title desc">
+  <title id="title">Emori MVP project card</title>
+  <desc id="desc">Voice emotion card product MVP illustration.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#111827"/>
+      <stop offset=".55" stop-color="#0f766e"/>
+      <stop offset="1" stop-color="#2563eb"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" x2="1" y1="0" y2="1">
+      <stop offset="0" stop-color="#ffffff"/>
+      <stop offset="1" stop-color="#ecfeff"/>
+    </linearGradient>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#020617" flood-opacity=".32"/>
+    </filter>
+  </defs>
+  <rect width="800" height="600" fill="url(#bg)"/>
+  <path d="M74 148c112-88 248-54 324 12 84 72 192 82 328 0v332H74z" fill="#ffffff" opacity=".08"/>
+  <g filter="url(#shadow)">
+    <rect x="168" y="88" width="464" height="424" rx="42" fill="url(#card)"/>
+    <rect x="214" y="134" width="372" height="84" rx="24" fill="#f8fafc"/>
+    <circle cx="256" cy="176" r="20" fill="#0f766e"/>
+    <rect x="292" y="158" width="224" height="14" rx="7" fill="#334155"/>
+    <rect x="292" y="188" width="166" height="12" rx="6" fill="#94a3b8"/>
+    <rect x="214" y="256" width="372" height="156" rx="28" fill="#ffffff" stroke="#ccfbf1" stroke-width="4"/>
+    <text x="248" y="310" fill="#0f766e" font-family="Arial, sans-serif" font-size="22" font-weight="800">Emotion Card</text>
+    <text x="248" y="358" fill="#0f172a" font-family="Arial, sans-serif" font-size="34" font-weight="800">Voice to feeling</text>
+    <rect x="248" y="382" width="118" height="30" rx="15" fill="#dcfce7"/>
+    <text x="270" y="404" fill="#166534" font-family="Arial, sans-serif" font-size="18" font-weight="800">calm 72%</text>
+    <g fill="#0f766e">
+      <rect x="236" y="444" width="10" height="34" rx="5"/>
+      <rect x="258" y="428" width="10" height="50" rx="5"/>
+      <rect x="280" y="412" width="10" height="66" rx="5"/>
+      <rect x="302" y="436" width="10" height="42" rx="5"/>
+      <rect x="324" y="420" width="10" height="58" rx="5"/>
+      <rect x="346" y="402" width="10" height="76" rx="5"/>
+      <rect x="368" y="434" width="10" height="44" rx="5"/>
+      <rect x="390" y="416" width="10" height="62" rx="5"/>
+      <rect x="412" y="426" width="10" height="52" rx="5"/>
+      <rect x="434" y="408" width="10" height="70" rx="5"/>
+      <rect x="456" y="438" width="10" height="40" rx="5"/>
+      <rect x="478" y="422" width="10" height="56" rx="5"/>
+      <rect x="500" y="432" width="10" height="46" rx="5"/>
+      <rect x="522" y="414" width="10" height="64" rx="5"/>
+    </g>
+  </g>
+  <text x="88" y="72" fill="#ffffff" font-family="Arial, sans-serif" font-size="40" font-weight="800">Emori MVP</text>
+  <text x="88" y="546" fill="#dbeafe" font-family="Arial, sans-serif" font-size="24" font-weight="700">Voice · AI Emotion · Matching</text>
+</svg>
