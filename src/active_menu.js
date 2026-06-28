@@ -1,6 +1,6 @@
 "use strict";
 
-const sectionIds = ["#home", "#about", "#skills", "#work", "#evidence", "#contact"];
+const sectionIds = ["#home", "#about", "#skills", "#work", "#contact"];
 const sections = sectionIds
   .map((id) => document.querySelector(id))
   .filter(Boolean);
