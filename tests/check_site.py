@@ -105,6 +105,18 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('Infrastructure</h3>', about)
         self.assertIn('AWS · GCP · Docker Compose', about)
 
+    def test_contact_has_centered_email_and_accessible_copy_icon(self):
+        self.assertIn('class="contact__email-row"', self.html)
+        buttons = [attrs for tag, attrs in self.nodes
+                   if tag == 'button' and attrs.get('class') == 'copy-email']
+        self.assertEqual(len(buttons), 1)
+        self.assertEqual(buttons[0].get('aria-label'), '이메일 주소 복사')
+        self.assertEqual(buttons[0].get('title'), '이메일 주소 복사')
+        button_content = self.html.split('<button class="copy-email"', 1)[1].split('</button>', 1)[0]
+        self.assertIn('<svg', button_content)
+        self.assertIn('aria-hidden="true"', button_content)
+        self.assertNotIn('>이메일 복사<', button_content)
+
     def test_no_proficiency_bars_or_file_module_dependency(self):
         self.assertNotIn('bar__value', self.html)
         scripts = [attrs for tag, attrs in self.nodes if tag == 'script']
