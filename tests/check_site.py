@@ -54,6 +54,14 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('>Sung Ryul Cho</strong>', self.html)
         self.assertNotIn('이 사이트는 HTML', self.html)
 
+    def test_education_course_and_org_labels_are_consistent(self):
+        items = self.html.split('<article class="education-item">')[1:]
+        self.assertEqual(len(items), 2)
+        for item in items:
+            content = item.split('</article>', 1)[0]
+            self.assertEqual(content.count('<p>교육 과정:'), 1)
+            self.assertEqual(content.count('<p class="education-item__org">기관:'), 1)
+
     def test_concise_sections_and_consistent_skill_cards(self):
         for subtitle in ('프로젝트에서 이렇게 사용했습니다', '교육 · 자격 · 수상',
                          '서비스의 흐름과 안정성을 고민한 세 가지 프로젝트', 'AI Pipeline'):
