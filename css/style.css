@@ -154,8 +154,8 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .contact__email-row { display: grid; grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr); align-items: center; column-gap: .5rem; margin-top: .75rem; }
 .contact__email { grid-column: 2; color: var(--color-accent); }
 .contact__email:hover { text-decoration: underline; }
-.copy-email { grid-column: 3; justify-self: start; display: grid; place-items: center; width: 2.75rem; height: 2.75rem; padding: 0; border: 1px solid #53616f; border-radius: 6px; color: #c9d1dd; }
-.copy-email:hover,.copy-email:focus-visible { color: var(--color-accent); border-color: var(--color-accent); background: #03e8f90d; }
+.copy-email { grid-column: 3; justify-self: start; display: grid; place-items: center start; width: 2.75rem; height: 2.75rem; padding: 0 0 0 .25rem; border: 0; border-radius: 4px; color: #a9b4c2; }
+.copy-email:hover,.copy-email:focus-visible { color: var(--color-accent); }
 .copy-status { min-height: 1.7em; color: #c9d1dd; font-size: .85rem; margin-top: .5rem; }
 .contact__links { display: flex; justify-content: center; gap: 1.5rem; padding: 1rem; }
 .contact__link { font-size: 1rem; }

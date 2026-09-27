@@ -114,6 +114,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertEqual(buttons[0].get('title'), '이메일 주소 복사')
         button_content = self.html.split('<button class="copy-email"', 1)[1].split('</button>', 1)[0]
         self.assertIn('<svg', button_content)
+        self.assertIn('width="14" height="14"', button_content)
         self.assertIn('aria-hidden="true"', button_content)
         self.assertNotIn('>이메일 복사<', button_content)
 
