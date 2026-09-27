@@ -178,7 +178,7 @@ section[id],li[id] { scroll-margin-top: 1rem; }
   .header { min-height: 64px; padding: .6rem 1rem; flex-direction: column; align-items: flex-end; }
   .header__nav { width: 100%; }
   .header__toggle:not([hidden]) { display: block; }
-  .header__menu { flex-wrap: wrap; justify-content: center; gap: .25rem; }
+  .header__menu { flex-direction: column; flex-wrap: nowrap; text-align: center; gap: .25rem; }
   .header--enhanced .header__menu { display: none; }
   .header--enhanced .header__menu.open { display: flex; padding-block: .75rem; }
   .header__menu__item { padding: .4rem .65rem; }

@@ -124,6 +124,18 @@ class PortfolioChecks(unittest.TestCase):
         self.assertTrue(all('defer' in attrs and attrs.get('type') != 'module' for attrs in scripts))
         self.assertTrue(all(not urlsplit(attrs['src']).scheme for attrs in scripts))
 
+    def test_only_narrow_navigation_is_vertical(self):
+        css = (ROOT / 'css/style.css').read_text()
+        desktop, mobile = css.split('@media (max-width: 768px)', 1)
+        desktop_menu = desktop.split('.header__menu {', 1)[1].split('}', 1)[0]
+        mobile_menu = mobile.split('.header__menu {', 1)[1].split('}', 1)[0]
+        self.assertIn('display: flex', desktop_menu)
+        self.assertNotIn('flex-direction: column', desktop_menu)
+        self.assertIn('flex-direction: column', mobile_menu)
+        self.assertIn('flex-wrap: nowrap', mobile_menu)
+        self.assertIn('.header--enhanced .header__menu { display: none; }', mobile)
+        self.assertIn('.header--enhanced .header__menu.open { display: flex;', mobile)
+
     def test_images_and_external_links_accessible(self):
         for tag, attrs in self.nodes:
             if tag == 'img':
