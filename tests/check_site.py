@@ -50,6 +50,10 @@ class PortfolioChecks(unittest.TestCase):
             self.assertIn(value, self.html)
         self.assertNotIn('졸업 예정', self.html)
 
+    def test_user_corrected_grade(self):
+        self.assertIn('평점 3.94 / 4.5', self.html)
+        self.assertNotIn('3.93', self.html)
+
     def test_requested_hero_and_no_site_implementation_sentence(self):
         self.assertIn('>Sung Ryul Cho</strong>', self.html)
         self.assertNotIn('이 사이트는 HTML', self.html)
@@ -97,6 +101,17 @@ class PortfolioChecks(unittest.TestCase):
             for item in items:
                 text = item.split('</li>', 1)[0]
                 self.assertTrue(text.endswith(('구현', '구성', '개선')), text)
+
+    def test_responsibilities_explain_features_before_technical_details(self):
+        self.assertIn('패션 카드를 컬렉션(덱)에 모으고', self.html)
+        for tasks in self.html.split('<ul class="project__tasks">')[1:]:
+            content = tasks.split('</ul>', 1)[0]
+            self.assertEqual(content.count('<strong>'), 4)
+            self.assertEqual(content.count(':</strong>'), 4)
+            for implementation_term in ('Outbox', '작업 선점', '분산 락', '메트릭', '토큰 재발급'):
+                self.assertNotIn(implementation_term, content)
+        for retained_detail in ('Redisson 분산 락', 'ai_outbox', 'GROUP BY와 ROW_NUMBER', 'BackgroundTasks'):
+            self.assertIn(retained_detail, self.html)
 
     def test_model_names_not_listed_as_technology_stacks(self):
         for marker in ('<p class="skill-card__tools">', '<p class="project__stack">'):
