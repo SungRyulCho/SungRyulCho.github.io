@@ -1,41 +1,49 @@
 "use strict";
-
-// Header에 페이지 아래로 스크롤시 다크 스타일링 적용
-const header = document.querySelector(".header");
-const headerHeight = header.getBoundingClientRect().height;
-document.addEventListener("scroll", () => {
-  if (window.scrollY > headerHeight) {
-    header.classList.add("header--dark");
-  } else {
-    header.classList.remove("header--dark");
+(() => {
+  const header = document.querySelector('.header');
+  const menu = document.querySelector('.header__menu');
+  const toggle = document.querySelector('.header__toggle');
+  const arrow = document.querySelector('.arrow-up');
+  const mobile = window.matchMedia('(max-width: 768px)');
+  const setMenu = (open) => {
+    menu.classList.toggle('open', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    toggle.setAttribute('aria-label', open ? '메뉴 닫기' : '메뉴 열기');
+    toggle.textContent = open ? '닫기 ×' : '메뉴';
+  };
+  header.classList.add('header--enhanced');
+  toggle.hidden = false;
+  toggle.addEventListener('click', () => setMenu(toggle.getAttribute('aria-expanded') !== 'true'));
+  menu.addEventListener('click', (event) => {
+    if (event.target.closest('a')) setMenu(false);
+  });
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && toggle.getAttribute('aria-expanded') === 'true') {
+      setMenu(false);
+      toggle.focus();
+    }
+  });
+  document.addEventListener('click', (event) => {
+    if (!header.contains(event.target)) setMenu(false);
+  });
+  mobile.addEventListener('change', () => setMenu(false));
+  const updateScroll = () => {
+    header.classList.toggle('header--dark', window.scrollY > 24);
+    arrow.hidden = window.scrollY < 300;
+  };
+  window.addEventListener('scroll', updateScroll, {passive:true});
+  updateScroll();
+  const copyButton = document.querySelector('.copy-email');
+  const copyStatus = document.querySelector('.copy-status');
+  if (navigator.clipboard?.writeText && window.isSecureContext) {
+    copyButton.hidden = false;
+    copyButton.addEventListener('click', async () => {
+      try {
+        await navigator.clipboard.writeText(document.querySelector('.contact__email').textContent.trim());
+        copyStatus.textContent = '이메일 주소를 복사했습니다.';
+      } catch {
+        copyStatus.textContent = '복사 권한이 없어 복사하지 못했습니다. 위 이메일 주소를 직접 선택해 복사해 주세요.';
+      }
+    });
   }
-});
-
-// home 섹션을 아래로 스크롤시 투명하게 처리함
-const home = document.querySelector(".home__container");
-const homeHeight = home.offsetHeight;
-document.addEventListener("scroll", () => {
-  home.style.opacity = 1 - window.scrollY / homeHeight;
-});
-
-// Arrow up 버튼을 아래로 스크롤시 투명하게 처리함
-const arrowUp = document.querySelector(".arrow-up");
-document.addEventListener("scroll", () => {
-  if (window.scrollY > homeHeight / 2) {
-    arrowUp.style.opacity = 1;
-  } else {
-    arrowUp.style.opacity = 0;
-  }
-});
-
-// Navbar 토글버튼 클릭 처리
-const navbarMenu = document.querySelector(".header__menu");
-const navbarToggle = document.querySelector(".header__toggle");
-navbarToggle.addEventListener("click", () => {
-  navbarMenu.classList.toggle("open");
-});
-
-// Navbar 메뉴 클릭시 메뉴를 자동으로 닫아줌
-navbarMenu.addEventListener("click", () => {
-  navbarMenu.classList.remove("open");
-});
+})();

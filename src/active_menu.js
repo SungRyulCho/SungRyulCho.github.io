@@ -1,48 +1,29 @@
 "use strict";
-
-const sectionIds = ["#home", "#about", "#skills", "#work", "#contact"];
-const sections = sectionIds
-  .map((id) => document.querySelector(id))
-  .filter(Boolean);
-const navItems = sectionIds.map((id) =>
-  document.querySelector(`.header__menu__item[href="${id}"]`)
-);
-const visibleSections = sectionIds.map(() => false);
-let activeNavItem = navItems.find(Boolean);
-
-const observer = new IntersectionObserver(observerCallback, {
-  rootMargin: "-20% 0px 0px 0px",
-  threshold: [0, 0.98],
-});
-
-sections.forEach((section) => observer.observe(section));
-
-function observerCallback(entries) {
-  let selectLastOne = false;
-  entries.forEach((entry) => {
-    const index = sectionIds.indexOf(`#${entry.target.id}`);
-    visibleSections[index] = entry.isIntersecting;
-    selectLastOne =
-      index === sectionIds.length - 1 &&
-      entry.isIntersecting &&
-      entry.intersectionRatio >= 0.95;
-  });
-
-  const navIndex = selectLastOne
-    ? sectionIds.length - 1
-    : findFirstIntersecting(visibleSections);
-  selectNavItem(navIndex);
-}
-
-function findFirstIntersecting(intersections) {
-  const index = intersections.indexOf(true);
-  return index >= 0 ? index : 0;
-}
-
-function selectNavItem(index) {
-  const navItem = navItems[index];
-  if (!navItem || !activeNavItem) return;
-  activeNavItem.classList.remove("active");
-  activeNavItem = navItem;
-  activeNavItem.classList.add("active");
-}
+(() => {
+  const links = [...document.querySelectorAll('.header__menu__item')];
+  const sections = links.map((link) => document.querySelector(link.hash));
+  let scheduled = false;
+  const update = () => {
+    const marker = document.querySelector('.header').offsetHeight + 48;
+    let active = sections[0];
+    for (const section of sections) {
+      if (section.getBoundingClientRect().top <= marker) active = section;
+    }
+    if (window.scrollY + window.innerHeight >= document.documentElement.scrollHeight - 4) active = sections.at(-1);
+    links.forEach((link) => {
+      const selected = link.hash === '#' + active.id;
+      link.classList.toggle('active', selected);
+      if (selected) link.setAttribute('aria-current', 'location');
+      else link.removeAttribute('aria-current');
+    });
+    scheduled = false;
+  };
+  const schedule = () => {
+    if (!scheduled) { scheduled = true; requestAnimationFrame(update); }
+  };
+  window.addEventListener('scroll', schedule, {passive:true});
+  window.addEventListener('resize', schedule);
+  window.addEventListener('hashchange', schedule);
+  window.addEventListener('load', schedule);
+  update();
+})();
