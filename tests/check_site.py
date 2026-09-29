@@ -54,6 +54,16 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('평점 3.94 / 4.5', self.html)
         self.assertNotIn('3.93', self.html)
 
+    def test_user_confirmed_education_and_award_dates(self):
+        about = self.html.split('<section id="about"', 1)[1].split('</section>', 1)[0]
+        self.assertIn('2022.02 – 2026.08', about)
+        self.assertNotIn('2022.03', about)
+        awards = self.html.split('<section aria-labelledby="awards-title">', 1)[1].split('</section>', 1)[0]
+        self.assertIn('<span class="credential__date">2026.03</span><h4>원티드랩 포텐업 Final Project 전체 1위</h4>', awards)
+        self.assertNotIn('2026.04', awards)
+        dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<h3', 1)[0]
+        self.assertIn('2026.02 – 2026.04', dekk)
+
     def test_requested_hero_and_no_site_implementation_sentence(self):
         self.assertIn('>Sung Ryul Cho</strong>', self.html)
         self.assertNotIn('이 사이트는 HTML', self.html)
