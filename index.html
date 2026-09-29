@@ -16,9 +16,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260929-project-evidence" />
+  <link rel="stylesheet" href="css/style.css?v=20260929-case-dialog" />
   <script src="src/main.js?v=20260927" defer></script>
   <script src="src/projects.js?v=20260927" defer></script>
+  <script src="src/project-dialog.js?v=20260929" defer></script>
   <script src="src/active_menu.js?v=20260927" defer></script>
 </head>
 <body>
@@ -122,8 +123,9 @@
                 <li><strong>회원 관리 인수:</strong> 기존 회원 기능을 이어받아 중복된 인증 처리와 기능 간 의존관계 개선</li>
                 <li><strong>배포 협업:</strong> 팀원이 설계한 인프라에서 배포를 담당하고, 초기 배포 실패 원인을 찾아 해결</li>
               </ul>
+              <button id="dekk-details-open" class="project__detail-trigger" type="button" aria-haspopup="dialog" aria-controls="dekk-case-dialog" hidden>문제 해결과 개선 <span aria-hidden="true">↗</span></button>
               <details class="project__detail"><summary>문제 해결과 개선</summary><div class="project__cases">
-                <article class="project__case" id="dekk-member-improvement">
+                <article class="project__case" id="dekk-member-improvement" data-case-label="회원 관리 개선">
                   <h4>회원 기능 인수 후 중복과 의존관계 개선</h4>
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>회원 기능을 인수한 뒤, 사용자와 관리자 인증에 비슷한 코드가 중복되어 있고 가입과 탈퇴 시 덱 관리 기능을 직접 호출하는 구조를 확인했습니다. 공통 인증 정책을 바꿀 때 여러 곳을 함께 수정해야 했습니다.</dd></div>
@@ -135,7 +137,7 @@
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/pull/180" target="_blank" rel="noopener noreferrer" aria-label="DEKK 기능 간 의존관계 개선 PR 보기 (새 탭)">의존관계 개선 PR ↗</a></li>
                   </ul>
                 </article>
-                <article class="project__case">
+                <article class="project__case" id="dekk-concurrent-save" data-case-label="동시 저장">
                   <h4>동시 저장 시 50장 제한 유지</h4>
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>카드 수 확인과 저장 사이에 다른 요청이 들어오면, 여러 요청이 조건을 통과해 50장 제한을 넘길 수 있었습니다.</dd></div>
@@ -147,7 +149,7 @@
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/src/test/java/com/dekk/app/deck/application/DeckCardCommandServiceConcurrencyTest.java" target="_blank" rel="noopener noreferrer" aria-label="DEKK 중복 저장 동시성 테스트 보기 (새 탭)">중복 저장 동시성 테스트 ↗</a></li>
                   </ul>
                 </article>
-                <article class="project__case">
+                <article class="project__case" id="dekk-query-improvement" data-case-label="조회 개선">
                   <h4>덱 목록의 반복 조회 축소</h4>
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>덱마다 카드 수와 최신 카드를 조회해, 덱 수에 비례하여 보조 쿼리가 늘어났습니다.</dd></div>
@@ -158,7 +160,7 @@
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/src/main/java/com/dekk/app/deck/infrastructure/jpa/DeckCardJpaRepository.java" target="_blank" rel="noopener noreferrer" aria-label="DEKK 집계 및 최신 카드 조회 코드 보기 (새 탭)">집계 및 최신 카드 조회 코드 ↗</a></li>
                   </ul>
                 </article>
-                <article class="project__case" id="dekk-deployment-collaboration">
+                <article class="project__case" id="dekk-deployment-collaboration" data-case-label="배포 협업">
                   <h4>초기 배포 실패 해결과 팀 개발 환경 마련</h4>
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>초기 배포가 실패해 애플리케이션을 서버에 반영하지 못했습니다.</dd></div>
@@ -281,5 +283,13 @@
       <p class="contact__copyright">© Sung Ryul Cho · Backend Portfolio</p>
     </div>
   </footer>
+  <dialog id="dekk-case-dialog" class="case-dialog" aria-labelledby="dekk-dialog-title">
+    <header class="case-dialog__header">
+      <div><p class="case-dialog__project">DEKK</p><h2 id="dekk-dialog-title">문제 해결과 개선</h2></div>
+      <button class="case-dialog__close" type="button" aria-label="DEKK 상세 닫기">닫기 <span aria-hidden="true">×</span></button>
+    </header>
+    <div class="case-dialog__tabs" role="tablist" aria-label="DEKK 개선 사례"></div>
+    <div class="case-dialog__content"></div>
+  </dialog>
 </body>
 </html>

@@ -151,6 +151,24 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('중복 저장 동시성 테스트', self.html)
         self.assertIn('팀 배포 구성 코드', self.html)
 
+    def test_dekk_dialog_has_accessible_controls_and_inline_fallback(self):
+        dialogs = [attrs for tag, attrs in self.nodes if tag == 'dialog']
+        self.assertEqual(len(dialogs), 1)
+        self.assertEqual(dialogs[0]['id'], 'dekk-case-dialog')
+        ids = {attrs['id'] for _, attrs in self.nodes if 'id' in attrs}
+        self.assertIn(dialogs[0]['aria-labelledby'], ids)
+        trigger = next(attrs for tag, attrs in self.nodes if attrs.get('id') == 'dekk-details-open')
+        self.assertEqual(trigger['aria-haspopup'], 'dialog')
+        self.assertEqual(trigger['aria-controls'], dialogs[0]['id'])
+        self.assertIn('hidden', trigger)
+        cases = [attrs for tag, attrs in self.nodes if 'data-case-label' in attrs]
+        self.assertEqual([attrs['data-case-label'] for attrs in cases],
+                         ['회원 관리 개선', '동시 저장', '조회 개선', '배포 협업'])
+        self.assertTrue(all(attrs.get('id') in ids for attrs in cases))
+        # Original details and source content remain present if enhancement fails to load.
+        self.assertEqual(self.html.count('<details class="project__detail">'), 3)
+        self.assertIn('<script src="src/project-dialog.js?v=20260929" defer></script>', self.html)
+
     def test_model_names_not_listed_as_technology_stacks(self):
         for marker in ('<p class="skill-card__tools">', '<p class="project__stack">'):
             for block in self.html.split(marker)[1:]:
