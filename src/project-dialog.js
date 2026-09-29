@@ -8,52 +8,75 @@
   const content = dialog.querySelector('.case-dialog__content');
   const closeButton = dialog.querySelector('.case-dialog__close');
   const projectLabel = dialog.querySelector('.case-dialog__project');
+  const projectMeta = dialog.querySelector('.case-dialog__meta');
+  const title = dialog.querySelector('#case-dialog-title');
   const root = document.documentElement;
   let activeEntry = null;
   let savedPosition = null;
   let pointerStartedOutside = false;
 
-  // Move each complete source group, retaining its notes and repository link.
-  // No duplicated paragraphs, evidence links or anchor IDs.
-  const entries = [...document.querySelectorAll('.project')].map((project) => {
-    const trigger = project.querySelector('.project__detail-trigger');
-    const fallback = project.querySelector('.project__detail');
-    const body = fallback?.querySelector('.project__cases');
-    if (!trigger || !body) return null;
-    const entry = {
-      project, trigger, body,
-      name: project.querySelector('.project__title').textContent,
-      cases: [...body.querySelectorAll('.project__case')],
-      tabs: [],
-      selectedIndex: 0,
-    };
-    // A single case needs no redundant one-item tab bar.
-    if (entry.cases.length > 1) {
-      entry.tabs = entry.cases.map((panel, index) => {
-        const tab = document.createElement('button');
-        tab.type = 'button';
-        tab.className = 'case-dialog__tab';
-        tab.id = panel.id + '-tab';
-        tab.textContent = panel.dataset.caseLabel;
-        tab.setAttribute('role', 'tab');
-        tab.setAttribute('aria-controls', panel.id);
-        tab.hidden = true;
-        panel.setAttribute('role', 'tabpanel');
-        panel.setAttribute('aria-labelledby', tab.id);
-        panel.tabIndex = 0;
-        tablist.append(tab);
-        tab.addEventListener('click', () => selectCase(index));
-        return tab;
-      });
-    }
-    body.hidden = true;
-    content.append(body);
-    fallback.open = false;
-    fallback.hidden = true;
-    trigger.hidden = false;
-    trigger.addEventListener('click', () => openProject(entry));
-    return entry;
-  }).filter(Boolean);
+  // Both card actions use one dialog. Move the original content, not copies,
+  // preserving inline details if JavaScript or native dialogs are unavailable.
+  const entries = [...document.querySelectorAll('.project')].flatMap((project) => {
+    const sections = [
+      {title: '담당한 일', trigger: '.project__tasks-trigger',
+        fallback: '.project__responsibilities', body: '.project__tasks'},
+      {title: '문제 해결과 개선', trigger: '.project__detail-trigger',
+        fallback: '.project__detail', body: '.project__cases'},
+    ];
+    return sections.map((section) => {
+      const trigger = project.querySelector(section.trigger);
+      const fallback = project.querySelector(section.fallback);
+      const body = fallback?.querySelector(section.body);
+      if (!trigger || !body) return null;
+      const entry = {
+        project, trigger, body, title: section.title,
+        name: project.querySelector('.project__title').textContent,
+        cases: [...body.querySelectorAll('.project__case')],
+        repository: body.querySelector('.project__link'),
+        tabs: [],
+        selectedIndex: 0,
+      };
+      // A repository belongs to the project, not to an individual case.
+      // Move the original link so the non-JavaScript fallback stays intact.
+      if (entry.repository) {
+        entry.repository.classList.add('case-dialog__repository');
+        entry.repository.textContent = 'GitHub ↗';
+        entry.repository.hidden = true;
+        projectMeta.append(entry.repository);
+      }
+      // Responsibilities are a single list and need no case-selection tabs.
+      if (body.matches('.project__tasks')) {
+        body.setAttribute('role', 'list');
+        body.tabIndex = 0;
+      }
+      if (entry.cases.length > 1) {
+        entry.tabs = entry.cases.map((panel, index) => {
+          const tab = document.createElement('button');
+          tab.type = 'button';
+          tab.className = 'case-dialog__tab';
+          tab.id = panel.id + '-tab';
+          tab.textContent = panel.dataset.caseLabel;
+          tab.setAttribute('role', 'tab');
+          tab.setAttribute('aria-controls', panel.id);
+          tab.hidden = true;
+          panel.setAttribute('role', 'tabpanel');
+          panel.setAttribute('aria-labelledby', tab.id);
+          panel.tabIndex = 0;
+          tablist.append(tab);
+          tab.addEventListener('click', () => selectCase(index));
+          return tab;
+        });
+      }
+      body.hidden = true;
+      content.append(body);
+      fallback.open = false;
+      fallback.hidden = true;
+      trigger.hidden = false;
+      trigger.addEventListener('click', () => openProject(entry));
+      return entry;
+    }).filter(Boolean);
+  });
 
   function selectCase(index, moveFocus = false) {
     const {tabs, cases} = activeEntry;
@@ -83,11 +106,14 @@
     activeEntry = entry;
     entries.forEach((item) => {
       item.body.hidden = item !== entry;
+      if (item.repository) item.repository.hidden = item !== entry;
       item.tabs.forEach((tab) => { tab.hidden = item !== entry; });
     });
     projectLabel.textContent = entry.name;
+    title.textContent = entry.title;
     closeButton.setAttribute('aria-label', entry.name + ' 상세 닫기');
     tablist.setAttribute('aria-label', entry.name + ' 개선 사례');
+    tablist.style.setProperty('--case-count', entry.tabs.length || 1);
     tablist.hidden = entry.tabs.length === 0;
     dialog.classList.toggle('case-dialog--single', entry.tabs.length === 0);
     selectCase(index);

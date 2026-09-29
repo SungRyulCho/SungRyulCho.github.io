@@ -94,7 +94,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('문제 해결과 검증', self.html)
         self.assertEqual(self.html.count('<summary>문제 해결과 개선</summary>'), 3)
         cases = self.html.split('<dl class="case-flow">')[1:]
-        self.assertEqual(len(cases), 6)
+        self.assertEqual(len(cases), 10)
         for case in cases:
             content = case.split('</dl>', 1)[0]
             self.assertEqual(content.count('<dt>'), 3)
@@ -102,9 +102,12 @@ class PortfolioChecks(unittest.TestCase):
             self.assertLess(content.index('<dt>해결 방안 검토</dt>'), content.index('<dt>해결·개선</dt>'))
 
     def test_backend_project_mapping_and_clear_responsibilities(self):
-        backend = self.html.split('id="backend-skills-title"', 1)[1].split('</section>', 1)[0]
-        self.assertIn('DEKK·LearnFlow는 Java/Spring Boot로', backend)
-        self.assertIn('Vench AI는 Python/FastAPI로', backend)
+        for project_id, stack in (('dekk', 'Java · Spring Boot'),
+                                  ('learnflow', 'Java · Spring Boot'),
+                                  ('vench', 'Python · FastAPI')):
+            project = self.html.split('<li id="project-' + project_id + '"', 1)[1]
+            project_stack = project.split('<p class="project__stack">', 1)[1].split('</p>', 1)[0]
+            self.assertIn(stack, project_stack)
         for count, tasks in zip((6, 4, 4), self.html.split('<ul class="project__tasks">')[1:]):
             items = tasks.split('</ul>', 1)[0].split('<li>')[1:]
             self.assertEqual(len(items), count)
@@ -123,6 +126,46 @@ class PortfolioChecks(unittest.TestCase):
         for retained_detail in ('Redisson 분산 락', 'ai_outbox', 'GROUP BY와 ROW_NUMBER', 'BackgroundTasks'):
             self.assertIn(retained_detail, self.html)
 
+    def test_responsibilities_share_dialog_and_keep_native_fallback(self):
+        triggers = [attrs for tag, attrs in self.nodes
+                    if tag == 'button' and attrs.get('class') == 'project__tasks-trigger']
+        self.assertEqual([attrs['id'] for attrs in triggers],
+                         ['dekk-tasks-open', 'learnflow-tasks-open', 'vench-tasks-open'])
+        for trigger in triggers:
+            self.assertEqual(trigger['aria-haspopup'], 'dialog')
+            self.assertEqual(trigger['aria-controls'], 'project-case-dialog')
+            self.assertIn('담당한 일 보기', trigger['aria-label'])
+            self.assertIn('hidden', trigger)
+        disclosures = [attrs for tag, attrs in self.nodes
+                       if tag == 'details' and attrs.get('class') == 'project__responsibilities']
+        self.assertEqual(len(disclosures), 3)
+        self.assertTrue(all('open' not in attrs for attrs in disclosures))
+        for name, count, project in zip(('DEKK', 'LearnFlow', 'Vench AI'), (6, 4, 4),
+                                        self.html.split('<li id="project-')[1:]):
+            before, after = project.split('</details>', 1)
+            self.assertIn('<summary aria-label="' + name + ' 담당한 일">', before)
+            self.assertIn('<ul class="project__tasks">', before)
+            self.assertIn('project__tasks-trigger', before.split('<details class="project__responsibilities">', 1)[0])
+            self.assertEqual(before.count('<li>'), count)
+            self.assertNotIn('project__detail-trigger', before)
+            self.assertIn('project__detail-trigger', after.split('<details class="project__detail">', 1)[0])
+        css = (ROOT / 'css/style.css').read_text()
+        self.assertIn('.project__responsibilities[open] .project__responsibilities-icon', css)
+        self.assertIn('.project__responsibilities summary:focus-visible', css)
+        self.assertIn('.case-dialog .project__tasks', css)
+        script = (ROOT / 'src/project-dialog.js').read_text()
+        self.assertIn("title: '담당한 일'", script)
+        self.assertIn('title.textContent = entry.title', script)
+        self.assertIn('body.tabIndex = 0', script)
+
+    def test_all_dialog_views_fit_content_with_viewport_cap(self):
+        css = (ROOT / 'css/style.css').read_text()
+        dialog_rule = css.split('\n.case-dialog {', 1)[1].split('}', 1)[0]
+        self.assertIn('height: fit-content;', dialog_rule)
+        self.assertIn('max-height: min(740px, calc(100dvh - 3rem));', dialog_rule)
+        self.assertIn('.case-dialog { width: 100%; max-height: 100dvh;', css)
+        self.assertNotRegex(css, r'(?<![-\w])height:\s*100dvh;')
+
     def test_member_takeover_and_deployment_roles_are_explicit(self):
         dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<li id="project-learnflow"', 1)[0]
         for fact in ('회원 관리 인수:', '공통 인증 정책의 수정 지점',
@@ -136,7 +179,7 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_each_case_links_to_specific_public_evidence(self):
         cases = self.html.split('<article class="project__case"')[1:]
-        self.assertEqual(len(cases), 6)
+        self.assertEqual(len(cases), 10)
         for case in cases:
             content = case.split('</article>', 1)[0]
             parser = SiteParser()
@@ -147,7 +190,7 @@ class PortfolioChecks(unittest.TestCase):
                 url = urlsplit(attrs['href'])
                 self.assertEqual(url.scheme, 'https')
                 self.assertEqual(url.netloc, 'github.com')
-                self.assertRegex(url.path, r'^/[^/]+/[^/]+/(pull/\d+|blob/[a-f0-9]{40}/.+)$')
+                self.assertRegex(url.path, r'^/[^/]+/[^/]+/(pull/\d+|blob/[a-f0-9]{40}/.+|commit/[a-f0-9]{40})$')
         self.assertIn('중복 저장 동시성 테스트', self.html)
         self.assertIn('팀 배포 구성 코드', self.html)
 
@@ -169,24 +212,67 @@ class PortfolioChecks(unittest.TestCase):
             self.assertIn('문제 해결과 개선 보기', trigger['aria-label'])
         cases = [attrs for tag, attrs in self.nodes if 'data-case-label' in attrs]
         self.assertEqual([attrs['data-case-label'] for attrs in cases],
-                         ['회원 관리 개선', '동시 저장', '조회 개선', '배포 협업'])
+                         ['회원 관리 개선', '동시 저장', '조회 개선', '배포 협업',
+                          'AI 작업 연결', '리뷰 조회', '배포 개선',
+                          '진행 및 실패 대응', '음성 입력', '감정 통계'])
         self.assertTrue(all(attrs.get('id') in ids for attrs in cases))
         # Original details and source content remain present if enhancement fails to load.
         self.assertEqual(self.html.count('<details class="project__detail">'), 3)
-        self.assertIn('<script src="src/project-dialog.js?v=20260929-all-projects" defer></script>', self.html)
+        self.assertIn('<script src="src/project-dialog.js?v=20260930-compact-cases" defer></script>', self.html)
+
+    def test_expanded_project_cases_have_distinct_topics_and_boundaries(self):
+        learnflow = self.html.split('<li id="project-learnflow"', 1)[1].split('<li id="project-vench"', 1)[0]
+        vench = self.html.split('<li id="project-vench"', 1)[1].split('<details class="project__detail">', 1)[1].split('</details>', 1)[0]
+        for project in (learnflow, vench):
+            self.assertEqual(project.count('<article class="project__case"'), 3)
+        for case_id in ('learnflow-review-query', 'learnflow-deployment-improvement',
+                        'vench-audio-input', 'vench-emotion-report'):
+            self.assertIn('id="' + case_id + '"', self.html)
+        self.assertIn('후속 heartbeat·workerId 고도화는 팀 구현', learnflow)
+        self.assertIn('최신 3개만', learnflow)
+        audio = vench.split('id="vench-audio-input"', 1)[1].split('</article>', 1)[0]
+        self.assertIn('음량 정규화를 추가하고', audio)
+        self.assertNotIn('정확도 향상', audio)
+        self.assertNotIn('%', audio)
+        progress = vench.split('id="vench-ai-progress"', 1)[1].split('</article>', 1)[0]
+        self.assertIn('프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다', progress)
+        css = (ROOT / 'css/style.css').read_text()
+        self.assertIn('repeat(var(--case-count, 4), minmax(0, 1fr))', css)
 
     def test_repository_links_are_secondary_inside_details(self):
         self.assertNotIn('GitHub에서 코드 보기', self.html)
         for project in self.html.split('<li id="project-')[1:]:
-            metadata = project.split('</details>', 1)
-            detail = metadata[0].split('<details class="project__detail">', 1)[1]
+            metadata = project.split('<details class="project__detail">', 1)[1].split('</details>', 1)
+            detail = metadata[0]
             self.assertEqual(detail.count('class="project__link"'), 1)
             self.assertIn('전체 GitHub 저장소 ↗', detail)
             self.assertNotIn('class="project__link"', metadata[1].split('</div>', 1)[0])
         css = (ROOT / 'css/style.css').read_text()
-        trigger_rule = css.split('.project__detail-trigger {', 1)[1].split('}', 1)[0]
+        trigger_rule = css.split('\n.project__detail-trigger {', 1)[1].split('}', 1)[0]
         self.assertIn('justify-content: flex-start', trigger_rule)
         self.assertIn('gap: .35rem', trigger_rule)
+
+    def test_repository_links_move_to_project_header_for_case_views(self):
+        self.assertIn('<div class="case-dialog__meta"><p id="case-dialog-project"', self.html)
+        self.assertIn('<h2 id="case-dialog-title" class="case-dialog__title">', self.html)
+        script = (ROOT / 'src/project-dialog.js').read_text()
+        self.assertIn("repository: body.querySelector('.project__link')", script)
+        self.assertIn('projectMeta.append(entry.repository)', script)
+        self.assertIn("entry.repository.textContent = 'GitHub ↗'", script)
+        self.assertIn('if (item.repository) item.repository.hidden = item !== entry', script)
+        css = (ROOT / 'css/style.css').read_text()
+        self.assertIn('.case-dialog__meta { display: flex; flex-wrap: wrap;', css)
+        self.assertIn('.case-dialog .case-dialog__repository', css)
+        self.assertNotIn('.case-dialog .project__link {', css)
+        link_rule = css.split('.case-dialog .case-dialog__repository {', 1)[1].split('}', 1)[0]
+        for affordance in ('min-height: 24px;', 'border: 1px solid', 'background: transparent;', 'font-size: .75rem;', 'font-weight: 500;'):
+            self.assertIn(affordance, link_rule)
+        project_rule = css.split('.case-dialog__project {', 1)[1].split('}', 1)[0]
+        self.assertIn('font-size: 1.25rem;', project_rule)
+        self.assertIn('font-weight: 700;', project_rule)
+        title_rule = css.split('.case-dialog__title {', 1)[1].split('}', 1)[0]
+        self.assertIn('font-size: 1.5rem;', title_rule)
+        self.assertIn('font-weight: 700;', title_rule)
 
     def test_model_names_not_listed_as_technology_stacks(self):
         for marker in ('<p class="skill-card__tools">', '<p class="project__stack">'):
@@ -196,12 +282,31 @@ class PortfolioChecks(unittest.TestCase):
                 self.assertNotIn('mDeBERTa', stack)
         self.assertIn('Faster-Whisper · Transformers · llama.cpp', self.html)
 
-    def test_about_infrastructure_uses_technologies_not_ai_features(self):
+    def test_about_summarizes_fields_and_skills_explains_capabilities(self):
         about = self.html.split('<section id="about"', 1)[1].split('</section>', 1)[0]
-        self.assertNotIn('AI &amp; Operations', about)
-        self.assertNotIn('음성 인식 · 로컬 LLM · 비동기 처리', about)
-        self.assertIn('Infrastructure</h3>', about)
-        self.assertIn('AWS · GCP · Docker Compose', about)
+        self.assertEqual(about.count('<li class="major">'), 3)
+        for icon in ('API', 'DB', 'OPS'):
+            self.assertIn(f'aria-hidden="true">{icon}</span>', about)
+        for field in ('웹 서비스 기능과<br />API 개발', '데이터 설계와<br />안정적인 처리',
+                      '배포 자동화와<br />운영 환경 구성'):
+            self.assertIn(field, about)
+        for technology in ('Spring Boot', 'PostgreSQL', 'Redisson', 'Docker Compose'):
+            self.assertNotIn(technology, about)
+        self.assertIn('맡은 일을 끝까지 책임지고', about)
+        skills = self.html.split('<section id="skills"', 1)[1].split('<section id="work"', 1)[0]
+        for project_name in ('DEKK', 'LearnFlow', 'Vench AI'):
+            self.assertNotIn(project_name, skills)
+        for usage in skills.split('<p class="skill-card__usage">')[1:]:
+            self.assertIn('수 있습니다.', usage.split('</p>', 1)[0])
+
+    def test_coupang_is_described_as_operations_not_development(self):
+        about = self.html.split('<section id="about"', 1)[1].split('</section>', 1)[0]
+        coupang = about.split('images/jobs/coupang.png', 1)[1].split('</li>', 1)[0]
+        for fact in ('쿠팡 COE Team · 상품 데이터 운영', '2024.01 – 2024.12',
+                     '데이터 운영 경력', '상품 데이터 검수', '운영 보고서 작성', '유관부서와의 데이터 변경 협의 및 오류 해결'):
+            self.assertIn(fact, coupang)
+        for old_copy in ('Grocery Category Owner', '주 3회', '백엔드 개발로 이어가고'):
+            self.assertNotIn(old_copy, coupang)
 
     def test_contact_has_centered_email_and_accessible_copy_icon(self):
         self.assertIn('class="contact__email-row"', self.html)

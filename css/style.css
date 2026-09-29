@@ -79,10 +79,10 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .major__title { font-size: 1.35rem; margin-bottom: .75rem; }
 .major p { color: #d3d9e2; font-size: .95rem; }
 .jobs { text-align: start; }
-.job { display: flex; align-items: center; gap: 1rem; padding: 1.2rem 0; border-top: 1px solid #e4e8ed; }
-.job img { flex: 0 0 50px; width: 50px; height: auto; object-fit: contain; border-radius: 4px; }
-.job__name { font-size: 1rem; }
-.job__period,.job__description { color: #505d6a; font-size: .9rem; }
+.job { display: flex; align-items: center; gap: .75rem; padding: .8rem 0; border-top: 1px solid #e4e8ed; }
+.job img { flex: 0 0 40px; width: 40px; height: auto; object-fit: contain; border-radius: 4px; }
+.job__name { font-size: .95rem; }
+.job__period,.job__description { color: #505d6a; font-size: .85rem; }
 .job__description { margin-top: .25rem; }
 
 /* Skills: usage evidence, never a proficiency score. */
@@ -112,7 +112,15 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .project__intro { font-size: .95rem; color: #e0e5ed; min-height: 5.1em; }
 .project__stack { color: var(--color-accent); font-size: .8rem; margin: 1rem 0; min-height: 3.4em; }
 .project__metadata h4 { font-size: .88rem; margin-bottom: .4rem; }
-.project__tasks { list-style: disc; padding-left: 1.1rem; font-size: .87rem; color: #c9d1dd; min-height: 9em; }
+.project__responsibilities summary, .project__tasks-trigger { display: flex; width: 100%; align-items: center; justify-content: flex-start; gap: .35rem; min-height: 44px; padding: .6rem 0; color: #d2d9e3; font-size: .9rem; font-weight: 500; cursor: pointer; list-style: none; text-align: left; }
+.project__responsibilities summary::-webkit-details-marker { display: none; }
+.project__responsibilities summary:hover, .project__tasks-trigger:hover { color: white; }
+.project__responsibilities summary:focus-visible, .project__tasks-trigger:focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; border-radius: 4px; }
+.project__responsibilities-icon { flex: 0 0 14px; width: 14px; height: 14px; }
+.project__responsibilities[open] .project__responsibilities-icon { transform: rotate(180deg); }
+.project__responsibilities[open] { padding-bottom: .6rem; }
+.project__responsibilities + .project__detail-trigger { margin-top: .35rem; }
+.project__tasks { list-style: disc; padding: .35rem 0 0 1.1rem; font-size: .87rem; color: #c9d1dd; }
 .project__tasks li + li { margin-top: .3rem; }
 .project__detail { margin-top: 1.25rem; border-block: 1px solid #3b4451; }
 .project__detail summary { padding: .8rem 0; cursor: pointer; font-size: .9rem; font-weight: 500; color: white; }
@@ -135,22 +143,31 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 /* One primary action on every card; repository links stay in the details. */
 .project__detail-trigger { display: flex; width: 100%; align-items: center; justify-content: flex-start; gap: .35rem; margin-top: 1.25rem; padding: .8rem 0; border-block: 1px solid #3b4451; color: var(--color-accent); font-size: .9rem; font-weight: 600; text-align: left; }
 .project__detail-trigger:hover { color: white; }
-.case-dialog { position: fixed; inset: 0; width: min(960px, calc(100% - 3rem)); height: min(740px, calc(100dvh - 3rem)); max-width: none; max-height: none; margin: auto; padding: 0; border: 1px solid #465363; border-radius: 12px; background: var(--color-primary-variant); color: white; box-shadow: 0 24px 80px #0008; overflow: hidden; word-break: keep-all; }
+.case-dialog { position: fixed; inset: 0; width: min(960px, calc(100% - 3rem)); height: fit-content; max-width: none; max-height: min(740px, calc(100dvh - 3rem)); margin: auto; padding: 0; border: 1px solid #465363; border-radius: 12px; background: var(--color-primary-variant); color: white; box-shadow: 0 24px 80px #0008; overflow: hidden; word-break: keep-all; }
 .case-dialog[open] { display: flex; flex-direction: column; }
 .case-dialog::backdrop { background: #050a13c9; }
 .case-dialog :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
 .case-dialog__header { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.5rem 2rem 1.25rem; }
 .case-dialog--single .case-dialog__header { border-bottom: 1px solid #3b4451; }
-.case-dialog__project { color: var(--color-accent); font-size: .85rem; font-weight: 700; margin-bottom: .15rem; }
-.case-dialog__header h2 { font-size: 1.4rem; line-height: 1.4; }
+.case-dialog__heading { min-width: 0; }
+.case-dialog__meta { display: flex; flex-wrap: wrap; align-items: center; gap: .25rem .65rem; margin-bottom: .3rem; }
+.case-dialog__project { color: var(--color-accent); font-size: 1.25rem; font-weight: 700; line-height: 1.4; }
+.case-dialog .case-dialog__repository { display: inline-flex; align-items: center; min-height: 24px; padding: 0 .4rem; border: 1px solid #546274; border-radius: 4px; background: transparent; color: #c8d2df; font-size: .75rem; font-weight: 500; white-space: nowrap; }
+.case-dialog .case-dialog__repository:hover { border-color: var(--color-accent); color: white; text-decoration: none; }
+.case-dialog__title { color: white; font-size: 1.5rem; font-weight: 700; line-height: 1.4; }
 .case-dialog__close { flex: 0 0 auto; min-height: 44px; padding: .45rem .85rem; border: 1px solid #68788b; border-radius: 6px; color: white; font-size: .9rem; }
 .case-dialog__close:hover { border-color: var(--color-accent); color: var(--color-accent); }
-.case-dialog__tabs { display: grid; flex: 0 0 auto; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: .5rem; padding: 0 2rem 1.25rem; border-bottom: 1px solid #3b4451; }
+.case-dialog__tabs { display: grid; flex: 0 0 auto; grid-template-columns: repeat(var(--case-count, 4), minmax(0, 1fr)); gap: .5rem; padding: 0 2rem 1.25rem; border-bottom: 1px solid #3b4451; }
 .case-dialog__tab { min-width: 0; min-height: 44px; padding: .6rem .75rem; border: 1px solid #546274; border-radius: 6px; color: #d2d9e3; font-size: .95rem; }
 .case-dialog__tab:hover { border-color: var(--color-accent); }
 .case-dialog__tab[aria-selected="true"] { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-primary); font-weight: 700; }
 .case-dialog__content { flex: 1 1 auto; min-height: 0; padding: 1.75rem 2rem 2rem; overflow-y: auto; overscroll-behavior: contain; }
 .case-dialog .project__cases { max-width: 760px; margin: 0 auto; padding: 0; }
+.case-dialog .project__tasks { max-width: 760px; margin: 0 auto; padding: 0; list-style: none; font-size: 1rem; line-height: 1.85; }
+.case-dialog .project__tasks li { padding: 1rem 0; }
+.case-dialog .project__tasks li:first-child { padding-top: 0; }
+.case-dialog .project__tasks li + li { margin-top: 0; border-top: 1px solid #3b4451; }
+.case-dialog .project__tasks strong { display: block; margin-bottom: .25rem; color: var(--color-accent); font-size: .9rem; }
 .case-dialog .project__case { max-width: 760px; margin: 0 auto; padding: 0; border: 0; }
 .case-dialog .project__case h4 { font-size: 1.2rem; line-height: 1.6; }
 .case-dialog .case-flow { margin-top: 1.25rem; padding-left: 1rem; }
@@ -160,14 +177,13 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .case-dialog .project__evidence { margin-top: 1.25rem; }
 .case-dialog .project__evidence a { min-height: 44px; padding: .6rem 0; font-size: .9rem; }
 .case-dialog .project__note { margin-top: 1.25rem; color: #adb9c9; font-size: .85rem; line-height: 1.7; }
-.case-dialog .project__link { margin-top: 1.5rem; padding: 1rem 0 0; min-height: 44px; border-top: 1px solid #3b4451; color: #adb9c9; font-size: .85rem; }
-.case-dialog .project__link:hover { color: var(--color-accent); }
 .case-dialog-open { overflow: hidden; }
 .case-dialog-open body { position: fixed; top: var(--case-dialog-scroll-top); width: 100%; padding-right: var(--case-dialog-scrollbar); }
 @media (max-width: 600px) {
-  .case-dialog { width: 100%; height: 100dvh; margin: 0; border: 0; border-radius: 0; }
+  .case-dialog { width: 100%; max-height: 100dvh; border: 0; border-radius: 0; }
   .case-dialog__header { padding: max(1rem, env(safe-area-inset-top)) 1rem 1rem; }
-  .case-dialog__header h2 { font-size: 1.15rem; }
+  .case-dialog__project { font-size: 1.125rem; }
+  .case-dialog__title { font-size: 1.35rem; }
   .case-dialog__tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); padding: 0 1rem 1rem; }
   .case-dialog__tab { font-size: .9rem; }
   .case-dialog__content { padding: 1.25rem 1rem max(1.5rem, env(safe-area-inset-bottom)); }
