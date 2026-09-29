@@ -132,14 +132,15 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .project__link { display: block; padding-top: 1rem; font-size: .9rem; color: var(--color-accent); }
 .project__link:hover { text-decoration: underline; text-underline-offset: 4px; }
 
-/* DEKK details: keep the card compact and the original case content intact. */
-.project__detail-trigger { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 1rem; margin-top: 1.25rem; padding: .8rem 0; border-block: 1px solid #3b4451; color: white; font-size: .9rem; font-weight: 500; text-align: left; }
-.project__detail-trigger:hover { color: var(--color-accent); }
+/* One primary action on every card; repository links stay in the details. */
+.project__detail-trigger { display: flex; width: 100%; align-items: center; justify-content: flex-start; gap: .35rem; margin-top: 1.25rem; padding: .8rem 0; border-block: 1px solid #3b4451; color: var(--color-accent); font-size: .9rem; font-weight: 600; text-align: left; }
+.project__detail-trigger:hover { color: white; }
 .case-dialog { position: fixed; inset: 0; width: min(960px, calc(100% - 3rem)); height: min(740px, calc(100dvh - 3rem)); max-width: none; max-height: none; margin: auto; padding: 0; border: 1px solid #465363; border-radius: 12px; background: var(--color-primary-variant); color: white; box-shadow: 0 24px 80px #0008; overflow: hidden; word-break: keep-all; }
 .case-dialog[open] { display: flex; flex-direction: column; }
 .case-dialog::backdrop { background: #050a13c9; }
 .case-dialog :focus-visible { outline: 3px solid var(--color-accent); outline-offset: 3px; }
 .case-dialog__header { display: flex; flex: 0 0 auto; align-items: center; justify-content: space-between; gap: 1rem; padding: 1.5rem 2rem 1.25rem; }
+.case-dialog--single .case-dialog__header { border-bottom: 1px solid #3b4451; }
 .case-dialog__project { color: var(--color-accent); font-size: .85rem; font-weight: 700; margin-bottom: .15rem; }
 .case-dialog__header h2 { font-size: 1.4rem; line-height: 1.4; }
 .case-dialog__close { flex: 0 0 auto; min-height: 44px; padding: .45rem .85rem; border: 1px solid #68788b; border-radius: 6px; color: white; font-size: .9rem; }
@@ -149,6 +150,7 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .case-dialog__tab:hover { border-color: var(--color-accent); }
 .case-dialog__tab[aria-selected="true"] { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-primary); font-weight: 700; }
 .case-dialog__content { flex: 1 1 auto; min-height: 0; padding: 1.75rem 2rem 2rem; overflow-y: auto; overscroll-behavior: contain; }
+.case-dialog .project__cases { max-width: 760px; margin: 0 auto; padding: 0; }
 .case-dialog .project__case { max-width: 760px; margin: 0 auto; padding: 0; border: 0; }
 .case-dialog .project__case h4 { font-size: 1.2rem; line-height: 1.6; }
 .case-dialog .case-flow { margin-top: 1.25rem; padding-left: 1rem; }
@@ -157,6 +159,9 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .case-dialog .case-flow dd { font-size: 1rem; line-height: 1.85; }
 .case-dialog .project__evidence { margin-top: 1.25rem; }
 .case-dialog .project__evidence a { min-height: 44px; padding: .6rem 0; font-size: .9rem; }
+.case-dialog .project__note { margin-top: 1.25rem; color: #adb9c9; font-size: .85rem; line-height: 1.7; }
+.case-dialog .project__link { margin-top: 1.5rem; padding: 1rem 0 0; min-height: 44px; border-top: 1px solid #3b4451; color: #adb9c9; font-size: .85rem; }
+.case-dialog .project__link:hover { color: var(--color-accent); }
 .case-dialog-open { overflow: hidden; }
 .case-dialog-open body { position: fixed; top: var(--case-dialog-scroll-top); width: 100%; padding-right: var(--case-dialog-scrollbar); }
 @media (max-width: 600px) {

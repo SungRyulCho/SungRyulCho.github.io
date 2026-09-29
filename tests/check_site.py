@@ -151,23 +151,42 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('중복 저장 동시성 테스트', self.html)
         self.assertIn('팀 배포 구성 코드', self.html)
 
-    def test_dekk_dialog_has_accessible_controls_and_inline_fallback(self):
+    def test_all_projects_use_shared_dialog_with_inline_fallback(self):
         dialogs = [attrs for tag, attrs in self.nodes if tag == 'dialog']
         self.assertEqual(len(dialogs), 1)
-        self.assertEqual(dialogs[0]['id'], 'dekk-case-dialog')
+        self.assertEqual(dialogs[0]['id'], 'project-case-dialog')
         ids = {attrs['id'] for _, attrs in self.nodes if 'id' in attrs}
-        self.assertIn(dialogs[0]['aria-labelledby'], ids)
-        trigger = next(attrs for tag, attrs in self.nodes if attrs.get('id') == 'dekk-details-open')
-        self.assertEqual(trigger['aria-haspopup'], 'dialog')
-        self.assertEqual(trigger['aria-controls'], dialogs[0]['id'])
-        self.assertIn('hidden', trigger)
+        for label_id in dialogs[0]['aria-labelledby'].split():
+            self.assertIn(label_id, ids)
+        triggers = [attrs for tag, attrs in self.nodes
+                    if attrs.get('class') == 'project__detail-trigger']
+        self.assertEqual([attrs['id'] for attrs in triggers],
+                         ['dekk-details-open', 'learnflow-details-open', 'vench-details-open'])
+        for trigger in triggers:
+            self.assertEqual(trigger['aria-haspopup'], 'dialog')
+            self.assertEqual(trigger['aria-controls'], dialogs[0]['id'])
+            self.assertIn('hidden', trigger)
+            self.assertIn('문제 해결과 개선 보기', trigger['aria-label'])
         cases = [attrs for tag, attrs in self.nodes if 'data-case-label' in attrs]
         self.assertEqual([attrs['data-case-label'] for attrs in cases],
                          ['회원 관리 개선', '동시 저장', '조회 개선', '배포 협업'])
         self.assertTrue(all(attrs.get('id') in ids for attrs in cases))
         # Original details and source content remain present if enhancement fails to load.
         self.assertEqual(self.html.count('<details class="project__detail">'), 3)
-        self.assertIn('<script src="src/project-dialog.js?v=20260929" defer></script>', self.html)
+        self.assertIn('<script src="src/project-dialog.js?v=20260929-all-projects" defer></script>', self.html)
+
+    def test_repository_links_are_secondary_inside_details(self):
+        self.assertNotIn('GitHub에서 코드 보기', self.html)
+        for project in self.html.split('<li id="project-')[1:]:
+            metadata = project.split('</details>', 1)
+            detail = metadata[0].split('<details class="project__detail">', 1)[1]
+            self.assertEqual(detail.count('class="project__link"'), 1)
+            self.assertIn('전체 GitHub 저장소 ↗', detail)
+            self.assertNotIn('class="project__link"', metadata[1].split('</div>', 1)[0])
+        css = (ROOT / 'css/style.css').read_text()
+        trigger_rule = css.split('.project__detail-trigger {', 1)[1].split('}', 1)[0]
+        self.assertIn('justify-content: flex-start', trigger_rule)
+        self.assertIn('gap: .35rem', trigger_rule)
 
     def test_model_names_not_listed_as_technology_stacks(self):
         for marker in ('<p class="skill-card__tools">', '<p class="project__stack">'):

@@ -1,47 +1,68 @@
 "use strict";
 (() => {
-  const dialog = document.querySelector('#dekk-case-dialog');
-  const trigger = document.querySelector('#dekk-details-open');
-  const project = document.querySelector('#project-dekk');
+  const dialog = document.querySelector('#project-case-dialog');
   // Keep native inline details usable without JavaScript or dialog support.
-  if (!dialog || !trigger || !project || typeof dialog.showModal !== 'function') return;
+  if (!dialog || typeof dialog.showModal !== 'function') return;
 
-  const fallback = project.querySelector('.project__detail');
-  const cases = [...fallback.querySelectorAll('.project__case')];
   const tablist = dialog.querySelector('[role="tablist"]');
   const content = dialog.querySelector('.case-dialog__content');
   const closeButton = dialog.querySelector('.case-dialog__close');
+  const projectLabel = dialog.querySelector('.case-dialog__project');
   const root = document.documentElement;
-  let selectedIndex = 0;
+  let activeEntry = null;
   let savedPosition = null;
   let pointerStartedOutside = false;
 
-  // Move, rather than copy, the source articles: one copy of every paragraph,
-  // evidence link and anchor ID, with inline fallback in the original HTML.
-  const tabs = cases.map((panel, index) => {
-    const tab = document.createElement('button');
-    tab.type = 'button';
-    tab.className = 'case-dialog__tab';
-    tab.id = panel.id + '-tab';
-    tab.textContent = panel.dataset.caseLabel;
-    tab.setAttribute('role', 'tab');
-    tab.setAttribute('aria-controls', panel.id);
-    panel.setAttribute('role', 'tabpanel');
-    panel.setAttribute('aria-labelledby', tab.id);
-    panel.tabIndex = 0;
-    tablist.append(tab);
-    content.append(panel);
-    tab.addEventListener('click', () => selectCase(index));
-    return tab;
-  });
+  // Move each complete source group, retaining its notes and repository link.
+  // No duplicated paragraphs, evidence links or anchor IDs.
+  const entries = [...document.querySelectorAll('.project')].map((project) => {
+    const trigger = project.querySelector('.project__detail-trigger');
+    const fallback = project.querySelector('.project__detail');
+    const body = fallback?.querySelector('.project__cases');
+    if (!trigger || !body) return null;
+    const entry = {
+      project, trigger, body,
+      name: project.querySelector('.project__title').textContent,
+      cases: [...body.querySelectorAll('.project__case')],
+      tabs: [],
+      selectedIndex: 0,
+    };
+    // A single case needs no redundant one-item tab bar.
+    if (entry.cases.length > 1) {
+      entry.tabs = entry.cases.map((panel, index) => {
+        const tab = document.createElement('button');
+        tab.type = 'button';
+        tab.className = 'case-dialog__tab';
+        tab.id = panel.id + '-tab';
+        tab.textContent = panel.dataset.caseLabel;
+        tab.setAttribute('role', 'tab');
+        tab.setAttribute('aria-controls', panel.id);
+        tab.hidden = true;
+        panel.setAttribute('role', 'tabpanel');
+        panel.setAttribute('aria-labelledby', tab.id);
+        panel.tabIndex = 0;
+        tablist.append(tab);
+        tab.addEventListener('click', () => selectCase(index));
+        return tab;
+      });
+    }
+    body.hidden = true;
+    content.append(body);
+    fallback.open = false;
+    fallback.hidden = true;
+    trigger.hidden = false;
+    trigger.addEventListener('click', () => openProject(entry));
+    return entry;
+  }).filter(Boolean);
 
   function selectCase(index, moveFocus = false) {
-    selectedIndex = index;
+    const {tabs, cases} = activeEntry;
+    activeEntry.selectedIndex = index;
+    cases.forEach((panel, position) => { panel.hidden = position !== index; });
     tabs.forEach((tab, position) => {
       const selected = position === index;
       tab.setAttribute('aria-selected', String(selected));
       tab.tabIndex = selected ? 0 : -1;
-      cases[position].hidden = !selected;
     });
     content.scrollTop = 0;
     if (moveFocus) tabs[index].focus({preventScroll: true});
@@ -49,7 +70,7 @@
 
   function restorePage() {
     if (!savedPosition) return;
-    const {x, y} = savedPosition;
+    const {x, y, trigger} = savedPosition;
     savedPosition = null;
     root.classList.remove('case-dialog-open');
     root.style.removeProperty('--case-dialog-scroll-top');
@@ -58,10 +79,20 @@
     trigger.focus({preventScroll: true});
   }
 
-  function openCase(index = selectedIndex) {
+  function openProject(entry, index = entry.selectedIndex) {
+    activeEntry = entry;
+    entries.forEach((item) => {
+      item.body.hidden = item !== entry;
+      item.tabs.forEach((tab) => { tab.hidden = item !== entry; });
+    });
+    projectLabel.textContent = entry.name;
+    closeButton.setAttribute('aria-label', entry.name + ' 상세 닫기');
+    tablist.setAttribute('aria-label', entry.name + ' 개선 사례');
+    tablist.hidden = entry.tabs.length === 0;
+    dialog.classList.toggle('case-dialog--single', entry.tabs.length === 0);
     selectCase(index);
     if (!dialog.open) {
-      savedPosition = {x: window.scrollX, y: window.scrollY};
+      savedPosition = {x: window.scrollX, y: window.scrollY, trigger: entry.trigger};
       const scrollbar = window.innerWidth - root.clientWidth;
       root.style.setProperty('--case-dialog-scroll-top', -savedPosition.y + 'px');
       root.style.setProperty('--case-dialog-scrollbar', scrollbar + 'px');
@@ -73,10 +104,12 @@
         throw error;
       }
     }
-    tabs[index].focus({preventScroll: true});
+    (entry.tabs[index] || closeButton).focus({preventScroll: true});
   }
 
   tablist.addEventListener('keydown', (event) => {
+    if (!activeEntry) return;
+    const {tabs} = activeEntry;
     const index = tabs.indexOf(event.target);
     if (index < 0) return;
     const next = {
@@ -90,7 +123,6 @@
     selectCase(next, true);
   });
 
-  trigger.addEventListener('click', () => openCase());
   closeButton.addEventListener('click', () => dialog.close());
   dialog.addEventListener('close', restorePage);
   // Keep keyboard traversal inside the visible case, including at both ends.
@@ -125,16 +157,14 @@
   // Existing case URLs still open their matching case, including when the
   // project was hidden by a category filter. Tab changes do not alter history.
   const openFromHash = () => {
-    const index = cases.findIndex((panel) => '#' + panel.id === location.hash);
-    if (index < 0) return;
-    if (project.hidden) document.querySelector('[data-category="all"]').click();
-    openCase(index);
+    for (const entry of entries) {
+      const index = entry.cases.findIndex((panel) => '#' + panel.id === location.hash);
+      if (index < 0) continue;
+      if (entry.project.hidden) document.querySelector('[data-category="all"]').click();
+      openProject(entry, index);
+      break;
+    }
   };
   window.addEventListener('hashchange', openFromHash);
   window.addEventListener('load', openFromHash, {once: true});
-
-  selectCase(0);
-  fallback.open = false;
-  fallback.hidden = true;
-  trigger.hidden = false;
 })();

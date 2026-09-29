@@ -16,10 +16,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260929-case-dialog" />
+  <link rel="stylesheet" href="css/style.css?v=20260929-project-dialogs" />
   <script src="src/main.js?v=20260927" defer></script>
   <script src="src/projects.js?v=20260927" defer></script>
-  <script src="src/project-dialog.js?v=20260929" defer></script>
+  <script src="src/project-dialog.js?v=20260929-all-projects" defer></script>
   <script src="src/active_menu.js?v=20260927" defer></script>
 </head>
 <body>
@@ -123,7 +123,7 @@
                 <li><strong>회원 관리 인수:</strong> 기존 회원 기능을 이어받아 중복된 인증 처리와 기능 간 의존관계 개선</li>
                 <li><strong>배포 협업:</strong> 팀원이 설계한 인프라에서 배포를 담당하고, 초기 배포 실패 원인을 찾아 해결</li>
               </ul>
-              <button id="dekk-details-open" class="project__detail-trigger" type="button" aria-haspopup="dialog" aria-controls="dekk-case-dialog" hidden>문제 해결과 개선 <span aria-hidden="true">↗</span></button>
+              <button id="dekk-details-open" class="project__detail-trigger" type="button" aria-label="DEKK 문제 해결과 개선 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 개선 보기</span><span aria-hidden="true">↗</span></button>
               <details class="project__detail"><summary>문제 해결과 개선</summary><div class="project__cases">
                 <article class="project__case" id="dekk-member-improvement" data-case-label="회원 관리 개선">
                   <h4>회원 기능 인수 후 중복과 의존관계 개선</h4>
@@ -171,8 +171,8 @@
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/appspec.yml" target="_blank" rel="noopener noreferrer" aria-label="DEKK 팀 배포 구성 코드 보기 (새 탭)">팀 배포 구성 코드 ↗</a></li>
                   </ul>
                 </article>
+                <a class="project__link" href="https://github.com/potenup-dekk/DEKK-BE" target="_blank" rel="noopener noreferrer" aria-label="DEKK 전체 GitHub 저장소 (새 탭)">전체 GitHub 저장소 ↗</a>
               </div></details>
-              <a class="project__link" href="https://github.com/potenup-dekk/DEKK-BE" target="_blank" rel="noopener noreferrer" aria-label="DEKK GitHub 저장소 (새 탭)">GitHub에서 코드 보기 ↗</a>
             </div>
           </li>
           <li id="project-learnflow" class="project" data-type="backend">
@@ -189,8 +189,9 @@
                 <li><strong>리뷰·답글:</strong> 강의 리뷰 작성·삭제와 강사의 답글 작성 API 구현</li>
                 <li><strong>배포·오류 추적:</strong> 서버 자동 배포와 요청별 처리 기록으로 오류를 추적하는 환경 구성</li>
               </ul>
+              <button id="learnflow-details-open" class="project__detail-trigger" type="button" aria-label="LearnFlow 문제 해결과 개선 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 개선 보기</span><span aria-hidden="true">↗</span></button>
               <details class="project__detail"><summary>문제 해결과 개선</summary><div class="project__cases">
-                <article class="project__case">
+                <article class="project__case" id="learnflow-ai-outbox">
                   <h4>강의 승인과 AI 작업 등록 연결</h4>
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>승인과 AI 호출을 따로 처리하면 호출 실패 시 작업이 누락될 수 있고, 분석 완료까지 기다리면 승인 응답도 늦어집니다.</dd></div>
@@ -202,8 +203,8 @@
                   </ul>
                 </article>
                 <p class="project__note">제 기여는 초기 Outbox·리뷰·배포 및 추적입니다. ML 워커와 화면, 후속 heartbeat·workerId 고도화는 팀 구현입니다.</p>
+                <a class="project__link" href="https://github.com/team-Octave/learnflow-api" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 전체 GitHub 저장소 (새 탭)">전체 GitHub 저장소 ↗</a>
               </div></details>
-              <a class="project__link" href="https://github.com/team-Octave/learnflow-api" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow GitHub 저장소 (새 탭)">GitHub에서 코드 보기 ↗</a>
             </div>
           </li>
           <li id="project-vench" class="project" data-type="ai">
@@ -220,8 +221,9 @@
                 <li><strong>감정 리포트:</strong> 여러 일기의 감정 분석 결과를 모아 보여주는 리포트 기능 구현</li>
                 <li><strong>실패 대응·운영:</strong> 생성 실패 시 대체 결과 제공 기능 구현 및 이용 현황 모니터링 구성</li>
               </ul>
+              <button id="vench-details-open" class="project__detail-trigger" type="button" aria-label="Vench AI 문제 해결과 개선 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 개선 보기</span><span aria-hidden="true">↗</span></button>
               <details class="project__detail"><summary>문제 해결과 개선</summary><div class="project__cases">
-                <article class="project__case">
+                <article class="project__case" id="vench-ai-progress">
                   <h4>긴 AI 처리의 진행 상황 제공</h4>
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>음성 인식부터 일기 생성까지 오래 걸려, 최종 결과만 반환하면 사용자가 진행 중인지 실패했는지 알기 어렵습니다.</dd></div>
@@ -234,8 +236,8 @@
                   </ul>
                 </article>
                 <p class="project__note">BackgroundTasks는 API 프로세스 내부 작업입니다. 프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다.</p>
+                <a class="project__link" href="https://github.com/voice-journal/vench" target="_blank" rel="noopener noreferrer" aria-label="Vench AI 전체 GitHub 저장소 (새 탭)">전체 GitHub 저장소 ↗</a>
               </div></details>
-              <a class="project__link" href="https://github.com/voice-journal/vench" target="_blank" rel="noopener noreferrer" aria-label="Vench AI GitHub 저장소 (새 탭)">GitHub에서 코드 보기 ↗</a>
             </div>
           </li>
         </ul>
@@ -283,12 +285,12 @@
       <p class="contact__copyright">© Sung Ryul Cho · Backend Portfolio</p>
     </div>
   </footer>
-  <dialog id="dekk-case-dialog" class="case-dialog" aria-labelledby="dekk-dialog-title">
+  <dialog id="project-case-dialog" class="case-dialog" aria-labelledby="case-dialog-project case-dialog-title">
     <header class="case-dialog__header">
-      <div><p class="case-dialog__project">DEKK</p><h2 id="dekk-dialog-title">문제 해결과 개선</h2></div>
-      <button class="case-dialog__close" type="button" aria-label="DEKK 상세 닫기">닫기 <span aria-hidden="true">×</span></button>
+      <div><p id="case-dialog-project" class="case-dialog__project">프로젝트</p><h2 id="case-dialog-title">문제 해결과 개선</h2></div>
+      <button class="case-dialog__close" type="button" aria-label="프로젝트 상세 닫기">닫기 <span aria-hidden="true">×</span></button>
     </header>
-    <div class="case-dialog__tabs" role="tablist" aria-label="DEKK 개선 사례"></div>
+    <div class="case-dialog__tabs" role="tablist" aria-label="개선 사례" hidden></div>
     <div class="case-dialog__content"></div>
   </dialog>
 </body>
