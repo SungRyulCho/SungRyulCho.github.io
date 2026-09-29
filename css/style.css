@@ -125,6 +125,9 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .case-flow > div + div { margin-top: 1rem; }
 .case-flow dt { color: var(--color-accent); font-size: .78rem; font-weight: 700; margin-bottom: .3rem; }
 .case-flow dd { margin: 0; color: #d2d9e3; font-size: .88rem; }
+.project__evidence { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: 1rem; padding: 0; list-style: none; }
+.project__evidence a { display: inline-block; padding: .2rem 0; color: var(--color-accent); font-size: .8rem; text-decoration: underline; text-underline-offset: 4px; overflow-wrap: anywhere; }
+.project__evidence a:hover { color: white; }
 .project__detail .project__note { margin-top: 1.25rem; font-size: .8rem; color: #adb9c9; }
 .project__link { display: block; padding-top: 1rem; font-size: .9rem; color: var(--color-accent); }
 .project__link:hover { text-decoration: underline; text-underline-offset: 4px; }

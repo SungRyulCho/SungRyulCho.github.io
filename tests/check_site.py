@@ -94,7 +94,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('문제 해결과 검증', self.html)
         self.assertEqual(self.html.count('<summary>문제 해결과 개선</summary>'), 3)
         cases = self.html.split('<dl class="case-flow">')[1:]
-        self.assertEqual(len(cases), 4)
+        self.assertEqual(len(cases), 6)
         for case in cases:
             content = case.split('</dl>', 1)[0]
             self.assertEqual(content.count('<dt>'), 3)
@@ -105,23 +105,51 @@ class PortfolioChecks(unittest.TestCase):
         backend = self.html.split('id="backend-skills-title"', 1)[1].split('</section>', 1)[0]
         self.assertIn('DEKK·LearnFlow는 Java/Spring Boot로', backend)
         self.assertIn('Vench AI는 Python/FastAPI로', backend)
-        for tasks in self.html.split('<ul class="project__tasks">')[1:]:
+        for count, tasks in zip((6, 4, 4), self.html.split('<ul class="project__tasks">')[1:]):
             items = tasks.split('</ul>', 1)[0].split('<li>')[1:]
-            self.assertEqual(len(items), 4)
+            self.assertEqual(len(items), count)
             for item in items:
                 text = item.split('</li>', 1)[0]
-                self.assertTrue(text.endswith(('구현', '구성', '개선')), text)
+                self.assertTrue(text.endswith(('구현', '구성', '개선', '해결')), text)
 
     def test_responsibilities_explain_features_before_technical_details(self):
         self.assertIn('패션 카드를 컬렉션(덱)에 모으고', self.html)
-        for tasks in self.html.split('<ul class="project__tasks">')[1:]:
+        for count, tasks in zip((6, 4, 4), self.html.split('<ul class="project__tasks">')[1:]):
             content = tasks.split('</ul>', 1)[0]
-            self.assertEqual(content.count('<strong>'), 4)
-            self.assertEqual(content.count(':</strong>'), 4)
+            self.assertEqual(content.count('<strong>'), count)
+            self.assertEqual(content.count(':</strong>'), count)
             for implementation_term in ('Outbox', '작업 선점', '분산 락', '메트릭', '토큰 재발급'):
                 self.assertNotIn(implementation_term, content)
         for retained_detail in ('Redisson 분산 락', 'ai_outbox', 'GROUP BY와 ROW_NUMBER', 'BackgroundTasks'):
             self.assertIn(retained_detail, self.html)
+
+    def test_member_takeover_and_deployment_roles_are_explicit(self):
+        dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<li id="project-learnflow"', 1)[0]
+        for fact in ('회원 관리 인수:', '공통 인증 정책의 수정 지점',
+                     '같은 트랜잭션에서 실행되는 이벤트 핸들러',
+                     '인프라 전체 구조 설계는 팀원이 맡고',
+                     'codedeploy-agent가 중지된 것을 확인하고 기동',
+                     '재배포가 정상 완료'):
+            self.assertIn(fact, dekk)
+        for unsupported_claim in ('비동기 이벤트', '전체 인프라를 설계', '응답 속도 향상'):
+            self.assertNotIn(unsupported_claim, dekk)
+
+    def test_each_case_links_to_specific_public_evidence(self):
+        cases = self.html.split('<article class="project__case"')[1:]
+        self.assertEqual(len(cases), 6)
+        for case in cases:
+            content = case.split('</article>', 1)[0]
+            parser = SiteParser()
+            parser.feed(content)
+            evidence = [attrs for tag, attrs in parser.nodes if tag == 'a']
+            self.assertGreaterEqual(len(evidence), 1)
+            for attrs in evidence:
+                url = urlsplit(attrs['href'])
+                self.assertEqual(url.scheme, 'https')
+                self.assertEqual(url.netloc, 'github.com')
+                self.assertRegex(url.path, r'^/[^/]+/[^/]+/(pull/\d+|blob/[a-f0-9]{40}/.+)$')
+        self.assertIn('중복 저장 동시성 테스트', self.html)
+        self.assertIn('팀 배포 구성 코드', self.html)
 
     def test_model_names_not_listed_as_technology_stacks(self):
         for marker in ('<p class="skill-card__tools">', '<p class="project__stack">'):
