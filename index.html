@@ -16,9 +16,10 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260930-compact-background" />
+  <link rel="stylesheet" href="css/style.css?v=20260930-gallery-autoplay" />
   <script src="src/main.js?v=20260927" defer></script>
   <script src="src/projects.js?v=20260927" defer></script>
+  <script src="src/project-gallery.js?v=20260930-autoplay-3s" defer></script>
   <script src="src/project-dialog.js?v=20260930-compact-cases" defer></script>
   <script src="src/active_menu.js?v=20260927" defer></script>
 </head>
@@ -108,7 +109,19 @@
         <p id="project-status" class="sr-only" role="status" aria-live="polite"></p>
         <ul class="projects">
           <li id="project-dekk" class="project" data-type="backend">
-            <img class="project__img project__img--mobile" src="images/projects/dekk-decks.png" alt="DEKK의 기본 덱과 공유 덱 목록 화면" width="1290" height="2796" loading="lazy" />
+            <div class="project__gallery project__gallery--mobile" data-project-gallery role="group" aria-label="DEKK 서비스 화면">
+              <div class="project__gallery-viewport">
+                <a class="project__gallery-slide" data-image-label="카드 탐색" href="images/projects/dekk-main.png" target="_blank" rel="noopener noreferrer" aria-label="DEKK 카드 탐색 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img project__img--mobile" src="images/projects/dekk-main.png" alt="DEKK 메인 화면에서 패션 카드를 탐색하고 선택하는 모습" width="466" height="820" loading="lazy" />
+                </a>
+                <a class="project__gallery-slide" data-image-label="덱 목록" href="images/projects/dekk-decks.png" target="_blank" rel="noopener noreferrer" aria-label="DEKK 덱 목록 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img project__img--mobile" src="images/projects/dekk-decks.png" alt="DEKK의 기본 덱과 공유 덱 목록 화면" width="1290" height="2796" loading="lazy" />
+                </a>
+                <a class="project__gallery-slide" data-image-label="링크 공유" href="images/projects/dekk-share.png" target="_blank" rel="noopener noreferrer" aria-label="DEKK 링크 공유 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img project__img--mobile" src="images/projects/dekk-share.png" alt="DEKK 공유 덱의 공유 상태, 남은 시간과 공유 주소를 확인하는 화면" width="1290" height="2796" loading="lazy" />
+                </a>
+              </div>
+            </div>
             <div class="project__metadata">
               <p class="project__period">2026.02 – 2026.04 · 4인 팀 · Backend</p>
               <h3 class="project__title">DEKK</h3>
@@ -157,7 +170,7 @@
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>덱마다 카드 수와 최신 카드를 조회해, 덱 수에 비례하여 보조 쿼리가 늘어났습니다.</dd></div>
                     <div><dt>해결 방안 검토</dt><dd>전체 카드를 불러오기보다, 화면에 필요한 집계값과 최신 카드만 덱 ID 기준으로 묶어 조회하도록 방향을 잡았습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>GROUP BY와 ROW_NUMBER 윈도 함수로 일괄 조회해 두 종류의 보조 쿼리를 N + N회에서 1 + 1회로 줄였습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>GROUP BY와 ROW_NUMBER 윈도 함수를 활용해 덱별 카드 수와 최신 카드를 일괄 조회하도록 개선했습니다. 두 종류의 보조 쿼리를 N + N회에서 1 + 1회로 줄여, 목록에 포함된 덱이 늘어나도 이 두 조회의 실행 횟수는 증가하지 않도록 했습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="덱 목록 조회 개선 근거">
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/src/main/java/com/dekk/app/deck/infrastructure/jpa/DeckCardJpaRepository.java" target="_blank" rel="noopener noreferrer" aria-label="DEKK 집계 및 최신 카드 조회 코드 보기 (새 탭)">집계 및 최신 카드 조회 코드 ↗</a></li>
@@ -179,7 +192,19 @@
             </div>
           </li>
           <li id="project-learnflow" class="project" data-type="backend">
-            <img class="project__img" src="images/projects/learnflow-home.png" alt="LearnFlow 강의 탐색 화면" width="1440" height="1000" loading="lazy" />
+            <div class="project__gallery" data-project-gallery role="group" aria-label="LearnFlow 서비스 화면">
+              <div class="project__gallery-viewport">
+                <a class="project__gallery-slide" data-image-label="메인" href="images/projects/learnflow-home.png" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 메인 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img" src="images/projects/learnflow-home.png" alt="LearnFlow 강의 탐색 화면" width="1440" height="1000" loading="lazy" />
+                </a>
+                <a class="project__gallery-slide" data-image-label="AI 요약" href="images/projects/learnflow-ai-summary.png" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow AI 요약 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img" src="images/projects/learnflow-ai-summary.png" alt="LearnFlow 강의 목차 옆에 영상 요약과 핵심 내용을 표시하는 화면" width="1440" height="1000" loading="lazy" />
+                </a>
+                <a class="project__gallery-slide" data-image-label="리뷰" href="images/projects/learnflow-reviews.png" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 리뷰 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img" src="images/projects/learnflow-reviews.png" alt="LearnFlow 강의 평점과 수강평을 확인하는 화면" width="1440" height="1000" loading="lazy" />
+                </a>
+              </div>
+            </div>
             <div class="project__metadata">
               <p class="project__period">2025.12 – 2026.02 · 7인 팀 · Backend</p>
               <h3 class="project__title">LearnFlow</h3>
@@ -198,11 +223,11 @@
               <button id="learnflow-details-open" class="project__detail-trigger" type="button" aria-label="LearnFlow 문제 해결과 개선 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 개선 보기</span><span aria-hidden="true">↗</span></button>
               <details class="project__detail"><summary>문제 해결과 개선</summary><div class="project__cases">
                 <article class="project__case" id="learnflow-ai-outbox" data-case-label="AI 작업 연결">
-                  <h4>강의 승인과 AI 작업 등록 연결</h4>
+                  <h4>강의 승인과 AI 분석 작업의 분리 및 실패 재처리</h4>
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>승인과 AI 호출을 따로 처리하면 호출 실패 시 작업이 누락될 수 있고, 분석 완료까지 기다리면 승인 응답도 늦어집니다.</dd></div>
                     <div><dt>해결 방안 검토</dt><dd>승인 응답과 분석 실행은 분리하되, 승인 상태와 작업 기록은 함께 확정해야 했습니다. 기존 MySQL에 작업을 남기는 Outbox 구조를 적용했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>승인과 ai_outbox 등록을 한 트랜잭션으로 묶고, 별도 워커가 가져갈 작업 선점 API를 구현했습니다. lesson_id 유니크 제약으로 중복 등록을 제한하고, 재시도 가능한 실패는 1분·5분·60분 간격으로 다시 처리하도록 했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>강의 승인과 분석 작업 등록을 하나의 트랜잭션으로 묶고, 분석 서버가 처리할 작업을 가져가는 API를 구현했습니다. 레슨별 작업의 중복 등록을 제한하고, 작업 상태를 대기, 처리 중, 완료, 실패로 구분해 DB에 기록했습니다.<br /><br />실패한 작업은 다음 실행 시각을 지정해 1분, 5분, 60분 간격으로 최대 3회 재시도하고, 한도를 넘으면 실패 상태로 남기도록 했습니다. 이를 통해 승인 요청과 시간이 오래 걸리는 분석 실행을 분리하고, 분석에 실패하더라도 정해진 기준에 따라 작업을 다시 처리할 수 있도록 했습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="강의 승인과 AI 작업 등록 구현 근거">
                     <li><a href="https://github.com/team-Octave/learnflow-api/pull/117" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 초기 AI 작업 처리 구현 PR 보기 (새 탭)">초기 AI 작업 처리 PR ↗</a></li>
@@ -236,7 +261,19 @@
             </div>
           </li>
           <li id="project-vench" class="project" data-type="ai">
-            <img class="project__img" src="images/projects/vench-result.png" alt="Vench AI가 생성한 일기와 감정 분석 결과 예시" width="716" height="461" loading="lazy" />
+            <div class="project__gallery" data-project-gallery role="group" aria-label="Vench AI 서비스 화면">
+              <div class="project__gallery-viewport">
+                <a class="project__gallery-slide" data-image-label="생성 중" href="images/projects/vench-progress.png" target="_blank" rel="noopener noreferrer" aria-label="Vench AI 음성 녹음과 일기 생성 중 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img" src="images/projects/vench-progress.png" alt="Vench AI에서 녹음한 음성과 일기 생성 진행 상황을 확인하는 화면" width="1280" height="432" loading="lazy" />
+                </a>
+                <a class="project__gallery-slide" data-image-label="생성 결과" href="images/projects/vench-result.png" target="_blank" rel="noopener noreferrer" aria-label="Vench AI 일기 생성 결과 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img" src="images/projects/vench-result.png" alt="Vench AI가 생성한 일기와 감정 분석 결과 예시" width="716" height="461" loading="lazy" />
+                </a>
+                <a class="project__gallery-slide" data-image-label="지난 기록" href="images/projects/vench-history-demo.png" target="_blank" rel="noopener noreferrer" aria-label="Vench AI 지난 기록 화면 원본 보기 (새 탭)" title="클릭하면 원본 이미지를 새 탭에서 볼 수 있습니다">
+                  <img class="project__img" src="images/projects/vench-history-demo.png" alt="Vench AI에서 지난 일기와 위로 문구, 누적 감정 통계를 확인하는 화면" width="1280" height="550" loading="lazy" />
+                </a>
+              </div>
+            </div>
             <div class="project__metadata">
               <p class="project__period">2026.01 · 3인 팀 · Backend &amp; AI</p>
               <h3 class="project__title">Vench AI</h3>

@@ -45,6 +45,48 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('Emori', self.html)
         self.assertNotIn('coupang-data', self.html)
 
+    def test_project_galleries_keep_existing_and_added_images(self):
+        expected = {
+            'dekk': [('카드 탐색', 'dekk-main.png'), ('덱 목록', 'dekk-decks.png'), ('링크 공유', 'dekk-share.png')],
+            'learnflow': [('메인', 'learnflow-home.png'), ('AI 요약', 'learnflow-ai-summary.png'), ('리뷰', 'learnflow-reviews.png')],
+            'vench': [('생성 중', 'vench-progress.png'), ('생성 결과', 'vench-result.png'), ('지난 기록', 'vench-history-demo.png')],
+        }
+        for project_id, screens in expected.items():
+            project = self.html.split('<li id="project-' + project_id + '"', 1)[1].split('<div class="project__metadata">', 1)[0]
+            parser = SiteParser()
+            parser.feed(project)
+            slides = [attrs for tag, attrs in parser.nodes
+                      if tag == 'a' and attrs.get('class') == 'project__gallery-slide']
+            self.assertEqual([(slide['data-image-label'], Path(slide['href']).name) for slide in slides], screens)
+            for slide in slides:
+                self.assertTrue((ROOT / slide['href']).is_file())
+                self.assertNotIn('hidden', slide)
+                self.assertEqual(slide['target'], '_blank')
+                self.assertIn('새 탭', slide['aria-label'])
+            self.assertNotIn('project__gallery-controls', project)
+            self.assertNotIn('project__gallery-caption', project)
+            self.assertNotIn('data-gallery-prev', project)
+            self.assertNotIn('data-gallery-next', project)
+            self.assertNotIn('aria-live="polite"', project)
+        learnflow = self.html.split('<li id="project-learnflow"', 1)[1].split('<div class="project__metadata">', 1)[0]
+        self.assertNotIn('예시 데이터', learnflow)
+        self.assertNotIn('images/projects/vench-history.jpg', self.html)
+        self.assertIn('<script src="src/project-gallery.js?v=20260930-autoplay-3s" defer></script>', self.html)
+
+    def test_gallery_keeps_existing_image_area_at_each_breakpoint(self):
+        css = (ROOT / 'css/style.css').read_text()
+        base = css.split('\n.project__gallery {', 1)[1].split('}', 1)[0]
+        self.assertIn('height: 210px;', base)
+        tablet = css.split('@media (max-width: 1100px) and (min-width: 769px)', 1)[1].split('@media (max-width: 768px)', 1)[0]
+        mobile = css.split('@media (max-width: 768px)', 1)[1].split('@media (max-width: 400px)', 1)[0]
+        for block, height in ((tablet, 170), (mobile, 240)):
+            self.assertIn('.project__img { height: ' + str(height) + 'px; }', block)
+            self.assertIn('.project__gallery { height: ' + str(height) + 'px; }', block)
+        self.assertIn('.project__gallery .project__img { height: 100%; padding: .25rem; }', css)
+        self.assertNotIn('height: calc(100% - 36px);', css)
+        self.assertNotIn('.project__gallery-caption', css)
+        self.assertIn('scroll-snap-type: x mandatory;', css)
+
     def test_resume_statuses_are_explicit(self):
         for value in ('컴퓨터공학과 · 졸업', '정보처리기사 필기 합격', '실기 준비 중', '수강 중', '960시간', '420시간', '2026.08.28'):
             self.assertIn(value, self.html)
@@ -68,6 +110,23 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('>Sung Ryul Cho</strong>', self.html)
         self.assertNotIn('이 사이트는 HTML', self.html)
 
+    def test_hero_actions_share_width_and_retain_visual_hierarchy(self):
+        home = self.html.split('<section id="home"', 1)[1].split('</section>', 1)[0]
+        parser = SiteParser()
+        parser.feed(home)
+        actions = [attrs for tag, attrs in parser.nodes
+                   if tag == 'a' and 'home__contact' in attrs.get('class', '').split()]
+        self.assertEqual([action['href'] for action in actions], ['#work', '#contact'])
+        self.assertEqual(actions[1]['class'], 'home__contact home__contact--outline')
+        css = (ROOT / 'css/style.css').read_text()
+        base_rule = css.split('\n.home__contact {', 1)[1].split('}', 1)[0]
+        outline_rule = css.split('\n.home__contact--outline {', 1)[1].split('}', 1)[0]
+        for value in ('width: 8.75rem;', 'max-width: calc(100% - .8rem);',
+                      'padding: .6rem 1.1rem;', 'background: var(--color-accent);'):
+            self.assertIn(value, base_rule)
+        self.assertIn('background: transparent;', outline_rule)
+        self.assertNotIn('width:', outline_rule)
+
     def test_education_course_and_org_labels_are_consistent(self):
         items = self.html.split('<article class="education-item">')[1:]
         self.assertEqual(len(items), 2)
@@ -75,6 +134,35 @@ class PortfolioChecks(unittest.TestCase):
             content = item.split('</article>', 1)[0]
             self.assertEqual(content.count('<p>교육 과정:'), 1)
             self.assertEqual(content.count('<p class="education-item__org">기관:'), 1)
+
+    def test_project_filters_share_dimensions_without_resizing_cards(self):
+        filters = [attrs for tag, attrs in self.nodes
+                   if tag == 'button' and 'category' in attrs.get('class', '').split()]
+        self.assertEqual([item['data-category'] for item in filters], ['all', 'backend', 'ai'])
+        css = (ROOT / 'css/style.css').read_text()
+        group_rule = css.split('\n.categories {', 1)[1].split('}', 1)[0]
+        button_rule = css.split('\n.category {', 1)[1].split('}', 1)[0]
+        for value in ('flex-wrap: wrap;', 'justify-content: center;', 'gap: .625rem;'):
+            self.assertIn(value, group_rule)
+        for value in ('width: 10.625rem;', 'min-height: 2.75rem;',
+                      'justify-content: center;', 'gap: .5rem;'):
+            self.assertIn(value, button_rule)
+        self.assertIn('max-width: calc((100% - .5rem) / 2);', css)
+        grid_rule = css.split('\n.projects {', 1)[1].split('}', 1)[0]
+        self.assertIn('grid-template-columns: repeat(3,minmax(0,1fr));', grid_rule)
+        self.assertIn('gap: 1.25rem;', grid_rule)
+
+    def test_filter_counts_keep_same_centered_badges_in_both_states(self):
+        css = (ROOT / 'css/style.css').read_text()
+        badge = css.split('\n.category__count {', 1)[1].split('}', 1)[0]
+        for value in ('display: inline-flex;', 'align-items: center;', 'justify-content: center;',
+                      'flex-shrink: 0;', 'width: 1.375rem;', 'height: 1.375rem;',
+                      'font-size: .875rem;', 'font-weight: 700;', 'line-height: 1;',
+                      'border-radius: 50%;', 'color: white;', 'background: #293646;'):
+            self.assertIn(value, badge)
+        self.assertNotIn('.category--selected .category__count', css)
+        selected_button = css.split('\n.category--selected {', 1)[1].split('}', 1)[0]
+        self.assertIn('background: var(--color-accent);', selected_button)
 
     def test_concise_sections_and_consistent_skill_cards(self):
         for subtitle in ('프로젝트에서 이렇게 사용했습니다', '교육 · 자격 · 수상',
@@ -123,8 +211,20 @@ class PortfolioChecks(unittest.TestCase):
             self.assertEqual(content.count(':</strong>'), count)
             for implementation_term in ('Outbox', '작업 선점', '분산 락', '메트릭', '토큰 재발급'):
                 self.assertNotIn(implementation_term, content)
-        for retained_detail in ('Redisson 분산 락', 'ai_outbox', 'GROUP BY와 ROW_NUMBER', 'BackgroundTasks'):
+        for retained_detail in ('Redisson 분산 락', 'Outbox', 'GROUP BY와 ROW_NUMBER', 'BackgroundTasks'):
             self.assertIn(retained_detail, self.html)
+
+    def test_query_improvement_scope_and_ai_retry_outcome_are_explicit(self):
+        dekk = self.html.split('id="dekk-query-improvement"', 1)[1].split('</article>', 1)[0]
+        for fact in ('두 종류의 보조 쿼리를 N + N회에서 1 + 1회로',
+                     '이 두 조회의 실행 횟수는 증가하지 않도록'):
+            self.assertIn(fact, dekk)
+        learnflow = self.html.split('id="learnflow-ai-outbox"', 1)[1].split('</article>', 1)[0]
+        for fact in ('강의 승인과 AI 분석 작업의 분리 및 실패 재처리',
+                     '하나의 트랜잭션', '대기, 처리 중, 완료, 실패',
+                     '다음 실행 시각', '1분, 5분, 60분 간격으로 최대 3회',
+                     '한도를 넘으면 실패 상태로', '승인 요청과 시간이 오래 걸리는 분석 실행을 분리'):
+            self.assertIn(fact, learnflow)
 
     def test_responsibilities_share_dialog_and_keep_native_fallback(self):
         triggers = [attrs for tag, attrs in self.nodes
