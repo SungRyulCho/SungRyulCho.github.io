@@ -45,6 +45,37 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('Emori', self.html)
         self.assertNotIn('coupang-data', self.html)
 
+    def test_share_preview_uses_a_dedicated_banner(self):
+        meta = {attrs.get('property', attrs.get('name')): attrs.get('content')
+                for tag, attrs in self.nodes if tag == 'meta'}
+        image_url = urlsplit(meta['og:image'])
+        self.assertEqual(image_url.scheme, 'https')
+        self.assertEqual(image_url.netloc, 'sungryulcho.github.io')
+        self.assertEqual(image_url.path, '/images/portfolio-share-20260930.png')
+        self.assertEqual(meta['twitter:image'], meta['og:image'])
+        self.assertEqual(meta['twitter:card'], 'summary_large_image')
+        self.assertEqual(meta['twitter:title'], meta['og:title'])
+        self.assertEqual(meta['twitter:description'], meta['og:description'])
+        self.assertEqual(meta['twitter:image:alt'], meta['og:image:alt'])
+        self.assertIn('Backend Portfolio', meta['og:image:alt'])
+        image = (ROOT / image_url.path.lstrip('/')).read_bytes()
+        self.assertEqual(image[:8], b'\x89PNG\r\n\x1a\n')
+        self.assertEqual(image[12:16], b'IHDR')
+        width = int.from_bytes(image[16:20], 'big')
+        height = int.from_bytes(image[20:24], 'big')
+        self.assertEqual((int(meta['og:image:width']), int(meta['og:image:height'])),
+                         (width, height))
+        self.assertEqual(meta['og:image:type'], 'image/png')
+        self.assertGreaterEqual(width, 1200)
+        self.assertAlmostEqual(width / height, 1200 / 630, places=2)
+        self.assertLess(len(image), 2 * 1024 * 1024)
+
+    def test_share_banner_does_not_replace_the_site_portrait(self):
+        portraits = [attrs for tag, attrs in self.nodes
+                     if tag == 'img' and attrs.get('class') == 'home__avatar']
+        self.assertEqual(len(portraits), 1)
+        self.assertEqual(portraits[0]['src'], 'images/profile.png')
+
     def test_project_galleries_keep_existing_and_added_images(self):
         expected = {
             'dekk': [('카드 탐색', 'dekk-main.png'), ('덱 목록', 'dekk-decks.png'), ('링크 공유', 'dekk-share.png')],
