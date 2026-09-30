@@ -301,6 +301,53 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('.case-dialog { width: 100%; max-height: 100dvh;', css)
         self.assertNotRegex(css, r'(?<![-\w])height:\s*100dvh;')
 
+    def test_case_typography_preserves_title_section_body_hierarchy(self):
+        css = (ROOT / 'css/style.css').read_text()
+        desktop, mobile = css.split('@media (max-width: 600px)', 1)
+
+        def rule(block, selector):
+            return block.split(selector + ' {', 1)[1].split('}', 1)[0]
+
+        def font_size(block, selector):
+            return float(rule(block, selector).split('font-size:', 1)[1].split('rem', 1)[0])
+
+        title = '.case-dialog .project__case h4'
+        label = '.case-dialog .case-flow dt'
+        body = '.case-dialog .case-flow dd'
+        body_size = font_size(desktop, body)
+        for block in (desktop, mobile):
+            self.assertGreater(font_size(block, title), font_size(block, label))
+            self.assertGreater(font_size(block, label), body_size)
+            self.assertGreaterEqual(font_size(block, label), body_size * 1.25)
+        self.assertGreaterEqual(body_size, 1)
+        self.assertNotIn(body + ' {', mobile)
+        self.assertIn('color: white;', rule(desktop, title))
+        self.assertIn('font-weight: 700;', rule(desktop, title))
+        self.assertIn('color: #abc9f0;', rule(desktop, label))
+        self.assertIn('font-weight: 800;', rule(desktop, label))
+        self.assertNotIn('var(--color-accent)', rule(desktop, label))
+        self.assertIn('margin-bottom: .5rem;', rule(desktop, label))
+        flow = rule(desktop, '.case-dialog .case-flow')
+        self.assertIn('padding-left: 1rem;', flow)
+        self.assertIn('border-left: 2px solid #4f6788;', flow)
+        self.assertIn('css/style.css?v=20260930-case-shared-center', self.html)
+
+    def test_case_layout_keeps_compact_tabs_and_content_centered(self):
+        css = (ROOT / 'css/style.css').read_text()
+        desktop, mobile = css.split('@media (max-width: 600px)', 1)
+        tabs = desktop.split('.case-dialog__tabs {', 1)[1].split('}', 1)[0]
+        self.assertIn('grid-template-columns: repeat(var(--case-count, 4), minmax(0, 9rem));', tabs)
+        self.assertIn('justify-content: center;', tabs)
+        self.assertIn('padding: 0 2rem 1.25rem;', tabs)
+        content = desktop.split('.case-dialog__content {', 1)[1].split('}', 1)[0]
+        self.assertIn('padding: 1.75rem 2rem 2rem;', content)
+        for selector in ('.case-dialog .project__cases', '.case-dialog .project__case'):
+            rule = desktop.split(selector + ' {', 1)[1].split('}', 1)[0]
+            self.assertIn('max-width: 760px;', rule)
+            self.assertIn('margin: 0 auto;', rule)
+        mobile_tabs = mobile.split('.case-dialog__tabs {', 1)[1].split('}', 1)[0]
+        self.assertIn('grid-template-columns: repeat(2, minmax(0, 1fr));', mobile_tabs)
+
     def test_member_takeover_and_deployment_roles_are_explicit(self):
         dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<li id="project-learnflow"', 1)[0]
         for fact in ('회원 관리 인수:', '공통 인증 정책의 수정 지점',
@@ -372,7 +419,7 @@ class PortfolioChecks(unittest.TestCase):
         progress = vench.split('id="vench-ai-progress"', 1)[1].split('</article>', 1)[0]
         self.assertIn('프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다', progress)
         css = (ROOT / 'css/style.css').read_text()
-        self.assertIn('repeat(var(--case-count, 4), minmax(0, 1fr))', css)
+        self.assertIn('repeat(var(--case-count, 4), minmax(0, 9rem))', css)
 
     def test_repository_links_are_secondary_inside_details(self):
         self.assertNotIn('GitHub에서 코드 보기', self.html)
