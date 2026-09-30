@@ -152,11 +152,12 @@
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>회원 관리 기능을 인수했을 때, 사용자와 관리자 인증에 비슷한 코드가 각각 존재해 공통 정책을 변경하려면 여러 곳을 함께 수정해야 했습니다. 가입과 탈퇴 과정에서는 회원 코드가 보관함 관리 기능을 직접 호출하고 있어, 서로 다른 기능의 처리 흐름이 연결되어 있었습니다.</dd></div>
                     <div><dt>해결 방안 검토</dt><dd>사용자와 관리자의 권한 구분은 유지하면서 공통 인증 처리만 모을 필요가 있었습니다. 회원 상태 변경과 보관함 처리는 함께 완료되도록 유지하되, 보관함을 생성하고 정리하는 책임은 보관함 기능에서 담당하도록 나눴습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>토큰 생성과 검증을 공통화하고, 가입 완료와 탈퇴에 따른 보관함 처리를 이벤트 핸들러로 분리했습니다. 이벤트 처리는 기존 트랜잭션에 참여하도록 구성했습니다. 공통 인증 정책의 수정 지점을 모아 중복 수정과 누락 위험을 줄였으며, 보관함 처리 방식은 회원 서비스 코드와 분리해 관리할 수 있도록 개선했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>토큰 생성과 검증을 공통화하고, 가입 완료와 탈퇴에 따른 보관함 처리를 이벤트 핸들러로 분리했습니다. 이벤트 처리는 기존 트랜잭션에 참여하도록 구성했습니다. 공통 인증 정책의 수정 지점을 모아 중복 수정과 누락 위험을 줄였으며, 보관함 처리 방식은 회원 서비스 코드와 분리해 관리할 수 있도록 개선했습니다.<br /><br />로그인 사용자 정보를 전달하는 공통 구조를 마련한 뒤, Codex로 관련 파일 26개에 일괄 적용했습니다. 변경 내용 검토와 빌드, 자동 테스트, 직접 API 호출로 동작을 확인하고 팀원들의 코드 리뷰를 거쳐 반영했습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="회원 기능 개선 근거">
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/pull/182" target="_blank" rel="noopener noreferrer" aria-label="DEKK 인증 통합 PR 보기 (새 탭)">인증 통합 PR ↗</a></li>
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/pull/180" target="_blank" rel="noopener noreferrer" aria-label="DEKK 기능 간 의존관계 개선 PR 보기 (새 탭)">의존관계 개선 PR ↗</a></li>
+                    <li><a href="https://github.com/potenup-dekk/DEKK-BE/commit/9f33a9e229412b5b0e6e3ff3472356481fed2cb9" target="_blank" rel="noopener noreferrer" aria-label="DEKK 로그인 사용자 처리 26개 파일 변경 내역 보기 (새 탭)">로그인 사용자 처리 일괄 변경 ↗</a></li>
                   </ul>
                 </article>
                 <article class="project__case" id="dekk-concurrent-save" data-case-label="동시 저장">

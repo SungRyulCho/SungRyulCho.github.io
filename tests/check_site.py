@@ -514,6 +514,18 @@ class PortfolioChecks(unittest.TestCase):
         for unsupported_claim in ('비동기 이벤트', '전체 인프라를 설계', '응답 속도 향상'):
             self.assertNotIn(unsupported_claim, dekk)
 
+    def test_member_case_connects_ai_bulk_changes_to_commit_evidence(self):
+        case = self.html.split('id="dekk-member-improvement"', 1)[1].split('</article>', 1)[0]
+        for fact in ('로그인 사용자 정보를 전달하는 공통 구조를 마련한 뒤',
+                     'Codex로 관련 파일 26개에 일괄 적용했습니다',
+                     '변경 내용 검토와 빌드, 자동 테스트, 직접 API 호출',
+                     '팀원들의 코드 리뷰를 거쳐 반영했습니다',
+                     'commit/9f33a9e229412b5b0e6e3ff3472356481fed2cb9',
+                     '로그인 사용자 처리 일괄 변경'):
+            self.assertIn(fact, case)
+        self.assertEqual(case.count('<dt>해결·개선</dt>'), 1)
+        self.assertEqual(case.count('class="project__evidence"'), 1)
+
     def test_each_case_links_to_specific_public_evidence(self):
         cases = self.html.split('<article class="project__case"')[1:]
         self.assertEqual(len(cases), 10)
