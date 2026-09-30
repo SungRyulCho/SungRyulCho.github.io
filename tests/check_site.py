@@ -51,7 +51,7 @@ class PortfolioChecks(unittest.TestCase):
         image_url = urlsplit(meta['og:image'])
         self.assertEqual(image_url.scheme, 'https')
         self.assertEqual(image_url.netloc, 'sungryulcho.github.io')
-        self.assertEqual(image_url.path, '/images/portfolio-share-home-20260930.png')
+        self.assertEqual(image_url.path, '/images/portfolio-share-crop-20260930.png')
         self.assertEqual(meta['twitter:image'], meta['og:image'])
         self.assertEqual(meta['twitter:card'], 'summary_large_image')
         self.assertEqual(meta['twitter:title'], meta['og:title'])
@@ -70,7 +70,7 @@ class PortfolioChecks(unittest.TestCase):
                          (width, height))
         self.assertEqual(meta['og:image:type'], 'image/png')
         self.assertGreaterEqual(width, 1200)
-        self.assertEqual((width, height), (1600, 800))
+        self.assertEqual((width, height), (1572, 786))
         self.assertEqual(width / height, 2)
         self.assertLess(len(image), 2 * 1024 * 1024)
 
