@@ -15,22 +15,15 @@
   let savedPosition = null;
   let pointerStartedOutside = false;
 
-  // Both card actions use one dialog. Move the original content, not copies,
-  // preserving inline details if JavaScript or native dialogs are unavailable.
-  const entries = [...document.querySelectorAll('.project')].flatMap((project) => {
-    const sections = [
-      {title: '담당한 일', trigger: '.project__tasks-trigger',
-        fallback: '.project__responsibilities', body: '.project__tasks'},
-      {title: '문제 해결과 개선', trigger: '.project__detail-trigger',
-        fallback: '.project__detail', body: '.project__cases'},
-    ];
-    return sections.map((section) => {
-      const trigger = project.querySelector(section.trigger);
-      const fallback = project.querySelector(section.fallback);
-      const body = fallback?.querySelector(section.body);
+  // Cards explain the developer's scope in the service flow. Their only detail
+  // action opens improvement cases, with native inline details as a fallback.
+  const entries = [...document.querySelectorAll('.project')].map((project) => {
+      const trigger = project.querySelector('.project__detail-trigger');
+      const fallback = project.querySelector('.project__detail');
+      const body = fallback?.querySelector('.project__cases');
       if (!trigger || !body) return null;
       const entry = {
-        project, trigger, body, title: section.title,
+        project, trigger, body, title: '문제 해결과 개선',
         name: project.querySelector('.project__title').textContent,
         cases: [...body.querySelectorAll('.project__case')],
         repository: body.querySelector('.project__link'),
@@ -44,11 +37,6 @@
         entry.repository.textContent = 'GitHub ↗';
         entry.repository.hidden = true;
         projectMeta.append(entry.repository);
-      }
-      // Responsibilities are a single list and need no case-selection tabs.
-      if (body.matches('.project__tasks')) {
-        body.setAttribute('role', 'list');
-        body.tabIndex = 0;
       }
       if (entry.cases.length > 1) {
         entry.tabs = entry.cases.map((panel, index) => {
@@ -75,8 +63,7 @@
       trigger.hidden = false;
       trigger.addEventListener('click', () => openProject(entry));
       return entry;
-    }).filter(Boolean);
-  });
+  }).filter(Boolean);
 
   function selectCase(index, moveFocus = false) {
     const {tabs, cases} = activeEntry;
@@ -115,7 +102,6 @@
     tablist.setAttribute('aria-label', entry.name + ' 개선 사례');
     tablist.style.setProperty('--case-count', entry.tabs.length || 1);
     tablist.hidden = entry.tabs.length === 0;
-    dialog.classList.toggle('case-dialog--single', entry.tabs.length === 0);
     selectCase(index);
     if (!dialog.open) {
       savedPosition = {x: window.scrollX, y: window.scrollY, trigger: entry.trigger};
