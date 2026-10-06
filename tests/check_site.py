@@ -202,7 +202,7 @@ class PortfolioChecks(unittest.TestCase):
     def test_card_headings_are_distinct_from_body_without_affecting_cases(self):
         css = (ROOT / 'css/style.css').read_text()
         heading = css.split('\n.project__role-summary h4,.project__outcome-summary h4 {', 1)[1].split('}', 1)[0]
-        body = css.split('\n.project__role-summary p,.project__outcome-summary p {', 1)[1].split('}', 1)[0]
+        body = css.split('\n.project__role-summary li,.project__outcome-summary p {', 1)[1].split('}', 1)[0]
         for value in ('font-size: 1.125rem;', 'font-weight: 700;',
                       'color: #abc9f0;', 'margin-bottom: .625rem;'):
             self.assertIn(value, heading)
@@ -258,22 +258,26 @@ class PortfolioChecks(unittest.TestCase):
         self.assertEqual(len(roles), 3)
         for role in roles:
             content = role.split('</div>', 1)[0]
-            self.assertEqual(content.count('<p>'), 2)
-            self.assertIn('백엔드', content)
-            self.assertNotIn('<li>', content)
+            self.assertEqual(content.count('<ul>'), 1)
+            self.assertEqual(content.count('<li>'), 3)
+            self.assertNotIn('<p>', content)
+            for item in content.split('<li>')[1:]:
+                self.assertLessEqual(len(item.split('</li>', 1)[0]), 40)
+        css = (ROOT / 'css/style.css').read_text()
+        list_rule = css.split('\n.project__role-summary ul {', 1)[1].split('}', 1)[0]
+        self.assertIn('list-style: disc;', list_rule)
+        self.assertIn('padding-left: 1.2em;', list_rule)
 
     def test_responsibilities_explain_features_before_technical_details(self):
         self.assertIn('패션 카드를 보관함에 모으고', self.html)
         for role in self.html.split('<div class="project__role-summary">')[1:]:
             content = role.split('</div>', 1)[0]
-            self.assertEqual(content.count('<strong>'), 1)
+            self.assertNotIn('<strong>', content)
             for implementation_term in ('Outbox', '작업 선점', '분산 락', '메트릭', '토큰 재발급'):
                 self.assertNotIn(implementation_term, content)
-        for service_context in ('개인 보관함과 공유 보관함을 관리하는 백엔드',
-                                '공유 링크를 통한 참여',
-                                '강의 승인과 AI 요약 제공을 연결하는 백엔드',
-                                'AI 서버가 처리할 작업을 등록하고',
-                                '음성을 받아 AI 처리를 실행하고 결과를 저장하는 백엔드'):
+        for service_context in ('개인/공유 보관함과 링크 공유 기능 개발',
+                                '강의 승인부터 AI 요약 제공까지 서버 처리 구현',
+                                '음성 인식, 감정 분석, 일기 생성 흐름 연동'):
             self.assertIn(service_context, self.html)
         for retained_detail in ('Redisson 분산 락', 'Outbox', 'GROUP BY', 'ROW_NUMBER', 'BackgroundTasks'):
             self.assertIn(retained_detail, self.html)
@@ -283,9 +287,9 @@ class PortfolioChecks(unittest.TestCase):
         card, details = project.split('<details class="project__detail">', 1)
         role = card.split('<div class="project__role-summary">', 1)[1].split('</div>', 1)[0]
         outcome = card.split('<div class="project__outcome-summary">', 1)[1].split('</div>', 1)[0]
-        self.assertIn('개인 보관함과 공유 보관함을 관리하는 백엔드', role)
-        self.assertIn('이후 회원 관리 기능을 인수해', role)
-        self.assertIn('관리자 기능 개발과 서버 배포', role)
+        self.assertIn('개인/공유 보관함과 링크 공유 기능 개발', role)
+        self.assertIn('회원 관리 기능 인수 및 인증 구조 개선', role)
+        self.assertIn('관리자 기능 개발 및 서버 배포', role)
         self.assertIn('<h4>대표 개선</h4>', outcome)
         self.assertIn('사용자와 관리자에 중복된 인증 코드를 공통화', outcome)
         self.assertIn('수정해야 하는 부담과 수정 누락 위험을 줄였습니다', outcome)
@@ -303,11 +307,11 @@ class PortfolioChecks(unittest.TestCase):
         card, details = project.split('<details class="project__detail">', 1)
         role = card.split('<div class="project__role-summary">', 1)[1].split('</div>', 1)[0]
         outcome = card.split('<div class="project__outcome-summary">', 1)[1].split('</div>', 1)[0]
-        self.assertIn('영상 강의를 듣고 AI 요약으로 복습', card)
-        self.assertIn('강의 승인과 AI 요약 제공을 연결하는 백엔드', role)
-        self.assertIn('처리 상태와 요약 결과를 저장해 조회', role)
+        self.assertIn('AI 요약으로 강의 내용을 미리 확인', card)
+        self.assertNotIn('AI 요약으로 복습', card)
+        self.assertIn('강의 승인부터 AI 요약 제공까지 서버 처리 구현', role)
         self.assertIn('수강생 리뷰와 강사 답글 기능', role)
-        self.assertIn('서버 배포와 오류 추적 환경', role)
+        self.assertIn('서버 배포 및 오류 추적 환경', role)
         self.assertIn('<h4>대표 개선</h4>', outcome)
         self.assertIn('승인 처리가 분석 완료를 기다리지 않으며', outcome)
         self.assertIn('실패한 작업은 정해진 기준에 따라 다시 처리', outcome)
@@ -327,9 +331,9 @@ class PortfolioChecks(unittest.TestCase):
         role = card.split('<div class="project__role-summary">', 1)[1].split('</div>', 1)[0]
         outcome = card.split('<div class="project__outcome-summary">', 1)[1].split('</div>', 1)[0]
         self.assertIn('지난 기록과 감정 통계를 확인', card)
-        self.assertIn('음성을 받아 AI 처리를 실행하고 결과를 저장하는 백엔드', role)
-        self.assertIn('하나의 처리 흐름으로 연결했습니다', role)
-        self.assertIn('완성된 일기와 누적 감정 통계를 조회하는 API', role)
+        self.assertIn('음성 인식, 감정 분석, 일기 생성 흐름 연동', role)
+        self.assertIn('일기 기록과 누적 감정 통계 조회 API', role)
+        self.assertIn('AI 처리 진행 상태', role)
         self.assertIn('이용 현황', role)
         self.assertIn('<h4>대표 개선</h4>', outcome)
         self.assertIn('진행 상황을 확인할 수 있도록 단계별 상태를 제공', outcome)
@@ -434,12 +438,14 @@ class PortfolioChecks(unittest.TestCase):
             card, details = project.split('<details class="project__detail">', 1)
             role = card.split('<div class="project__role-summary">', 1)[1].split('</div>', 1)[0]
             self.assertIn('<h4>담당 영역</h4>', role)
-            self.assertEqual(role.count('<p>'), 2)
+            self.assertEqual(role.count('<ul>'), 1)
+            self.assertEqual(role.count('<li>'), 3)
+            self.assertNotIn('<p>', role)
             self.assertLess(card.index('project__role-summary'), card.index('project__detail-trigger'))
             self.assertEqual(card.count('aria-haspopup="dialog"'), 1)
             self.assertNotIn('project__role-summary', details.split('</details>', 1)[0])
         css = (ROOT / 'css/style.css').read_text()
-        self.assertIn('.project__role-summary p', css)
+        self.assertIn('.project__role-summary li', css)
         self.assertNotIn('project__responsibilities', css)
         self.assertNotIn('project__tasks', css)
         script = (ROOT / 'src/project-dialog.js').read_text()
@@ -505,7 +511,7 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_member_takeover_and_deployment_roles_are_explicit(self):
         dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<li id="project-learnflow"', 1)[0]
-        for fact in ('회원 관리 기능을 인수해', '공통 인증 정책의 수정 지점',
+        for fact in ('회원 관리 기능 인수 및 인증 구조 개선', '공통 인증 정책의 수정 지점',
                      '이벤트 처리는 기존 트랜잭션에 참여하도록',
                      '팀원이 전체 인프라 구조를 설계하고',
                      'codedeploy-agent가 중지된 것을 확인했습니다',
