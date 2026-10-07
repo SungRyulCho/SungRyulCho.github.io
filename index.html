@@ -25,11 +25,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
-  <link rel="stylesheet" href="css/style.css?v=20260930-card-readability" />
+    <link rel="stylesheet" href="css/style.css?v=20261007-repository-lower" />
   <script src="src/main.js?v=20260927" defer></script>
   <script src="src/projects.js?v=20260927" defer></script>
   <script src="src/project-gallery.js?v=20260930-autoplay-3s" defer></script>
-  <script src="src/project-dialog.js?v=20260930-role-context" defer></script>
+    <script src="src/project-dialog.js?v=20261007-header-bottom" defer></script>
   <script src="src/active_menu.js?v=20260927" defer></script>
 </head>
 <body>
@@ -144,31 +144,28 @@
                   <li>관리자 기능 개발 및 서버 배포</li>
                 </ul>
               </div>
-              <div class="project__outcome-summary">
-                <h4>대표 개선</h4>
-                <p>회원 기능을 인수한 뒤 사용자와 관리자에 중복된 인증 코드를 공통화했습니다. 인증 정책을 변경할 때 여러 곳을 각각 수정해야 하는 부담과 수정 누락 위험을 줄였습니다.</p>
-              </div>
-              <button id="dekk-details-open" class="project__detail-trigger" type="button" aria-label="DEKK 문제 해결과 개선 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 개선 보기</span><span aria-hidden="true">↗</span></button>
-              <details class="project__detail"><summary>문제 해결과 개선</summary><div class="project__cases">
+              <button id="dekk-details-open" class="project__detail-trigger" type="button" aria-label="DEKK 문제 해결과 성과 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 성과 보기</span><span aria-hidden="true">↗</span></button>
+              <details class="project__detail"><summary>문제 해결과 성과 보기</summary><div class="project__cases">
                 <article class="project__case" id="dekk-member-improvement" data-case-label="회원 관리 개선">
-                  <h4>회원 기능 인수 후 인증 중복과 기능 간 의존관계 개선</h4>
+                  <h4>회원 기능 인수 후 중복 수정과 변경 영향 범위 축소</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>회원 관리 기능을 인수했을 때, 사용자와 관리자 인증에 비슷한 코드가 각각 존재해 공통 정책을 변경하려면 여러 곳을 함께 수정해야 했습니다. 가입과 탈퇴 과정에서는 회원 코드가 보관함 관리 기능을 직접 호출하고 있어, 서로 다른 기능의 처리 흐름이 연결되어 있었습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>사용자와 관리자의 권한 구분은 유지하면서 공통 인증 처리만 모을 필요가 있었습니다. 회원 상태 변경과 보관함 처리는 함께 완료되도록 유지하되, 보관함을 생성하고 정리하는 책임은 보관함 기능에서 담당하도록 나눴습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>토큰 생성과 검증을 공통화하고, 가입 완료와 탈퇴에 따른 보관함 처리를 이벤트 핸들러로 분리했습니다. 이벤트 처리는 기존 트랜잭션에 참여하도록 구성했습니다. 공통 인증 정책의 수정 지점을 모아 중복 수정과 누락 위험을 줄였으며, 보관함 처리 방식은 회원 서비스 코드와 분리해 관리할 수 있도록 개선했습니다.<br /><br />로그인 사용자 정보를 전달하는 공통 구조를 마련한 뒤, Codex로 관련 파일 26개에 일괄 적용했습니다. 변경 내용 검토와 빌드, 자동 테스트, 직접 API 호출로 동작을 확인하고 팀원들의 코드 리뷰를 거쳐 반영했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>회원 기능을 인수했을 때, 같은 인증 정책을 바꾸려면 사용자와 관리자 코드를 각각 수정해야 했습니다. 한쪽을 빠뜨리면 서로 다른 정책이 적용될 위험이 있었습니다.<br /><br />회원 코드가 가입·탈퇴에 필요한 보관함 처리를 직접 호출해, 보관함 처리 방식이 바뀌면 회원 코드도 함께 검토해야 했습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>인증은 권한 구분을 유지하면서 중복 처리만 공통화하기로 했습니다. 보관함 처리는 회원 코드에서 분리하되, 가입·탈퇴와 함께 성공하거나 취소돼야 하므로 같은 트랜잭션에서 실행하도록 했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>토큰 생성과 검증을 공통화해 공통 인증 정책의 수정 지점을 모았습니다. 가입·탈퇴에 따른 보관함 처리는 이벤트 핸들러로 분리하고, 이벤트 처리는 기존 트랜잭션에 참여하도록 구성했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>인증 정책의 중복 수정·누락 위험을 줄이고, 보관함 변경이 회원 코드에 미치는 영향을 좁혔습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="회원 기능 개선 근거">
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/pull/182" target="_blank" rel="noopener noreferrer" aria-label="DEKK 인증 통합 PR 보기 (새 탭)">인증 통합 PR ↗</a></li>
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/pull/180" target="_blank" rel="noopener noreferrer" aria-label="DEKK 기능 간 의존관계 개선 PR 보기 (새 탭)">의존관계 개선 PR ↗</a></li>
-                    <li><a href="https://github.com/potenup-dekk/DEKK-BE/commit/9f33a9e229412b5b0e6e3ff3472356481fed2cb9" target="_blank" rel="noopener noreferrer" aria-label="DEKK 로그인 사용자 처리 26개 파일 변경 내역 보기 (새 탭)">로그인 사용자 처리 일괄 변경 ↗</a></li>
                   </ul>
                 </article>
                 <article class="project__case" id="dekk-concurrent-save" data-case-label="동시 저장">
                   <h4>동시 저장 요청의 중복과 보관함 용량 초과 제어</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>하나의 보관함에 여러 저장 요청이 동시에 들어오면, 각 요청이 다른 요청의 저장 결과를 반영하지 못한 채 조건을 확인할 수 있었습니다. 이 경우 같은 카드가 중복 저장되거나 보관함의 50장 제한을 초과할 위험이 있었습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>같은 보관함에 대한 저장 요청을 순서대로 처리해야 했습니다. 저장 코드가 끝나는 시점뿐 아니라 DB에 변경 내용이 확정되는 시점까지 잠금을 유지해야 다음 요청이 직전 저장 결과를 기준으로 조건을 확인할 수 있었습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>보관함 ID를 기준으로 Redisson 분산 락을 적용하고, 잠금 안에서 별도 트랜잭션을 실행하도록 구성했습니다. 중복 여부와 카드 수를 확인한 뒤 저장하고, DB 커밋이 끝난 후 잠금을 해제하도록 순서를 맞췄습니다. 이를 통해 같은 보관함의 저장 요청이 이전 요청의 처리 결과를 반영해 중복 여부와 용량 제한을 판단하도록 개선했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>여러 사용자가 같은 보관함에 동시에 저장하면, 각 요청이 모두 ‘아직 저장되지 않은 카드’ 또는 ‘50장 미만’이라고 판단할 수 있었습니다. 이 상태로 저장하면 같은 카드가 중복되거나 50장 제한을 넘을 위험이 있었습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>카드별로 잠그면 서로 다른 카드의 동시 저장은 제어할 수 없어 보관함 단위의 잠금이 필요했습니다. 앞선 저장이 DB에 확정된 뒤 다음 요청이 카드 수와 중복 여부를 확인하도록, 트랜잭션 종료까지 잠금을 유지하기로 했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>보관함 ID를 기준으로 Redisson 분산 락을 적용하고, 잠금을 획득한 요청만 별도 트랜잭션에서 저장 조건을 확인하도록 했습니다. 이미 있는 카드는 추가하지 않고, 50장에 도달한 보관함에는 새 카드 저장을 거절했습니다. DB 커밋 또는 롤백 후 잠금을 해제하도록 구성했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>보관함 단위로 저장을 제어해, 동시 요청에 따른 카드 중복과 용량 초과 위험을 줄였습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="동시 저장 제어 근거">
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/src/main/java/com/dekk/global/lock/DistributedLockAop.java" target="_blank" rel="noopener noreferrer" aria-label="DEKK 동시 저장 제어 코드 보기 (새 탭)">동시 저장 제어 코드 ↗</a></li>
@@ -178,9 +175,10 @@
                 <article class="project__case" id="dekk-query-improvement" data-case-label="조회 개선">
                   <h4>보관함 미리보기에 필요한 카드만 조회하도록 개선</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>보관함 목록에는 보관함별 최신 카드 3장만 필요했지만, 기존 코드는 보관함에 저장된 전체 카드를 가져온 뒤 애플리케이션에서 정렬하고 3장을 골랐습니다. 저장된 카드가 늘어나면 화면에 표시하지 않는 데이터까지 가져와 처리해야 했습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>전체 데이터를 가져온 뒤 추리는 대신, DB에서 보관함별 최신 카드만 선별하도록 조회 범위를 줄였습니다. 전체 카드 수는 별도 집계로 구해, 미리보기 카드를 제한하더라도 목록에 필요한 정보는 유지하도록 했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>ROW_NUMBER 윈도 함수를 사용해 보관함별 최신 카드 3장만 반환하고, 카드 수는 GROUP BY로 일괄 집계하도록 구성했습니다. 미리보기용 카드 조회 결과를 보관함당 최대 3건으로 제한해, 애플리케이션으로 전달되는 데이터와 전체 카드를 정렬하는 작업을 줄였습니다.</dd></div>
+                    <div><dt>문제</dt><dd>보관함 목록에는 최신 카드 3장만 표시하지만, 전체 카드를 가져온 뒤 애플리케이션에서 정렬하고 3장을 골랐습니다. 저장된 카드가 많아질수록 화면에 쓰지 않는 데이터까지 가져와 처리해야 했습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>전체 카드 수를 구하는 기존 집계는 유지하고, 미리보기 조회만 DB에서 최신 3장을 선별하도록 바꾸기로 했습니다. 전체 카드를 가져오지 않아도 목록의 카드 수와 미리보기를 모두 표시할 수 있기 때문입니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>ROW_NUMBER 윈도 함수로 보관함별 최신 카드 3장만 조회하도록 변경했습니다. 서버의 전체 카드 정렬 코드를 제거하고, 선별된 카드를 보관함별로 묶어 기존 카드 수 집계 결과와 함께 응답하도록 했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>화면에 필요한 정보는 유지하면서, 불필요한 카드 데이터 전송과 서버의 전체 카드 정렬을 줄였습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="보관함 목록 조회 개선 근거">
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/commit/2df04598d52b99e48f09742588ba99b82aa1227a" target="_blank" rel="noopener noreferrer" aria-label="DEKK 최신 카드 조회 쿼리 변경 내역 보기 (새 탭)">조회 쿼리 변경 ↗</a></li>
@@ -190,9 +188,10 @@
                 <article class="project__case" id="dekk-deployment-collaboration" data-case-label="배포 협업">
                   <h4>배포 프로그램 중지를 확인하고 초기 배포 복구</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>팀원이 전체 인프라 구조를 설계하고, 저는 해당 환경에 코드를 배포하는 부분을 맡았습니다. 초기 배포가 실패하면서 애플리케이션 코드를 서버에 반영하지 못하는 상황이 발생했습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>배포 요청을 보내는 것뿐 아니라, 대상 서버에서 실제 배포를 수행하는 프로그램이 정상적으로 동작해야 했습니다. 서버 측 배포 실행 상태를 확인하기 위해 CodeDeploy 에이전트의 동작 여부를 점검했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>프라이빗 서브넷의 서버에 접속해 codedeploy-agent가 중지된 것을 확인했습니다. 서비스를 기동한 뒤 다시 배포해 정상 완료되는 것을 확인했습니다. 이 조치로 막혀 있던 초기 배포를 복구하고, 개발한 코드를 서버에 반영할 수 있도록 했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>초기 배포가 실패해 팀이 개발한 코드를 서버에 반영하지 못했습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>배포 요청 이후 서버에서 실제 배포를 실행하는 단계까지 확인할 필요가 있었습니다. 대상 서버의 CodeDeploy 에이전트가 동작하는지 점검해 원인을 좁혔습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>팀원이 설계한 인프라에서 서버 배포를 담당했습니다. 프라이빗 서브넷의 서버에 접속해 codedeploy-agent가 중지된 것을 확인했습니다. 에이전트를 실행한 뒤 재배포해 정상 완료를 확인했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>중단된 초기 배포를 복구해 팀이 개발한 코드를 서버에 반영할 수 있게 했습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="배포 구성 참고 코드">
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/appspec.yml" target="_blank" rel="noopener noreferrer" aria-label="DEKK 팀 배포 구성 코드 보기 (새 탭)">팀 배포 구성 코드 ↗</a></li>
@@ -229,29 +228,28 @@
                   <li>서버 배포 및 오류 추적 환경 구성</li>
                 </ul>
               </div>
-              <div class="project__outcome-summary">
-                <h4>대표 개선</h4>
-                <p>강의 승인과 분석 작업을 함께 기록하되, 실제 AI 분석은 별도로 실행하도록 구성했습니다. 승인 처리가 분석 완료를 기다리지 않으며, 실패한 작업은 정해진 기준에 따라 다시 처리할 수 있도록 했습니다.</p>
-              </div>
-              <button id="learnflow-details-open" class="project__detail-trigger" type="button" aria-label="LearnFlow 문제 해결과 개선 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 개선 보기</span><span aria-hidden="true">↗</span></button>
-              <details class="project__detail"><summary>문제 해결과 개선</summary><div class="project__cases">
+              <button id="learnflow-details-open" class="project__detail-trigger" type="button" aria-label="LearnFlow 문제 해결과 성과 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 성과 보기</span><span aria-hidden="true">↗</span></button>
+              <details class="project__detail"><summary>문제 해결과 성과 보기</summary><div class="project__cases">
                 <article class="project__case" id="learnflow-ai-outbox" data-case-label="AI 작업 연결">
                   <h4>강의 승인을 기다리게 하지 않는 AI 요약 작업 처리</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>승인된 강의의 영상으로 AI 요약을 생성해야 했습니다. 승인 요청 안에서 분석까지 실행하면 관리자가 분석이 끝날 때까지 기다려야 하고, 승인 후 분석 서버를 별도로 호출하는 방식은 호출에 실패했을 때 처리할 작업이 기록되지 않을 수 있었습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>강의 승인 시점에는 ‘분석해야 할 작업’을 빠짐없이 기록하고, 시간이 오래 걸리는 분석은 별도로 실행하도록 나눴습니다. 이를 위해 승인 정보와 작업 기록을 같은 DB에 함께 저장하는 Outbox 방식을 적용했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>강의 승인과 영상별 분석 작업 등록을 하나의 트랜잭션으로 묶고, 분석 서버가 대기 중인 작업을 가져가 결과를 전달하는 API를 구현했습니다. 작업은 대기, 처리 중, 완료, 실패 상태로 관리하고 같은 영상의 작업이 중복 등록되지 않도록 제한했습니다.<br /><br />분석 서버가 실패를 알린 작업은 1분, 5분, 60분 뒤에 다시 가져갈 수 있도록 최대 3회의 재시도 기준을 마련했습니다. 그 결과 승인 처리가 분석 완료를 기다리지 않으며, 작업의 진행 상태와 재처리 대상을 DB 기록으로 구분할 수 있게 했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>강의 승인과 AI 요약을 연결할 때 두 가지 위험을 고려해야 했습니다. 승인 요청 안에서 분석하면 관리자가 완료까지 기다려야 하고, 승인 후 분석 서버를 별도로 호출하면 호출 실패 시 승인된 강의의 분석 작업이 누락될 수 있었습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>승인 정보와 작업 기록을 같은 DB에 함께 저장하는 Outbox 방식을 선택했습니다. 두 기록을 함께 확정하고 실제 분석은 분리하면, 분석 완료를 기다리지 않고 승인하면서 실패해도 처리할 작업을 추적할 수 있기 때문입니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>강의 승인과 영상별 분석 작업 등록을 하나의 트랜잭션으로 묶고, 분석 서버가 작업을 가져가 결과를 전달하는 API를 구현했습니다. 작업은 대기, 처리 중, 완료, 실패 상태로 관리하고 중복 등록을 제한했습니다.<br /><br />분석 서버가 실패를 알린 작업은 1분, 5분, 60분 뒤에 다시 가져갈 수 있도록 최대 3회의 재시도 기준을 마련했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>AI 분석 완료를 기다리지 않고 승인하며, 승인만 완료되고 분석 작업은 등록되지 않는 위험을 줄였습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="강의 승인과 AI 작업 등록 구현 근거">
                     <li><a href="https://github.com/team-Octave/learnflow-api/pull/117" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 초기 AI 작업 처리 구현 PR 보기 (새 탭)">초기 AI 작업 처리 PR ↗</a></li>
                   </ul>
+                  <p class="project__note">ML 워커와 화면, 후속 heartbeat·workerId 고도화는 팀 구현입니다.</p>
                 </article>
                 <article class="project__case" id="learnflow-review-query" data-case-label="리뷰 조회">
                   <h4>리뷰마다 반복하던 작성자 정보 조회 개선</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>강의 리뷰 목록에 작성자의 닉네임을 표시하기 위해 리뷰마다 회원 정보를 따로 조회했습니다. 한 페이지에 표시할 리뷰가 늘어날수록 작성자 정보를 가져오는 DB 조회도 반복됐습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>리뷰를 하나씩 처리하면서 작성자를 조회하는 대신, 현재 페이지에 필요한 작성자 정보를 먼저 모아 가져오도록 조회 순서를 바꿨습니다. 같은 작성자가 여러 리뷰를 남긴 경우에도 가져온 정보를 재사용할 수 있는 방식입니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>리뷰 목록에서 중복을 제거한 작성자 ID를 모아 일괄 조회하고, ID별 닉네임을 연결해 응답을 구성했습니다. 작성자 조회를 리뷰마다 실행하던 구조를 없애고, 한 번 가져온 정보를 목록 전체에서 재사용하도록 개선했습니다.<br /><br />내가 작성한 리뷰 목록에서도 필요한 강의 제목을 모아 조회해, 각 리뷰가 어느 강의에 대한 내용인지 함께 확인할 수 있도록 했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>리뷰 목록에 닉네임을 표시하려고 리뷰마다 회원 정보를 따로 조회했습니다. 같은 작성자의 정보도 반복해서 가져와, 리뷰가 늘어날수록 DB 조회가 함께 늘어나는 구조였습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>현재 페이지에 필요한 작성자 정보를 한꺼번에 가져오기로 했습니다. 작성자 ID의 중복을 제거하면 같은 정보를 여러 번 조회하지 않고 목록 전체에서 재사용할 수 있었습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>현재 페이지의 리뷰에서 작성자 ID를 모아 중복을 제거한 뒤 회원 정보를 일괄 조회했습니다. 조회 결과를 ID별 닉네임으로 연결해 각 리뷰의 응답을 구성했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>작성자 정보를 재사용해, 리뷰마다 반복되던 작성자 DB 조회를 줄였습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="리뷰 조회 개선 근거">
                     <li><a href="https://github.com/team-Octave/learnflow-api/pull/28" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 리뷰 조회 개선 PR 보기 (새 탭)">리뷰 조회 개선 PR ↗</a></li>
@@ -260,15 +258,15 @@
                 <article class="project__case" id="learnflow-deployment-improvement" data-case-label="배포 개선">
                   <h4>배포 스크립트의 중복 실행 제거와 백업 관리</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>배포 스크립트에 애플리케이션 실행 명령이 두 번 들어 있어, 배포할 때 같은 서버 프로그램의 실행을 중복으로 시도했습니다. 이전 실행 파일의 백업에도 보관 기준이 없어 배포를 반복할수록 파일이 계속 쌓였습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>실행 명령을 하나로 합쳐 필요한 설정을 같은 경로로 전달하고, 백업은 최근 버전을 보관하면서 오래된 파일을 자동으로 정리하도록 개선했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>중복된 실행 명령을 제거하고, 필요한 설정을 전달하는 명령 하나로 통합했습니다. 백업은 최신 3개만 남기도록 정리 절차를 추가했습니다.<br /><br />그 결과 배포 과정의 불필요한 중복 실행 시도를 없애고, 최근 백업을 유지하면서 오래된 파일이 제한 없이 누적되는 구조를 개선했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>배포 스크립트가 같은 애플리케이션의 실행을 중복으로 시도했습니다. 백업 파일에도 보관 기준이 없어 배포를 반복할수록 오래된 파일이 쌓였습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>설정을 전달하는 실행 명령은 하나로 통일하고, 백업은 최근 버전만 남기기로 했습니다. 복구에 쓸 파일은 유지하면서 불필요한 실행과 파일 누적을 줄이기 위한 기준이었습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>중복된 실행 명령을 제거하고 필요한 설정을 전달하는 명령 하나로 통합했습니다. 백업은 최신 3개만 남기도록 오래된 파일을 정리하는 절차를 추가했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>중복 실행 시도를 없애고, 복구용 백업을 유지하면서 오래된 파일의 무제한 누적을 막았습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="배포 과정 개선 근거">
                     <li><a href="https://github.com/team-Octave/learnflow-api/pull/127" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 배포 스크립트 개선 PR 보기 (새 탭)">배포 스크립트 개선 PR ↗</a></li>
                   </ul>
                 </article>
-                <p class="project__note">제 기여는 초기 Outbox·리뷰·배포 및 추적입니다. ML 워커와 화면, 후속 heartbeat·workerId 고도화는 팀 구현입니다.</p>
                 <a class="project__link" href="https://github.com/team-Octave/learnflow-api" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 전체 GitHub 저장소 (새 탭)">전체 GitHub 저장소 ↗</a>
               </div></details>
             </div>
@@ -300,18 +298,15 @@
                   <li>AI 처리 진행 상태와 서비스 이용 현황 제공</li>
                 </ul>
               </div>
-              <div class="project__outcome-summary">
-                <h4>대표 개선</h4>
-                <p>오래 걸리는 AI 처리 중 사용자가 진행 상황을 확인할 수 있도록 단계별 상태를 제공했습니다. 일기 생성 실패 시에는 인식한 원문이나 기본 문구를 활용해 일부 결과를 유지했습니다.</p>
-              </div>
-              <button id="vench-details-open" class="project__detail-trigger" type="button" aria-label="Vench AI 문제 해결과 개선 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 개선 보기</span><span aria-hidden="true">↗</span></button>
-              <details class="project__detail"><summary>문제 해결과 개선</summary><div class="project__cases">
+              <button id="vench-details-open" class="project__detail-trigger" type="button" aria-label="Vench AI 문제 해결과 성과 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 성과 보기</span><span aria-hidden="true">↗</span></button>
+              <details class="project__detail"><summary>문제 해결과 성과 보기</summary><div class="project__cases">
                 <article class="project__case" id="vench-ai-progress" data-case-label="진행 및 실패 대응">
                   <h4>AI 처리 단계 안내와 생성 실패 시 대체 결과 제공</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>음성으로 일기를 만들려면 음성 인식, 감정 분석, 일기와 위로 문구 생성을 차례로 거쳐야 했습니다. 단순히 ‘처리 중’이라는 상태만 제공하면 사용자는 어느 단계가 진행되고 있는지 알기 어려웠습니다. 일부 생성 과정에서 오류가 발생하더라도 이미 인식한 내용은 활용할 필요가 있었습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>작업 접수와 AI 실행을 분리하고, 접수된 일기 ID로 현재 처리 단계를 조회하도록 구성했습니다. 생성 단계의 오류는 기존에 확보한 내용이나 기본 문구로 대체할 수 있도록 처리했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>업로드된 음성과 일기 정보를 저장한 뒤 HTTP 202 응답과 일기 ID를 먼저 반환하고, BackgroundTasks로 AI 처리를 이어갔습니다. 음성 인식, 감정 분석, 일기 생성 등 단계가 바뀔 때마다 진행 안내를 DB에 기록해 조회할 수 있도록 했습니다.<br /><br />일기 본문 생성 중 예외가 발생하면 음성에서 인식한 원문을 사용하고, 제목과 위로 문구는 각각 본문 첫 줄과 기본 문구로 대체했습니다. 이를 통해 사용자는 처리 단계를 확인할 수 있고, 일부 생성 과정에 실패하더라도 확보한 내용을 활용한 결과를 받을 수 있도록 했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>음성 인식부터 일기 생성까지 여러 단계를 거치는데, ‘처리 중’만 표시하면 사용자는 어디까지 진행됐는지 알 수 없었습니다. 본문이나 위로 문구 생성에 실패했을 때, 이미 인식한 원문까지 결과로 제공하지 못하는 상황도 피해야 했습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>접수 응답과 AI 실행을 분리해, 기다리는 동안 일기 ID로 현재 단계를 조회할 수 있게 하기로 했습니다. 원문이 확보된 뒤의 생성 예외는 전체 실패로 끝내지 않고, 원문이나 기본 문구로 대체해 결과를 남기기로 했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>음성과 일기 정보를 저장한 뒤 HTTP 202 응답과 일기 ID를 먼저 반환하고, BackgroundTasks로 AI 처리를 이어갔습니다. 단계가 바뀔 때마다 진행 안내를 DB에 기록했습니다.<br /><br />일기 본문 생성 중 예외가 발생하면 인식한 원문을 사용하고, 제목과 위로 문구는 각각 본문 첫 줄과 기본 문구로 대체했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>사용자가 현재 처리 단계를 확인하고, 일부 생성 단계에 실패해도 확보한 내용을 결과로 받을 수 있게 했습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="AI 처리 진행 상황과 실패 대응 구현 근거">
                     <li><a href="https://github.com/voice-journal/vench/blob/f98bd7432435ba622c39cd25c34b1dd540d81d3c/app/services/diary_task.py" target="_blank" rel="noopener noreferrer" aria-label="Vench AI 단계별 처리 코드 보기 (새 탭)">단계별 처리 코드 ↗</a></li>
@@ -320,11 +315,12 @@
                   <p class="project__note">BackgroundTasks는 API 프로세스 내부 작업입니다. 프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다.</p>
                 </article>
                 <article class="project__case" id="vench-audio-input" data-case-label="음성 입력">
-                  <h4>녹음 음량 차이를 보정하는 음성 입력 처리</h4>
+                  <h4>음성 인식 오류에 대응한 전처리·모델 설정 변경</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>사용자가 녹음한 파일은 음량과 형식이 서로 달랐습니다. 기존에는 파일 형식을 변환했지만 음량 차이는 별도로 보정하지 않아, 작게 녹음된 음성도 그대로 인식 모델에 전달하는 구조였습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>인식 모델을 변경하는 것과 함께, 모델에 전달하기 전 녹음 상태를 정리할 필요가 있었습니다. 기존의 파일 형식 변환을 유지하면서 음량 정규화를 추가하고 인식 설정을 조정했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>기존 16kHz 모노 WAV 변환 과정에 음량 정규화를 추가해, 입력 파일의 음량을 보정한 뒤 인식하도록 했습니다. 인식 모델을 small에서 medium으로 변경하고, 이전 구간의 인식 결과를 다음 구간에 조건으로 사용하는 옵션을 껐습니다.<br /><br />그 결과 파일 형식뿐 아니라 음량을 함께 정리하는 전처리 흐름을 마련했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>일부 녹음에서 사용자가 말한 내용이 텍스트로 정확하게 변환되지 않았습니다. 당시 입력 처리는 파일 형식만 변환하고, 녹음 파일마다 다른 음량은 보정하지 않는 구조였습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>인식 모델과 입력 음성 양쪽을 개선 대상으로 잡았습니다. 파일 형식을 맞춰도 음량 차이는 남기 때문에, 모델 설정 변경과 함께 음량 정규화를 추가하기로 했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>기존 16kHz 모노 WAV 변환 과정에 음량 정규화를 추가했습니다. 인식 모델은 small에서 medium으로 변경하고, 이전 구간의 인식 결과를 다음 구간의 조건으로 사용하는 옵션을 껐습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>음성 인식 전에 녹음 파일의 음량 편차를 줄였습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="음성 입력 처리 개선 근거">
                     <li><a href="https://github.com/voice-journal/vench/commit/d964e6577fe6ed542e3f490bc778b2c9c519c4f6" target="_blank" rel="noopener noreferrer" aria-label="Vench AI 음성 입력 처리 개선 내역 보기 (새 탭)">음성 입력 처리 개선 내역 ↗</a></li>
@@ -333,9 +329,10 @@
                 <article class="project__case" id="vench-emotion-report" data-case-label="감정 통계">
                   <h4>대표 감정 하나만 집계하던 통계 개선</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>한 일기에서 여러 감정의 점수를 분석했지만, 통계에는 가장 높은 감정 하나만 집계했습니다. 기쁨과 슬픔이 함께 분석된 일기도 대표 감정 한 건으로만 반영돼, 나머지 감정 점수는 통계에서 빠졌습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>대표 감정별 일기 수를 세는 대신, 각 일기에 저장된 감정별 점수를 누적하도록 집계 기준을 바꿨습니다. 사용자 리포트와 운영 대시보드에도 같은 기준을 적용했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>처리가 완료된 일기의 감정별 점수를 합산하고, 집계 값이 없는 감정은 0으로 표시하도록 변경했습니다. 리포트 API와 운영 대시보드의 지표도 동일한 점수 누적 방식으로 맞췄습니다.<br /><br />그 결과 대표 감정에 가려졌던 다른 감정의 분석 점수를 통계에 함께 반영하고, 두 화면이 같은 기준으로 감정 분포를 보여주도록 개선했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>한 일기에 기쁨과 슬픔이 함께 분석돼도 통계에는 대표 감정 하나만 집계됐습니다. 저장된 다른 감정 점수가 빠져, 사용자는 분석된 감정 분포를 통계에서 확인할 수 없었습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>대표 감정별 일기 수보다 감정별 점수를 합산하는 편이 분석 내용을 더 충실하게 보여준다고 판단했습니다. 사용자 리포트와 운영 대시보드도 같은 기준으로 집계하기로 했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>처리가 완료된 일기의 감정별 점수를 합산하고, 집계 값이 없는 감정은 0으로 표시했습니다. 리포트 API와 운영 대시보드를 동일한 점수 누적 방식으로 맞췄습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>대표 감정에 가려졌던 나머지 감정 점수까지 통계에 반영해, 분석된 감정 분포를 확인할 수 있게 했습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="감정 통계 개선 근거">
                     <li><a href="https://github.com/voice-journal/vench/commit/6cb45241a7a45993ec733d6380daf4d2ad985330" target="_blank" rel="noopener noreferrer" aria-label="Vench AI 감정 통계 개선 내역 보기 (새 탭)">감정 통계 개선 내역 ↗</a></li>
@@ -390,13 +387,12 @@
       <p class="contact__copyright">© Sung Ryul Cho · Backend Portfolio</p>
     </div>
   </footer>
-  <dialog id="project-case-dialog" class="case-dialog" aria-labelledby="case-dialog-project case-dialog-title">
+  <dialog id="project-case-dialog" class="case-dialog" aria-labelledby="case-dialog-project">
     <header class="case-dialog__header">
       <div class="case-dialog__heading">
-        <div class="case-dialog__meta"><p id="case-dialog-project" class="case-dialog__project">프로젝트</p></div>
-        <h2 id="case-dialog-title" class="case-dialog__title">문제 해결과 개선</h2>
+        <div class="case-dialog__meta"><h2 id="case-dialog-project" class="case-dialog__project">프로젝트</h2></div>
       </div>
-      <button class="case-dialog__close" type="button" aria-label="프로젝트 상세 닫기">닫기 <span aria-hidden="true">×</span></button>
+      <button class="case-dialog__close" type="button" aria-label="프로젝트 상세 닫기"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true" focusable="false"><path d="m6 6 12 12M18 6 6 18" /></svg></button>
     </header>
     <div class="case-dialog__tabs" role="tablist" aria-label="개선 사례" hidden></div>
     <div class="case-dialog__content"></div>

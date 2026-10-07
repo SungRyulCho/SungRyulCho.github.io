@@ -9,7 +9,6 @@
   const closeButton = dialog.querySelector('.case-dialog__close');
   const projectLabel = dialog.querySelector('.case-dialog__project');
   const projectMeta = dialog.querySelector('.case-dialog__meta');
-  const title = dialog.querySelector('#case-dialog-title');
   const root = document.documentElement;
   let activeEntry = null;
   let savedPosition = null;
@@ -23,7 +22,7 @@
       const body = fallback?.querySelector('.project__cases');
       if (!trigger || !body) return null;
       const entry = {
-        project, trigger, body, title: '문제 해결과 개선',
+        project, trigger, body,
         name: project.querySelector('.project__title').textContent,
         cases: [...body.querySelectorAll('.project__case')],
         repository: body.querySelector('.project__link'),
@@ -97,7 +96,6 @@
       item.tabs.forEach((tab) => { tab.hidden = item !== entry; });
     });
     projectLabel.textContent = entry.name;
-    title.textContent = entry.title;
     closeButton.setAttribute('aria-label', entry.name + ' 상세 닫기');
     tablist.setAttribute('aria-label', entry.name + ' 개선 사례');
     tablist.style.setProperty('--case-count', entry.tabs.length || 1);

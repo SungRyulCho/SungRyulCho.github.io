@@ -201,8 +201,8 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_card_headings_are_distinct_from_body_without_affecting_cases(self):
         css = (ROOT / 'css/style.css').read_text()
-        heading = css.split('\n.project__role-summary h4,.project__outcome-summary h4 {', 1)[1].split('}', 1)[0]
-        body = css.split('\n.project__role-summary li,.project__outcome-summary p {', 1)[1].split('}', 1)[0]
+        heading = css.split('\n.project__role-summary h4 {', 1)[1].split('}', 1)[0]
+        body = css.split('\n.project__role-summary li {', 1)[1].split('}', 1)[0]
         for value in ('font-size: 1.125rem;', 'font-weight: 700;',
                       'color: #abc9f0;', 'margin-bottom: .625rem;'):
             self.assertIn(value, heading)
@@ -210,7 +210,12 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('line-height: 1.75;', body)
         stack = css.split('\n.project__stack {', 1)[1].split('}', 1)[0]
         self.assertNotIn('min-height:', stack)
-        self.assertIn('.project__outcome-summary { margin-top: 1.5rem; }', css)
+        self.assertNotIn('project__outcome-summary', css)
+        trigger = css.split('\n.project__detail-trigger {', 1)[1].split('}', 1)[0]
+        fallback = css.split('\n.project__detail summary {', 1)[1].split('}', 1)[0]
+        for rule in (trigger, fallback):
+            self.assertIn('font-size: 1.125rem;', rule)
+            self.assertIn('font-weight: 700;', rule)
 
     def test_project_cards_use_three_two_and_one_columns(self):
         css = (ROOT / 'css/style.css').read_text()
@@ -236,16 +241,31 @@ class PortfolioChecks(unittest.TestCase):
             self.assertEqual(content.count('class="skill-card__tools"'), 1)
             self.assertEqual(content.count('class="skill-card__usage"'), 1)
 
-    def test_project_cases_show_problem_decision_and_improvement(self):
+    def test_project_cases_show_problem_decision_improvement_and_outcome(self):
         self.assertNotIn('문제 해결과 검증', self.html)
-        self.assertEqual(self.html.count('<summary>문제 해결과 개선</summary>'), 3)
+        self.assertEqual(self.html.count('<summary>문제 해결과 성과 보기</summary>'), 3)
         cases = self.html.split('<dl class="case-flow">')[1:]
         self.assertEqual(len(cases), 10)
         for case in cases:
             content = case.split('</dl>', 1)[0]
-            self.assertEqual(content.count('<dt>'), 3)
+            self.assertEqual(content.count('<dt>'), 4)
             self.assertLess(content.index('<dt>문제</dt>'), content.index('<dt>해결 방안 검토</dt>'))
             self.assertLess(content.index('<dt>해결 방안 검토</dt>'), content.index('<dt>해결·개선</dt>'))
+            self.assertLess(content.index('<dt>해결·개선</dt>'), content.index('<dt>성과</dt>'))
+            self.assertEqual(content.count('class="case-flow__outcome"'), 1)
+            outcome = content.split('<dt>성과</dt><dd>', 1)[1].split('</dd>', 1)[0]
+            self.assertLessEqual(len(outcome), 90)
+            self.assertEqual(outcome.count('.'), 1)
+            self.assertNotIn('<br', outcome)
+            self.assertNotIn('<a ', outcome)
+            self.assertLess(case.index('<dt>성과</dt>'), case.index('class="project__evidence"'))
+
+    def test_outcomes_keep_existing_layout_and_receive_only_text_emphasis(self):
+        css = (ROOT / 'css/style.css').read_text()
+        rule = css.split('.case-flow .case-flow__outcome dd {', 1)[1].split('}', 1)[0]
+        self.assertIn('font-weight: 700;', rule)
+        self.assertNotIn('background', rule)
+        self.assertNotIn('height', rule)
 
     def test_backend_project_mapping_and_clear_responsibilities(self):
         for project_id, stack in (('dekk', 'Java · Spring Boot'),
@@ -279,71 +299,58 @@ class PortfolioChecks(unittest.TestCase):
                                 '강의 승인부터 AI 요약 제공까지 서버 처리 구현',
                                 '음성 인식, 감정 분석, 일기 생성 흐름 연동'):
             self.assertIn(service_context, self.html)
-        for retained_detail in ('Redisson 분산 락', 'Outbox', 'GROUP BY', 'ROW_NUMBER', 'BackgroundTasks'):
+        for retained_detail in ('Redisson 분산 락', 'Outbox', 'ROW_NUMBER', 'BackgroundTasks'):
             self.assertIn(retained_detail, self.html)
 
-    def test_dekk_card_separates_service_ownership_and_improvement(self):
+    def test_dekk_card_connects_service_and_ownership_to_case_entry(self):
         project = self.html.split('<li id="project-dekk"', 1)[1].split('</li>\n          <li id="project-learnflow"', 1)[0]
         card, details = project.split('<details class="project__detail">', 1)
         role = card.split('<div class="project__role-summary">', 1)[1].split('</div>', 1)[0]
-        outcome = card.split('<div class="project__outcome-summary">', 1)[1].split('</div>', 1)[0]
         self.assertIn('개인/공유 보관함과 링크 공유 기능 개발', role)
         self.assertIn('회원 관리 기능 인수 및 인증 구조 개선', role)
         self.assertIn('관리자 기능 개발 및 서버 배포', role)
-        self.assertIn('<h4>대표 개선</h4>', outcome)
-        self.assertIn('사용자와 관리자에 중복된 인증 코드를 공통화', outcome)
-        self.assertIn('수정해야 하는 부담과 수정 누락 위험을 줄였습니다', outcome)
         self.assertLess(card.index('project__intro'), card.index('project__role-summary'))
-        self.assertLess(card.index('project__role-summary'), card.index('project__outcome-summary'))
-        self.assertLess(card.index('project__outcome-summary'), card.index('project__detail-trigger'))
+        self.assertLess(card.index('project__role-summary'), card.index('project__detail-trigger'))
+        self.assertNotIn('project__outcome-summary', card)
         self.assertNotIn('project__outcome-summary', details)
-        self.assertEqual(card.count('class="project__outcome-summary"'), 1)
+        self.assertIn('인증 정책의 중복 수정·누락 위험을 줄이고', details)
         for case in ('dekk-member-improvement', 'dekk-concurrent-save',
                      'dekk-query-improvement', 'dekk-deployment-collaboration'):
             self.assertIn('id="' + case + '"', details)
 
-    def test_learnflow_card_connects_ai_job_ownership_to_outcome(self):
+    def test_learnflow_card_keeps_ownership_and_outcomes_in_details(self):
         project = self.html.split('<li id="project-learnflow"', 1)[1].split('<li id="project-vench"', 1)[0]
         card, details = project.split('<details class="project__detail">', 1)
         role = card.split('<div class="project__role-summary">', 1)[1].split('</div>', 1)[0]
-        outcome = card.split('<div class="project__outcome-summary">', 1)[1].split('</div>', 1)[0]
         self.assertIn('AI 요약으로 강의 내용을 미리 확인', card)
         self.assertNotIn('AI 요약으로 복습', card)
         self.assertIn('강의 승인부터 AI 요약 제공까지 서버 처리 구현', role)
         self.assertIn('수강생 리뷰와 강사 답글 기능', role)
         self.assertIn('서버 배포 및 오류 추적 환경', role)
-        self.assertIn('<h4>대표 개선</h4>', outcome)
-        self.assertIn('승인 처리가 분석 완료를 기다리지 않으며', outcome)
-        self.assertIn('실패한 작업은 정해진 기준에 따라 다시 처리', outcome)
         self.assertLess(card.index('project__intro'), card.index('project__role-summary'))
-        self.assertLess(card.index('project__role-summary'), card.index('project__outcome-summary'))
-        self.assertLess(card.index('project__outcome-summary'), card.index('project__detail-trigger'))
-        self.assertEqual(card.count('class="project__outcome-summary"'), 1)
+        self.assertLess(card.index('project__role-summary'), card.index('project__detail-trigger'))
+        self.assertNotIn('project__outcome-summary', card)
         self.assertNotIn('project__outcome-summary', details)
+        self.assertIn('AI 분석 완료를 기다리지 않고 승인하며', details)
         self.assertIn('ML 워커와 화면, 후속 heartbeat·workerId 고도화는 팀 구현입니다.', details)
         for case in ('learnflow-ai-outbox', 'learnflow-review-query',
                      'learnflow-deployment-improvement'):
             self.assertIn('id="' + case + '"', details)
 
-    def test_vench_card_distinguishes_ai_integration_and_progress_outcome(self):
+    def test_vench_card_keeps_ai_ownership_and_progress_outcome_in_details(self):
         project = self.html.split('<li id="project-vench"', 1)[1].split('<section id="education"', 1)[0]
         card, details = project.split('<details class="project__detail">', 1)
         role = card.split('<div class="project__role-summary">', 1)[1].split('</div>', 1)[0]
-        outcome = card.split('<div class="project__outcome-summary">', 1)[1].split('</div>', 1)[0]
         self.assertIn('지난 기록과 감정 통계를 확인', card)
         self.assertIn('음성 인식, 감정 분석, 일기 생성 흐름 연동', role)
         self.assertIn('일기 기록과 누적 감정 통계 조회 API', role)
         self.assertIn('AI 처리 진행 상태', role)
         self.assertIn('이용 현황', role)
-        self.assertIn('<h4>대표 개선</h4>', outcome)
-        self.assertIn('진행 상황을 확인할 수 있도록 단계별 상태를 제공', outcome)
-        self.assertIn('일기 생성 실패 시에는 인식한 원문이나 기본 문구', outcome)
-        self.assertIn('일부 결과를 유지', outcome)
         self.assertLess(card.index('project__intro'), card.index('project__role-summary'))
-        self.assertLess(card.index('project__role-summary'), card.index('project__outcome-summary'))
-        self.assertLess(card.index('project__outcome-summary'), card.index('project__detail-trigger'))
-        self.assertEqual(card.count('class="project__outcome-summary"'), 1)
+        self.assertLess(card.index('project__role-summary'), card.index('project__detail-trigger'))
+        self.assertNotIn('project__outcome-summary', card)
         self.assertNotIn('project__outcome-summary', details)
+        self.assertIn('사용자가 현재 처리 단계를 확인하고', details)
         self.assertIn('프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다.', details)
         for case in ('vench-ai-progress', 'vench-audio-input', 'vench-emotion-report'):
             self.assertIn('id="' + case + '"', details)
@@ -351,8 +358,9 @@ class PortfolioChecks(unittest.TestCase):
     def test_query_improvement_scope_and_ai_retry_outcome_are_explicit(self):
         dekk = self.html.split('id="dekk-query-improvement"', 1)[1].split('</article>', 1)[0]
         for fact in ('전체 카드를 가져온 뒤 애플리케이션에서 정렬하고 3장을',
-                     '보관함당 최대 3건으로 제한해',
-                     '애플리케이션으로 전달되는 데이터와 전체 카드를 정렬하는 작업을 줄였습니다',
+                     '보관함별 최신 카드 3장만 조회',
+                     '전체 카드 수를 구하는 기존 집계는 유지',
+                     '불필요한 카드 데이터 전송과 서버의 전체 카드 정렬을 줄였습니다',
                      'commit/2df04598d52b99e48f09742588ba99b82aa1227a',
                      'commit/79f83a38e8c9b143876046e1edc87b451f7c6dc6'):
             self.assertIn(fact, dekk)
@@ -362,19 +370,30 @@ class PortfolioChecks(unittest.TestCase):
         for fact in ('강의 승인을 기다리게 하지 않는 AI 요약 작업 처리',
                      '하나의 트랜잭션', '대기, 처리 중, 완료, 실패',
                      '분석 서버가 실패를 알린 작업', '1분, 5분, 60분 뒤에',
-                     '최대 3회의 재시도', '승인 처리가 분석 완료를 기다리지 않으며',
-                     '진행 상태와 재처리 대상을 DB 기록으로 구분'):
+                     '최대 3회의 재시도', 'AI 분석 완료를 기다리지 않고 승인',
+                     '승인만 완료되고 분석 작업은 등록되지 않는 위험'):
             self.assertIn(fact, learnflow)
 
-    def test_learnflow_cases_keep_approved_copy_and_evidence(self):
+    def test_learnflow_team_note_is_scoped_to_ai_work_only(self):
+        note = 'ML 워커와 화면, 후속 heartbeat·workerId 고도화는 팀 구현입니다.'
+        ai_case = self.html.split('id="learnflow-ai-outbox"', 1)[1].split('</article>', 1)[0]
+        self.assertEqual(self.html.count(note), 1)
+        self.assertIn('<p class="project__note">' + note + '</p>', ai_case)
+        self.assertNotIn('제 기여는 초기 Outbox·리뷰·배포 및 추적입니다.', self.html)
+        for case_id in ('learnflow-review-query', 'learnflow-deployment-improvement'):
+            case = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
+            self.assertNotIn('project__note', case)
+            self.assertNotIn(note, case)
+
+    def test_learnflow_cases_keep_implementation_facts_and_evidence(self):
         cases = {
             'learnflow-ai-outbox': ('강의 승인을 기다리게 하지 않는 AI 요약 작업 처리',
-                                   '승인된 강의의 영상으로 AI 요약을 생성',
+                                   '두 가지 위험을 고려해야 했습니다',
                                    '승인 정보와 작업 기록을 같은 DB에 함께 저장',
                                    'pull/117'),
             'learnflow-review-query': ('리뷰마다 반복하던 작성자 정보 조회 개선',
                                       '리뷰마다 회원 정보를 따로 조회',
-                                      '한 번 가져온 정보를 목록 전체에서 재사용',
+                                      '같은 정보를 여러 번 조회하지 않고 목록 전체에서 재사용',
                                       'pull/28'),
             'learnflow-deployment-improvement': ('배포 스크립트의 중복 실행 제거와 백업 관리',
                                                 '실행을 중복으로 시도',
@@ -386,24 +405,23 @@ class PortfolioChecks(unittest.TestCase):
                 case = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
                 for fact in facts:
                     self.assertIn(fact, case)
-                for label in ('문제', '해결 방안 검토', '해결·개선'):
+                for label in ('문제', '해결 방안 검토', '해결·개선', '성과'):
                     self.assertEqual(case.count('<dt>' + label + '</dt>'), 1)
                 self.assertEqual(case.count('class="project__evidence"'), 1)
-                self.assertEqual(case.count('<br /><br />'), 1)
 
-    def test_vench_cases_keep_approved_copy_and_evidence(self):
+    def test_vench_cases_keep_implementation_facts_and_evidence(self):
         cases = {
             'vench-ai-progress': ('AI 처리 단계 안내와 생성 실패 시 대체 결과 제공',
                                   'HTTP 202 응답과 일기 ID를 먼저 반환',
                                   '진행 안내를 DB에 기록',
                                   '일기 본문 생성 중 예외가 발생하면',
                                   'diary_task.py', 'diary_generation_service.py'),
-            'vench-audio-input': ('녹음 음량 차이를 보정하는 음성 입력 처리',
+            'vench-audio-input': ('음성 인식 오류에 대응한 전처리·모델 설정 변경',
                                   '기존 16kHz 모노 WAV 변환 과정에 음량 정규화를 추가',
                                   'small에서 medium으로 변경',
                                   'commit/d964e6577fe6ed542e3f490bc778b2c9c519c4f6'),
             'vench-emotion-report': ('대표 감정 하나만 집계하던 통계 개선',
-                                     '나머지 감정 점수는 통계에서 빠졌습니다',
+                                     '저장된 다른 감정 점수가 빠져',
                                      '동일한 점수 누적 방식으로 맞췄습니다',
                                      'commit/6cb45241a7a45993ec733d6380daf4d2ad985330'),
         }
@@ -412,10 +430,21 @@ class PortfolioChecks(unittest.TestCase):
                 case = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
                 for fact in facts:
                     self.assertIn(fact, case)
-                for label in ('문제', '해결 방안 검토', '해결·개선'):
+                for label in ('문제', '해결 방안 검토', '해결·개선', '성과'):
                     self.assertEqual(case.count('<dt>' + label + '</dt>'), 1)
                 self.assertEqual(case.count('class="project__evidence"'), 1)
-                self.assertEqual(case.count('<br /><br />'), 1)
+
+    def test_problems_describe_effects_without_inventing_measurements(self):
+        member = self.html.split('id="dekk-member-improvement"', 1)[1].split('</article>', 1)[0]
+        self.assertIn('한쪽을 빠뜨리면 서로 다른 정책이 적용될 위험', member)
+        self.assertIn('보관함 처리 방식이 바뀌면 회원 코드도 함께 검토', member)
+        audio = self.html.split('id="vench-audio-input"', 1)[1].split('</article>', 1)[0]
+        self.assertIn('말한 내용이 텍스트로 정확하게 변환되지 않았습니다', audio)
+        self.assertIn('음성 인식 전에 녹음 파일의 음량 편차를 줄였습니다', audio)
+        self.assertNotIn('확인된 변경은', audio)
+        self.assertNotIn('전후 비교로 확인이 필요합니다', audio)
+        for unmeasured in ('정확도 향상', '정확도가 높아', '인식 오류를 해결', '%'):
+            self.assertNotIn(unmeasured, audio)
 
     def test_role_context_stays_on_cards_and_cases_have_one_entry(self):
         triggers = [attrs for tag, attrs in self.nodes
@@ -427,8 +456,9 @@ class PortfolioChecks(unittest.TestCase):
         self.assertTrue(all('hidden' not in attrs for attrs in summaries))
         outcomes = [attrs for tag, attrs in self.nodes
                     if attrs.get('class') == 'project__outcome-summary']
-        self.assertEqual(len(outcomes), 3)
-        self.assertTrue(all('hidden' not in attrs for attrs in outcomes))
+        self.assertEqual(outcomes, [])
+        self.assertNotIn('대표 개선', self.html)
+        self.assertEqual(self.html.count('<span>문제 해결과 성과 보기</span>'), 3)
         disclosures = [attrs for tag, attrs in self.nodes
                        if tag == 'details' and attrs.get('class') == 'project__responsibilities']
         self.assertEqual(disclosures, [])
@@ -449,7 +479,8 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('project__responsibilities', css)
         self.assertNotIn('project__tasks', css)
         script = (ROOT / 'src/project-dialog.js').read_text()
-        self.assertIn('title.textContent = entry.title', script)
+        self.assertIn('projectLabel.textContent = entry.name', script)
+        self.assertNotIn('case-dialog-title', script)
         self.assertNotIn('responsibilities', script)
         self.assertNotIn('project__role-summary', script)
         self.assertNotIn('project__tasks-trigger', script)
@@ -484,14 +515,15 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn(body + ' {', mobile)
         self.assertIn('color: white;', rule(desktop, title))
         self.assertIn('font-weight: 700;', rule(desktop, title))
-        self.assertIn('color: #abc9f0;', rule(desktop, label))
+        self.assertIn('color: #e8e8e8;', rule(desktop, label))
+        self.assertIn('color: #e8e8e8;', rule(desktop, '.case-flow dt'))
         self.assertIn('font-weight: 800;', rule(desktop, label))
         self.assertNotIn('var(--color-accent)', rule(desktop, label))
         self.assertIn('margin-bottom: .5rem;', rule(desktop, label))
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 1rem;', flow)
-        self.assertIn('border-left: 2px solid #4f6788;', flow)
-        self.assertIn('css/style.css?v=20260930-card-readability', self.html)
+        self.assertIn('border-left: 2px solid #484848;', flow)
+        self.assertIn('css/style.css?v=20261007-repository-lower', self.html)
 
     def test_case_layout_keeps_compact_tabs_and_content_centered(self):
         css = (ROOT / 'css/style.css').read_text()
@@ -513,24 +545,52 @@ class PortfolioChecks(unittest.TestCase):
         dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<li id="project-learnflow"', 1)[0]
         for fact in ('회원 관리 기능 인수 및 인증 구조 개선', '공통 인증 정책의 수정 지점',
                      '이벤트 처리는 기존 트랜잭션에 참여하도록',
-                     '팀원이 전체 인프라 구조를 설계하고',
+                     '팀원이 설계한 인프라에서 서버 배포를 담당했습니다',
                      'codedeploy-agent가 중지된 것을 확인했습니다',
-                     '서비스를 기동한 뒤 다시 배포해 정상 완료'):
+                     '에이전트를 실행한 뒤 재배포해 정상 완료'):
             self.assertIn(fact, dekk)
         for unsupported_claim in ('비동기 이벤트', '전체 인프라를 설계', '응답 속도 향상'):
             self.assertNotIn(unsupported_claim, dekk)
 
-    def test_member_case_connects_ai_bulk_changes_to_commit_evidence(self):
+    def test_deployment_problem_keeps_role_context_in_action(self):
+        case = self.html.split('id="dekk-deployment-collaboration"', 1)[1].split('</article>', 1)[0]
+        problem = case.split('<dt>문제</dt><dd>', 1)[1].split('</dd>', 1)[0]
+        action = case.split('<dt>해결·개선</dt><dd>', 1)[1].split('</dd>', 1)[0]
+        self.assertEqual(problem, '초기 배포가 실패해 팀이 개발한 코드를 서버에 반영하지 못했습니다.')
+        self.assertIn('팀원이 설계한 인프라에서 서버 배포를 담당했습니다.', action)
+        self.assertNotIn('맡고 있었습니다', case)
+
+    def test_member_case_keeps_only_auth_and_deck_change_scope(self):
+        # These checks guard reviewed edits; they do not replace a narrative review.
         case = self.html.split('id="dekk-member-improvement"', 1)[1].split('</article>', 1)[0]
-        for fact in ('로그인 사용자 정보를 전달하는 공통 구조를 마련한 뒤',
-                     'Codex로 관련 파일 26개에 일괄 적용했습니다',
-                     '변경 내용 검토와 빌드, 자동 테스트, 직접 API 호출',
-                     '팀원들의 코드 리뷰를 거쳐 반영했습니다',
-                     'commit/9f33a9e229412b5b0e6e3ff3472356481fed2cb9',
-                     '로그인 사용자 처리 일괄 변경'):
+        for fact in ('사용자와 관리자 코드를 각각 수정',
+                     '보관함 처리 방식이 바뀌면 회원 코드도 함께 검토',
+                     '권한 구분을 유지하면서 중복 처리만 공통화',
+                     '가입·탈퇴와 함께 성공하거나 취소',
+                     '토큰 생성과 검증을 공통화', '이벤트 핸들러로 분리',
+                     '중복 수정·누락 위험을 줄이고',
+                     '보관함 변경이 회원 코드에 미치는 영향을 좁혔습니다',
+                     'pull/182', 'pull/180'):
             self.assertIn(fact, case)
+        for unrelated in ('Codex', '26개', '로그인 사용자 정보를 전달',
+                          '9f33a9e229412b5b0e6e3ff3472356481fed2cb9'):
+            self.assertNotIn(unrelated, case)
         self.assertEqual(case.count('<dt>해결·개선</dt>'), 1)
         self.assertEqual(case.count('class="project__evidence"'), 1)
+
+    def test_review_case_does_not_mix_in_lecture_title_feature(self):
+        case = self.html.split('id="learnflow-review-query"', 1)[1].split('</article>', 1)[0]
+        for unrelated in ('강의 제목', '내가 작성한 리뷰', 'getMyReviews'):
+            self.assertNotIn(unrelated, case)
+        for relevant in ('리뷰마다 회원 정보를 따로 조회', '작성자 ID의 중복을 제거',
+                         '회원 정보를 일괄 조회', '리뷰마다 반복되던 작성자 DB 조회'):
+            self.assertIn(relevant, case)
+
+    def test_emotion_case_focuses_on_omitted_scores_not_a_screen_mismatch(self):
+        case = self.html.split('id="vench-emotion-report"', 1)[1].split('</article>', 1)[0]
+        outcome = case.split('<dt>성과</dt><dd>', 1)[1].split('</dd>', 1)[0]
+        self.assertIn('나머지 감정 점수까지 통계에 반영', outcome)
+        self.assertNotIn('기준을 일치시켰습니다', outcome)
 
     def test_each_case_links_to_specific_public_evidence(self):
         cases = self.html.split('<article class="project__case"')[1:]
@@ -564,7 +624,7 @@ class PortfolioChecks(unittest.TestCase):
             self.assertEqual(trigger['aria-haspopup'], 'dialog')
             self.assertEqual(trigger['aria-controls'], dialogs[0]['id'])
             self.assertIn('hidden', trigger)
-            self.assertIn('문제 해결과 개선 보기', trigger['aria-label'])
+            self.assertIn('문제 해결과 성과 보기', trigger['aria-label'])
         cases = [attrs for tag, attrs in self.nodes if 'data-case-label' in attrs]
         self.assertEqual([attrs['data-case-label'] for attrs in cases],
                          ['회원 관리 개선', '동시 저장', '조회 개선', '배포 협업',
@@ -573,7 +633,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertTrue(all(attrs.get('id') in ids for attrs in cases))
         # Original details and source content remain present if enhancement fails to load.
         self.assertEqual(self.html.count('<details class="project__detail">'), 3)
-        self.assertIn('<script src="src/project-dialog.js?v=20260930-role-context" defer></script>', self.html)
+        self.assertIn('<script src="src/project-dialog.js?v=20261007-header-bottom" defer></script>', self.html)
 
     def test_expanded_project_cases_have_distinct_topics_and_boundaries(self):
         learnflow = self.html.split('<li id="project-learnflow"', 1)[1].split('<li id="project-vench"', 1)[0]
@@ -586,7 +646,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('후속 heartbeat·workerId 고도화는 팀 구현', learnflow)
         self.assertIn('최신 3개만', learnflow)
         audio = vench.split('id="vench-audio-input"', 1)[1].split('</article>', 1)[0]
-        self.assertIn('음량 정규화를 추가하고', audio)
+        self.assertIn('음량 정규화를 추가', audio)
         self.assertNotIn('정확도 향상', audio)
         self.assertNotIn('%', audio)
         progress = vench.split('id="vench-ai-progress"', 1)[1].split('</article>', 1)[0]
@@ -608,8 +668,8 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('gap: .35rem', trigger_rule)
 
     def test_repository_links_move_to_project_header_for_case_views(self):
-        self.assertIn('<div class="case-dialog__meta"><p id="case-dialog-project"', self.html)
-        self.assertIn('<h2 id="case-dialog-title" class="case-dialog__title">', self.html)
+        self.assertIn('<div class="case-dialog__meta"><h2 id="case-dialog-project"', self.html)
+        self.assertNotIn('case-dialog-title', self.html)
         script = (ROOT / 'src/project-dialog.js').read_text()
         self.assertIn("repository: body.querySelector('.project__link')", script)
         self.assertIn('projectMeta.append(entry.repository)', script)
@@ -620,14 +680,42 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('.case-dialog .case-dialog__repository', css)
         self.assertNotIn('.case-dialog .project__link {', css)
         link_rule = css.split('.case-dialog .case-dialog__repository {', 1)[1].split('}', 1)[0]
-        for affordance in ('min-height: 24px;', 'border: 1px solid', 'background: transparent;', 'font-size: .75rem;', 'font-weight: 500;'):
+        meta_rule = css.split('.case-dialog__meta {', 1)[1].split('}', 1)[0]
+        self.assertIn('align-items: flex-end;', meta_rule)
+        self.assertNotIn('--project-ink-overhang', css)
+        self.assertNotIn('projectMeta.dataset.project', script)
+        self.assertIn('transform: translateY(2px);', link_rule)
+        for affordance in ('height: 20px;', 'line-height: 1;', 'border: 1px solid', 'background: transparent;', 'font-size: .75rem;', 'font-weight: 500;'):
             self.assertIn(affordance, link_rule)
         project_rule = css.split('.case-dialog__project {', 1)[1].split('}', 1)[0]
-        self.assertIn('font-size: 1.25rem;', project_rule)
+        self.assertIn('font-size: 1.5rem;', project_rule)
         self.assertIn('font-weight: 700;', project_rule)
-        title_rule = css.split('.case-dialog__title {', 1)[1].split('}', 1)[0]
-        self.assertIn('font-size: 1.5rem;', title_rule)
-        self.assertIn('font-weight: 700;', title_rule)
+        for alignment in ('display: block;', 'line-height: 1;', 'text-box-trim: trim-end;', 'text-box-edge: cap alphabetic;'):
+            self.assertIn(alignment, project_rule)
+        self.assertNotIn('min-height:', project_rule)
+        self.assertNotIn('min-height:', link_rule)
+        mobile = css.split('@media (max-width: 600px)', 1)[1]
+        self.assertNotIn('.case-dialog__project { font-size:', mobile)
+
+    def test_evidence_stays_below_cases_with_larger_text_and_icon_only_close(self):
+        script = (ROOT / 'src/project-dialog.js').read_text()
+        self.assertNotIn('project__case-header', script)
+        close = self.html.split('<button class="case-dialog__close"', 1)[1].split('</button>', 1)[0]
+        self.assertIn('aria-label="프로젝트 상세 닫기"', close)
+        self.assertIn('<svg ', close)
+        self.assertIn('aria-hidden="true"', close)
+        self.assertNotIn('>닫기', close)
+        css = (ROOT / 'css/style.css').read_text()
+        close_rule = css.split('.case-dialog__close {', 1)[1].split('}', 1)[0]
+        for value in ('width: 44px;', 'height: 44px;', 'border: 0;'):
+            self.assertIn(value, close_rule)
+        link_rule = css.split('.case-dialog .project__evidence a {', 1)[1].split('}', 1)[0]
+        for value in ('font-size: 1.125rem;', 'font-weight: 600;', 'min-height: 44px;'):
+            self.assertIn(value, link_rule)
+        evidence_rule = css.split('.case-dialog .project__evidence {', 1)[1].split('}', 1)[0]
+        self.assertIn('margin-top: 1.25rem;', evidence_rule)
+        self.assertIn('padding-left: 1rem;', evidence_rule)
+        self.assertIn('border-left: 2px solid transparent;', evidence_rule)
 
     def test_model_names_not_listed_as_technology_stacks(self):
         for marker in ('<p class="skill-card__tools">', '<p class="project__stack">'):
