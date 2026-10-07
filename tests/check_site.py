@@ -332,7 +332,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('project__outcome-summary', card)
         self.assertNotIn('project__outcome-summary', details)
         self.assertIn('AI 분석 완료를 기다리지 않고 승인하며', details)
-        self.assertIn('ML 워커와 화면, 후속 heartbeat·workerId 고도화는 팀 구현입니다.', details)
+        self.assertNotIn('ML 워커와 화면, 후속 heartbeat·workerId 고도화는 팀 구현입니다.', details)
         for case in ('learnflow-ai-outbox', 'learnflow-review-query',
                      'learnflow-deployment-improvement'):
             self.assertIn('id="' + case + '"', details)
@@ -351,7 +351,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('project__outcome-summary', card)
         self.assertNotIn('project__outcome-summary', details)
         self.assertIn('사용자가 현재 처리 단계를 확인하고', details)
-        self.assertIn('프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다.', details)
+        self.assertNotIn('프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다.', details)
         for case in ('vench-ai-progress', 'vench-audio-input', 'vench-emotion-report'):
             self.assertIn('id="' + case + '"', details)
 
@@ -374,11 +374,13 @@ class PortfolioChecks(unittest.TestCase):
                      '승인만 완료되고 분석 작업은 등록되지 않는 위험'):
             self.assertIn(fact, learnflow)
 
-    def test_learnflow_team_note_is_scoped_to_ai_work_only(self):
+    def test_learnflow_team_note_is_removed_without_expanding_claims(self):
         note = 'ML 워커와 화면, 후속 heartbeat·workerId 고도화는 팀 구현입니다.'
         ai_case = self.html.split('id="learnflow-ai-outbox"', 1)[1].split('</article>', 1)[0]
-        self.assertEqual(self.html.count(note), 1)
-        self.assertIn('<p class="project__note">' + note + '</p>', ai_case)
+        self.assertNotIn(note, self.html)
+        self.assertNotIn('project__note', ai_case)
+        self.assertIn('분석 서버가 작업을 가져가 결과를 전달하는 API를 구현했습니다.', ai_case)
+        self.assertNotIn('ML 워커를 구현', ai_case)
         self.assertNotIn('제 기여는 초기 Outbox·리뷰·배포 및 추적입니다.', self.html)
         for case_id in ('learnflow-review-query', 'learnflow-deployment-improvement'):
             case = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
@@ -523,7 +525,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 1rem;', flow)
         self.assertIn('border-left: 2px solid #484848;', flow)
-        self.assertIn('css/style.css?v=20261007-repository-lower', self.html)
+        self.assertIn('css/style.css?v=20261007-case-spacing', self.html)
 
     def test_case_layout_keeps_compact_tabs_and_content_centered(self):
         css = (ROOT / 'css/style.css').read_text()
@@ -536,7 +538,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('padding: 1.75rem 2rem 2rem;', content)
         for selector in ('.case-dialog .project__cases', '.case-dialog .project__case'):
             rule = desktop.split(selector + ' {', 1)[1].split('}', 1)[0]
-            self.assertIn('max-width: 760px;', rule)
+            self.assertIn('max-width: 840px;', rule)
             self.assertIn('margin: 0 auto;', rule)
         mobile_tabs = mobile.split('.case-dialog__tabs {', 1)[1].split('}', 1)[0]
         self.assertIn('grid-template-columns: repeat(2, minmax(0, 1fr));', mobile_tabs)
@@ -643,14 +645,16 @@ class PortfolioChecks(unittest.TestCase):
         for case_id in ('learnflow-review-query', 'learnflow-deployment-improvement',
                         'vench-audio-input', 'vench-emotion-report'):
             self.assertIn('id="' + case_id + '"', self.html)
-        self.assertIn('후속 heartbeat·workerId 고도화는 팀 구현', learnflow)
+        self.assertNotIn('후속 heartbeat·workerId 고도화는 팀 구현', learnflow)
         self.assertIn('최신 3개만', learnflow)
         audio = vench.split('id="vench-audio-input"', 1)[1].split('</article>', 1)[0]
         self.assertIn('음량 정규화를 추가', audio)
         self.assertNotIn('정확도 향상', audio)
         self.assertNotIn('%', audio)
         progress = vench.split('id="vench-ai-progress"', 1)[1].split('</article>', 1)[0]
-        self.assertIn('프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다', progress)
+        self.assertNotIn('프로세스 재시작 후 자동 복구까지 보장하는 구조는 아닙니다', progress)
+        self.assertNotIn('project__note', progress)
+        self.assertIn('BackgroundTasks로 AI 처리를 이어갔습니다.', progress)
         css = (ROOT / 'css/style.css').read_text()
         self.assertIn('repeat(var(--case-count, 4), minmax(0, 9rem))', css)
 
@@ -716,6 +720,9 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('margin-top: 1.25rem;', evidence_rule)
         self.assertIn('padding-left: 1rem;', evidence_rule)
         self.assertIn('border-left: 2px solid transparent;', evidence_rule)
+        note_rule = css.split('.case-dialog .project__note {', 1)[1].split('}', 1)[0]
+        self.assertIn('padding-left: 1rem;', note_rule)
+        self.assertIn('border-left: 2px solid transparent;', note_rule)
 
     def test_model_names_not_listed_as_technology_stacks(self):
         for marker in ('<p class="skill-card__tools">', '<p class="project__stack">'):

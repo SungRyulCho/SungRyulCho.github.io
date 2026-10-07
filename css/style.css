@@ -162,8 +162,8 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .case-dialog__tab:hover { border-color: var(--color-accent); }
 .case-dialog__tab[aria-selected="true"] { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-primary); font-weight: 700; }
 .case-dialog__content { flex: 1 1 auto; min-height: 0; padding: 1.75rem 2rem 2rem; overflow-y: auto; overscroll-behavior: contain; }
-.case-dialog .project__cases { max-width: 760px; margin: 0 auto; padding: 0; }
-.case-dialog .project__case { max-width: 760px; margin: 0 auto; padding: 0; border: 0; }
+.case-dialog .project__cases { max-width: 840px; margin: 0 auto; padding: 0; }
+.case-dialog .project__case { max-width: 840px; margin: 0 auto; padding: 0; border: 0; }
 /* Read each case as title > section heading > body; a neutral rail groups the sections. */
 .case-dialog .project__case h4 { color: white; font-size: 1.5rem; font-weight: 700; line-height: 1.45; }
 .case-dialog .case-flow { margin-top: 1.5rem; padding-left: 1rem; border-left: 2px solid #484848; }
@@ -172,7 +172,7 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .case-dialog .case-flow dd { font-size: 1rem; line-height: 1.8; }
 .case-dialog .project__evidence { margin-top: 1.25rem; padding-left: 1rem; border-left: 2px solid transparent; }
 .case-dialog .project__evidence a { min-height: 44px; padding: .6rem 0; font-size: 1.125rem; font-weight: 600; }
-.case-dialog .project__note { margin-top: 1.25rem; color: #adb9c9; font-size: .85rem; line-height: 1.7; }
+.case-dialog .project__note { margin-top: 1.25rem; padding-left: 1rem; border-left: 2px solid transparent; color: #adb9c9; font-size: .85rem; line-height: 1.7; }
 .case-dialog-open { overflow: hidden; }
 .case-dialog-open body { position: fixed; top: var(--case-dialog-scroll-top); width: 100%; padding-right: var(--case-dialog-scrollbar); }
 @media (max-width: 600px) {
