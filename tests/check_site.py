@@ -517,15 +517,46 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn(body + ' {', mobile)
         self.assertIn('color: white;', rule(desktop, title))
         self.assertIn('font-weight: 700;', rule(desktop, title))
-        self.assertIn('color: #e8e8e8;', rule(desktop, label))
-        self.assertIn('color: #e8e8e8;', rule(desktop, '.case-flow dt'))
+        self.assertIn('color: #d8b77c;', rule(desktop, label))
+        self.assertIn('color: #d8b77c;', rule(desktop, '.case-flow dt'))
         self.assertIn('font-weight: 800;', rule(desktop, label))
         self.assertNotIn('var(--color-accent)', rule(desktop, label))
         self.assertIn('margin-bottom: .5rem;', rule(desktop, label))
         flow = rule(desktop, '.case-dialog .case-flow')
-        self.assertIn('padding-left: 1rem;', flow)
-        self.assertIn('border-left: 2px solid #484848;', flow)
-        self.assertIn('css/style.css?v=20261007-case-spacing', self.html)
+        self.assertIn('padding-left: 0;', flow)
+        self.assertIn('border-left: 0;', flow)
+        self.assertIn('css/style.css?v=20261007-case-readability', self.html)
+
+    def test_all_cases_share_approved_readability_styles(self):
+        cases = [attrs for tag, attrs in self.nodes if tag == 'article'
+                 and 'project__case' in attrs.get('class', '').split()]
+        self.assertEqual(len(cases), 10)
+        self.assertNotIn('readability-preview', self.html)
+        css = (ROOT / 'css/style.css').read_text()
+        self.assertNotIn('readability-preview', css)
+        scope = '.case-dialog .case-flow'
+
+        def rule(selector):
+            return css.split(selector + ' {', 1)[1].split('}', 1)[0]
+
+        title = rule('.case-dialog .project__case h4')
+        self.assertIn('padding-left: 1rem;', title)
+        self.assertIn('border-left: 2px solid transparent;', title)
+        self.assertIn('padding-left: 0;', rule(scope))
+        self.assertIn('border-left: 0;', rule(scope))
+        section = rule(scope + ' > div')
+        self.assertIn('padding: 1rem;', section)
+        self.assertIn('border-left: 2px solid #484848;', section)
+        self.assertIn('background: #ffffff06;', section)
+        self.assertIn('color: #d8b77c;', rule(scope + ' dt'))
+        self.assertNotIn('border-left', rule(scope + ' dd'))
+        self.assertNotIn('padding-left', rule(scope + ' dd'))
+        self.assertIn('margin-top: 2.25rem;', rule(scope + ' > div + div'))
+        separator = rule(scope + ' > div + div::before')
+        self.assertIn('content: "";', separator)
+        self.assertIn('border-top: 1px solid #ffffff12;', separator)
+        self.assertIn('border-left-color: #74808e;', rule(scope + ' > .case-flow__outcome'))
+        self.assertNotIn(scope + ' > .case-flow__outcome dd {', css)
 
     def test_case_layout_keeps_compact_tabs_and_content_centered(self):
         css = (ROOT / 'css/style.css').read_text()
@@ -595,10 +626,11 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('기준을 일치시켰습니다', outcome)
 
     def test_each_case_links_to_specific_public_evidence(self):
-        cases = self.html.split('<article class="project__case"')[1:]
+        cases = [attrs['id'] for tag, attrs in self.nodes if tag == 'article'
+                 and 'project__case' in attrs.get('class', '').split()]
         self.assertEqual(len(cases), 10)
-        for case in cases:
-            content = case.split('</article>', 1)[0]
+        for case_id in cases:
+            content = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
             parser = SiteParser()
             parser.feed(content)
             evidence = [attrs for tag, attrs in parser.nodes if tag == 'a']
@@ -641,7 +673,11 @@ class PortfolioChecks(unittest.TestCase):
         learnflow = self.html.split('<li id="project-learnflow"', 1)[1].split('<li id="project-vench"', 1)[0]
         vench = self.html.split('<li id="project-vench"', 1)[1].split('<details class="project__detail">', 1)[1].split('</details>', 1)[0]
         for project in (learnflow, vench):
-            self.assertEqual(project.count('<article class="project__case"'), 3)
+            parser = SiteParser()
+            parser.feed(project)
+            self.assertEqual(sum(tag == 'article' and 'project__case'
+                                 in attrs.get('class', '').split()
+                                 for tag, attrs in parser.nodes), 3)
         for case_id in ('learnflow-review-query', 'learnflow-deployment-improvement',
                         'vench-audio-input', 'vench-emotion-report'):
             self.assertIn('id="' + case_id + '"', self.html)
