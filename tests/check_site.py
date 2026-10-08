@@ -582,8 +582,8 @@ class PortfolioChecks(unittest.TestCase):
         for fact in ('회원 관리 기능 인수 및 인증 구조 개선', '공통 인증 정책의 수정 지점',
                      '이벤트 처리는 기존 트랜잭션에 참여하도록',
                      '팀원이 설계한 인프라를 바탕으로',
-                     '배포 가이드를 직접 작성했습니다',
-                     '설정과 배포 과정에서 발생한 문제의 원인을 분석하고 해결했습니다',
+                     '배포 가이드를 직접 작성해',
+                     '여러 설정 문제와 배포 오류는 원인을 분석해 해결했습니다',
                      'CodeDeploy 에이전트가 중지된 것을 확인했습니다',
                      '에이전트를 실행하고 재배포해 정상 완료'):
             self.assertIn(fact, dekk)
@@ -597,7 +597,8 @@ class PortfolioChecks(unittest.TestCase):
         self.assertEqual(problem, '배포 환경 준비가 지연되고 초기 배포가 실패하면서, 팀이 개발한 기능을 서버에 반영하지 못했습니다. 팀원들이 각자 구현한 기능을 연동하고 확인하는 작업에도 차질이 생겼습니다.')
         self.assertNotIn('팀원이 설계한', problem)
         self.assertIn('팀원이 설계한 인프라를 바탕으로', action)
-        self.assertIn('다른 팀원이 가이드를 따라 설정 작업에 참여할 수 있도록', action)
+        self.assertIn('동료가 이를 따라 설정 작업에 참여할 수 있도록', action)
+        self.assertIn('예를 들어 초기 배포가 실패했을 때는', action)
         self.assertIn('프라이빗 서브넷의 서버에 접속해 CodeDeploy 에이전트가 중지된 것을 확인했습니다.', action)
         parser = SiteParser()
         parser.feed(case)
