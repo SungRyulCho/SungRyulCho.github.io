@@ -359,7 +359,7 @@ class PortfolioChecks(unittest.TestCase):
         dekk = self.html.split('id="dekk-query-improvement"', 1)[1].split('</article>', 1)[0]
         for fact in ('전체 카드를 가져온 뒤 애플리케이션에서 정렬하고 3장을',
                      '보관함별 최신 카드 3장만 조회',
-                     '전체 카드 수를 구하는 기존 집계는 유지',
+                     '전체 카드 수도 표시해야 하므로 기존 집계는 유지',
                      '불필요한 카드 데이터 전송과 서버의 전체 카드 정렬을 줄였습니다',
                      'commit/2df04598d52b99e48f09742588ba99b82aa1227a',
                      'commit/79f83a38e8c9b143876046e1edc87b451f7c6dc6'):
@@ -390,12 +390,13 @@ class PortfolioChecks(unittest.TestCase):
     def test_learnflow_cases_keep_implementation_facts_and_evidence(self):
         cases = {
             'learnflow-ai-outbox': ('강의 승인을 기다리게 하지 않는 AI 요약 작업 처리',
-                                   '두 가지 위험을 고려해야 했습니다',
-                                   '승인 정보와 작업 기록을 같은 DB에 함께 저장',
+                                   '관리자가 분석 완료까지 기다리는 상황',
+                                   '승인된 강의의 분석 작업이 누락되는 상황을 피해야',
+                                   '승인 정보와 작업 기록은 같은 트랜잭션으로 저장',
                                    'pull/117'),
             'learnflow-review-query': ('리뷰마다 반복하던 작성자 정보 조회 개선',
                                       '리뷰마다 회원 정보를 따로 조회',
-                                      '같은 정보를 여러 번 조회하지 않고 목록 전체에서 재사용',
+                                      '작성자 ID를 중복 없이 모아 일괄 조회하고 각 리뷰에서 재사용',
                                       'pull/28'),
             'learnflow-deployment-improvement': ('배포 스크립트의 중복 실행 제거와 백업 관리',
                                                 '실행을 중복으로 시도',
@@ -598,7 +599,7 @@ class PortfolioChecks(unittest.TestCase):
         case = self.html.split('id="dekk-member-improvement"', 1)[1].split('</article>', 1)[0]
         for fact in ('사용자와 관리자 코드를 각각 수정',
                      '보관함 처리 방식이 바뀌면 회원 코드도 함께 검토',
-                     '권한 구분을 유지하면서 중복 처리만 공통화',
+                     '권한 구분은 유지하고 토큰 생성·검증을 공통화',
                      '가입·탈퇴와 함께 성공하거나 취소',
                      '토큰 생성과 검증을 공통화', '이벤트 핸들러로 분리',
                      '중복 수정·누락 위험을 줄이고',
@@ -615,7 +616,7 @@ class PortfolioChecks(unittest.TestCase):
         case = self.html.split('id="learnflow-review-query"', 1)[1].split('</article>', 1)[0]
         for unrelated in ('강의 제목', '내가 작성한 리뷰', 'getMyReviews'):
             self.assertNotIn(unrelated, case)
-        for relevant in ('리뷰마다 회원 정보를 따로 조회', '작성자 ID의 중복을 제거',
+        for relevant in ('리뷰마다 회원 정보를 따로 조회', '작성자 ID를 중복 없이 모아',
                          '회원 정보를 일괄 조회', '리뷰마다 반복되던 작성자 DB 조회'):
             self.assertIn(relevant, case)
 
