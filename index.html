@@ -186,16 +186,16 @@
                   </ul>
                 </article>
                 <article class="project__case" id="dekk-query-improvement" data-case-label="조회 개선">
-                  <h4>인덱스별 효과를 비교해 보관함 목록 조회 성능 개선</h4>
+                  <h4>보관함 미리보기에 필요한 카드만 조회하도록 개선</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>보관함 목록 조회에서 카드 수 집계와 최신 카드 조회에 많은 시간이 소요됐습니다. 실행 계획을 확인한 결과, 필요한 보관함의 카드를 찾기 위해 카드 연결 테이블을 넓게 탐색하고 있었습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>보관함·참여자·카드 연결 테이블의 인덱스를 각각 적용하고, 모두 적용한 경우와 비교했습니다. 카드 조회용 인덱스 하나만 적용해도 전체 적용과 비슷한 응답 시간을 보여, 해당 조회에서 효과가 확인된 인덱스를 선택했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>카드 연결 테이블에 삭제되지 않은 데이터를 대상으로 보관함 ID 기반 인덱스를 적용했습니다. 실행 계획의 변화를 확인하고, 변경 전후 응답을 비교해 카드 수와 미리보기 정보가 유지되는지 검증했습니다.</dd></div>
-                    <div class="case-flow__outcome"><dt>성과</dt><dd>보관함 목록 API의 평균 응답 시간을 37.49ms에서 4.97ms로 약 86.8% 단축해, 보관함을 열고 저장한 코디를 탐색하는 과정의 대기 부담을 줄였습니다.</dd><dd class="case-flow__measurement">측정 조건: 로컬 환경 · 합성 보관함 5만 개 · 초당 50요청 · 20초씩 3회 측정한 평균 응답 시간의 중앙값</dd></div>
+                    <div><dt>문제</dt><dd>보관함 목록에는 최신 카드 3장만 표시하지만, 전체 카드를 가져온 뒤 애플리케이션에서 정렬하고 3장을 골랐습니다. 저장된 카드가 많아질수록 화면에 쓰지 않는 데이터까지 가져와 처리해야 했습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>서버의 정렬 방식을 개선하더라도 전체 카드 데이터를 가져오는 부담은 남습니다. 보관함마다 최신 3장만 필요하므로 DB에서 보관함별로 선별하는 방식을 선택했습니다. 전체 카드 수도 표시해야 하므로 기존 집계는 유지했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>ROW_NUMBER 윈도 함수로 보관함별 최신 카드 3장만 조회하도록 변경했습니다. 서버의 전체 카드 정렬 코드를 제거하고, 선별된 카드를 보관함별로 묶어 기존 카드 수 집계 결과와 함께 응답하도록 했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>미리보기 정보를 유지하면서 불필요한 카드 조회와 서버 정렬을 줄여, 목록 조회에 필요한 데이터 처리 부담을 낮췄습니다.</dd></div>
                   </dl>
-                  <ul class="project__evidence" aria-label="보관함 목록 인덱스와 성능 측정 근거">
-                    <li><a href="evidence/performance/dekk-index.html#dekk-index-sql" target="_blank" rel="noopener noreferrer" aria-label="DEKK 측정에 적용한 인덱스 SQL 보기 (새 탭)">인덱스 적용 SQL ↗</a></li>
-                    <li><a href="evidence/performance/dekk-index.html" target="_blank" rel="noopener noreferrer" aria-label="DEKK 성능 측정 조건과 결과 보기 (새 탭)">성능 측정 기록 ↗</a></li>
+                  <ul class="project__evidence" aria-label="보관함 목록 조회 개선 근거">
+                    <li><a href="https://github.com/potenup-dekk/DEKK-BE/commit/2df04598d52b99e48f09742588ba99b82aa1227a" target="_blank" rel="noopener noreferrer" aria-label="DEKK 최신 카드 조회 쿼리 변경 내역 보기 (새 탭)">조회 쿼리 변경 ↗</a></li>
+                    <li><a href="https://github.com/potenup-dekk/DEKK-BE/commit/79f83a38e8c9b143876046e1edc87b451f7c6dc6" target="_blank" rel="noopener noreferrer" aria-label="DEKK 조회 서비스 처리 변경 내역 보기 (새 탭)">서비스 처리 변경 ↗</a></li>
                   </ul>
                 </article>
                 <article class="project__case" id="dekk-deployment-collaboration" data-case-label="배포 협업">
