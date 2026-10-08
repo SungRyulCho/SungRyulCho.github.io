@@ -71,7 +71,8 @@ test('opens six original assets with one selected capture and meaningful alt tex
   assert.equal(view.document.activeElement, view.close);
   for (const button of view.thumbnails.children) {
     button.emit('click');
-    assert.ok(fs.existsSync(path.join(root, view.image.src)), view.image.src);
+    assert.ok(fs.existsSync(path.join(root, view.image.src.split('?')[0])), view.image.src);
+    assert.match(view.image.src, /\?v=20261008-clean$/);
     assert.ok(view.image.alt.length > 20);
     assert.equal(view.thumbnails.children.filter(el => el.attrs['aria-pressed'] === 'true').length, 1);
   }
