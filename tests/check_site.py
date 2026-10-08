@@ -614,15 +614,15 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('프라이빗 서브넷의 서버에 접속해 중지된 CodeDeploy 에이전트를 실행하고', action)
         self.assertIn('<ul class="case-flow__actions">', action)
         self.assertEqual(action.count('<li>'), 3)
-        for label in ('배포 중단:', '배포 스크립트 수정:', '운영 설정 반영:'):
+        for label in ('배포 중단:', '배포 스크립트 보완:', '운영 설정 반영:'):
             self.assertIn('<strong>' + label + '</strong>', action)
-        for fact in ('애플리케이션 이름과 기존 프로세스 조회 조건을 수정',
-                     '*SNAPSHOT.jar에서 *.jar로 변경', 'SNAPSHOT 파일명에 의존하지 않도록',
+        for fact in ('실행 중인 애플리케이션과 새 배포 파일을 올바르게 찾도록 스크립트를 수정했습니다.',
                      'GitHub Secrets로 운영 설정 파일을 생성하는 단계를 빌드 전으로 옮기고',
                      'JWT 유효기간'):
             self.assertIn(fact, action)
         # The original script already excluded plain JARs; this was not a new change.
         self.assertNotIn('plain JAR는 제외', action)
+        self.assertNotIn('SNAPSHOT', action)
         parser = SiteParser()
         parser.feed(case)
         links = [attrs['href'] for tag, attrs in parser.nodes if tag == 'a']
