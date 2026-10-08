@@ -604,10 +604,13 @@ class PortfolioChecks(unittest.TestCase):
         self.assertEqual(action.count('<li>'), 3)
         for label in ('배포 중단:', '배포 스크립트 수정:', '운영 설정 반영:'):
             self.assertIn('<strong>' + label + '</strong>', action)
-        for fact in ('기존 프로세스를 조회하도록 수정', 'SNAPSHOT 파일명에 의존하지 않도록',
-                     'plain JAR는 제외', '빌드 전에 GitHub Secrets로 운영 설정 파일을 생성',
+        for fact in ('애플리케이션 이름과 기존 프로세스 조회 조건을 수정',
+                     '*SNAPSHOT.jar에서 *.jar로 변경', 'SNAPSHOT 파일명에 의존하지 않도록',
+                     'GitHub Secrets로 운영 설정 파일을 생성하는 단계를 빌드 전으로 옮기고',
                      'JWT 유효기간'):
             self.assertIn(fact, action)
+        # The original script already excluded plain JARs; this was not a new change.
+        self.assertNotIn('plain JAR는 제외', action)
         parser = SiteParser()
         parser.feed(case)
         links = [attrs['href'] for tag, attrs in parser.nodes if tag == 'a']

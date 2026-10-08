@@ -206,8 +206,8 @@
                     <div><dt>해결·개선</dt><dd>팀원이 설계한 인프라를 바탕으로 GitHub Actions·S3·CodeDeploy를 연결하는 배포 가이드를 직접 작성해, 동료가 이를 따라 설정 작업에 참여할 수 있도록 했습니다. 진행 중 발생한 설정·배포 문제는 다음과 같이 해결했습니다.
                       <ul class="case-flow__actions">
                         <li><strong>배포 중단:</strong> 프라이빗 서브넷의 서버에 접속해 중지된 CodeDeploy 에이전트를 실행하고, 재배포가 정상 완료되는 것을 확인했습니다.</li>
-                        <li><strong>배포 스크립트 수정:</strong> 실제 애플리케이션 이름에 맞춰 기존 프로세스를 조회하도록 수정했습니다. 실행 파일 탐색 조건도 SNAPSHOT 파일명에 의존하지 않도록 바꾸고, 실행 대상이 아닌 plain JAR는 제외했습니다.</li>
-                        <li><strong>운영 설정 반영:</strong> 빌드 전에 GitHub Secrets로 운영 설정 파일을 생성하도록 배포 절차를 수정하고, JWT 유효기간 등 필요한 설정을 보완했습니다.</li>
+                        <li><strong>배포 스크립트 수정:</strong> 애플리케이션 이름과 기존 프로세스 조회 조건을 수정했습니다. 실행 파일 탐색 패턴을 *SNAPSHOT.jar에서 *.jar로 변경해, SNAPSHOT 파일명에 의존하지 않도록 했습니다.</li>
+                        <li><strong>운영 설정 반영:</strong> GitHub Secrets로 운영 설정 파일을 생성하는 단계를 빌드 전으로 옮기고, JWT 유효기간 등 필요한 설정을 보완했습니다.</li>
                       </ul>
                     </dd></div>
                     <div class="case-flow__outcome"><dt>성과</dt><dd>배포 지연을 해소해 팀원들이 개발한 기능을 서버에서 함께 확인하고, 각자 맡은 기능 개발과 연동 작업에 집중할 수 있는 기반을 마련했습니다.</dd></div>
