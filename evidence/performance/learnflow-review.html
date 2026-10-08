@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="robots" content="noindex" />
+  <title>LearnFlow 조회 성능 측정 기록 | 조성률</title>
+  <style>
+:root { color-scheme: dark; font-family: system-ui, -apple-system, sans-serif; background: #16191f; color: #e5eaf1; }
+* { box-sizing: border-box; }
+body { max-width: 880px; margin: auto; padding: 32px 24px 64px; line-height: 1.7; word-break: keep-all; overflow-wrap: anywhere; }
+a { color: #69dce8; text-underline-offset: 4px; }
+a:focus-visible { outline: 2px solid #d8b77c; outline-offset: 4px; }
+h1 { margin: 24px 0 8px; font-size: 1.65rem; line-height: 1.4; }
+h2 { margin: 28px 0 12px; font-size: 1.15rem; color: #d8b77c; scroll-margin-top: 24px; }
+.note, caption { color: #adb9c9; font-size: .85rem; }
+.result { margin: 20px 0 28px; padding: 16px 20px; background: #ffffff06; border-left: 2px solid #74808e; font-weight: 700; }
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-variant-numeric: tabular-nums; font-size: .95rem; }
+caption { text-align: left; margin-bottom: 8px; }
+th, td { border-bottom: 1px solid #363f4a; padding: 10px 12px; text-align: right; }
+th:first-child { text-align: left; }
+thead th { color: #d8b77c; background: #ffffff04; }
+tbody th { font-weight: 500; }
+.selected { background: #69dce808; }
+.selected th, .selected td { font-weight: 700; }
+.conditions th { width: 116px; color: #bfc8d6; }
+.conditions td { text-align: left; }
+pre { padding: 16px; background: #101319; border: 1px solid #363f4a; border-radius: 6px; white-space: pre-wrap; overflow-wrap: anywhere; }
+code { font-size: .9em; }
+footer { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 28px; padding-top: 20px; border-top: 1px solid #424852; font-size: .9rem; }
+@media (max-width: 480px) { body { padding: 20px 16px 48px; } h1 { font-size: 1.4rem; } th, td { padding: 8px 6px; font-size: .83rem; } .conditions th { width: 84px; } }
+  </style>
+</head>
+<body>
+  <header><a href="../../index.html#learnflow-review-query">LearnFlow 사례로 돌아가기</a><h1>LearnFlow · 리뷰 조회 성능 측정</h1><p class="note">로컬 환경 · 합성 데이터 기준</p></header>
+  <main>
+<p class="result">리뷰 10개 조회 처리 시간 약 23% 단축 · SQL 24회 → 15회</p>
+<h2>변경 전후 비교</h2>
+<div class="table-wrap"><table><caption>시간: 회차별 평균의 중앙값 · SQL: 요청당 실행 수</caption><thead><tr><th scope="col">지표</th><th scope="col">개별 조회</th><th scope="col">일괄 조회</th></tr></thead><tbody>
+<tr class="selected"><th scope="row">처리 시간</th><td>11.32ms</td><td>8.68ms</td></tr>
+<tr><th scope="row">SQL 실행 수</th><td>24회</td><td>15회</td></tr>
+</tbody></table></div>
+<h2>측정 조건</h2>
+<table class="conditions"><tbody>
+<tr><th scope="row">측정 구간</th><td>서비스·JPA·DB 처리 · 응답 객체 조립 · 트랜잭션 종료</td></tr>
+<tr><th scope="row">제외 항목</th><td>HTTP·인증·JSON 직렬화·네트워크·동시 부하</td></tr>
+<tr><th scope="row">환경</th><td>Java 17.0.18 · Spring Boot 3.5.8 · MySQL 8.4.11</td></tr>
+<tr><th scope="row">데이터</th><td>합성 강의 100개 · 리뷰 10,000개 · 서로 다른 작성자의 첫 페이지 리뷰 10개</td></tr>
+<tr><th scope="row">반복 횟수</th><td>각 방식 150회 워밍업 · 120회 × 5회차 (각 600회)</td></tr>
+<tr><th scope="row">통제 조건</th><td>작성자 조회 방식만 변경 · 전후 강의 조회/응답 필드 유지 · 실행 순서 교차 · 요청마다 새 트랜잭션</td></tr>
+<tr><th scope="row">캐시·집계</th><td>2차/쿼리 캐시 미사용 · 회차별 평균의 중앙값 · SQL 진단 4건은 시간 측정과 분리</td></tr>
+<tr><th scope="row">검증</th><td>응답 25건 동일 · 5회차 모두 단축 · SQL 진단 4건 모두 24회 → 15회</td></tr>
+</tbody></table>
+<h2>회차별 평균 처리 시간</h2>
+<div class="table-wrap"><table><caption>단위 ms · 각 방식 120회 평균</caption><thead><tr><th scope="col">회차</th><th scope="col">개별 조회</th><th scope="col">일괄 조회</th></tr></thead><tbody><tr><th scope="row">1</th><td>11.4830</td><td>9.1209</td></tr>
+<tr><th scope="row">2</th><td>14.0763</td><td>10.8189</td></tr>
+<tr><th scope="row">3</th><td>11.3224</td><td>8.6811</td></tr>
+<tr><th scope="row">4</th><td>10.3856</td><td>7.8136</td></tr>
+<tr><th scope="row">5</th><td>10.2200</td><td>8.0149</td></tr></tbody></table></div>
+  </main>
+  <footer><a href="learnflow-review-results.json" target="_blank" rel="noopener noreferrer">회차별 측정 데이터 JSON ↗</a><a href="https://github.com/team-Octave/learnflow-api/pull/28" target="_blank" rel="noopener noreferrer">작성자 조회 개선 PR ↗</a><a href="https://github.com/team-Octave/learnflow-api/tree/b6d81742cfb4dabb38f1355020ccccf4dc70c678" target="_blank" rel="noopener noreferrer">측정 기준 코드 ↗</a></footer>
+</body>
+</html>

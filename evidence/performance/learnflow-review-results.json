@@ -1,0 +1,99 @@
+{
+  "scenario": "learnflow-page-10",
+  "conditions": {
+    "common_base": "b6d81742",
+    "lectures": 100,
+    "page_size": 10,
+    "common_lecture_lookup": "retained in both variants for equal responses",
+    "variable": "per-review User.findById vs User.findAllById",
+    "distinct_authors_per_page": 10,
+    "database": "MySQL 8.4.11",
+    "reviews_per_lecture": 100
+  },
+  "scope": "service + JPA + local DB, not HTTP",
+  "java": "17.0.18",
+  "equality_checks": 25,
+  "sql_probes": [
+    {
+      "before_entities": 31,
+      "after_entities": 31,
+      "after_sql": 15,
+      "before_sql": 24,
+      "sample": 0
+    },
+    {
+      "before_entities": 31,
+      "after_entities": 31,
+      "after_sql": 15,
+      "before_sql": 24,
+      "sample": 1
+    },
+    {
+      "before_entities": 31,
+      "after_entities": 31,
+      "after_sql": 15,
+      "before_sql": 24,
+      "sample": 2
+    },
+    {
+      "before_entities": 31,
+      "after_entities": 31,
+      "after_sql": 15,
+      "before_sql": 24,
+      "sample": 3
+    }
+  ],
+  "rounds": [
+    {
+      "round": 1,
+      "n": 120,
+      "before_mean_ms": 11.483023275,
+      "after_mean_ms": 9.120863199999999,
+      "before_p95_ms": 15.5155,
+      "after_p95_ms": 12.756084,
+      "mean_reduction_pct": 20.570889899202104
+    },
+    {
+      "round": 2,
+      "n": 120,
+      "before_mean_ms": 14.076291650000005,
+      "after_mean_ms": 10.818878891666664,
+      "before_p95_ms": 20.261209,
+      "after_p95_ms": 13.55675,
+      "mean_reduction_pct": 23.141128639042797
+    },
+    {
+      "round": 3,
+      "n": 120,
+      "before_mean_ms": 11.32239924166667,
+      "after_mean_ms": 8.681136516666669,
+      "before_p95_ms": 15.571375,
+      "after_p95_ms": 12.78925,
+      "mean_reduction_pct": 23.32776533157476
+    },
+    {
+      "round": 4,
+      "n": 120,
+      "before_mean_ms": 10.385560774999995,
+      "after_mean_ms": 7.813639558333334,
+      "before_p95_ms": 12.432167,
+      "after_p95_ms": 9.569875,
+      "mean_reduction_pct": 24.76439426225073
+    },
+    {
+      "round": 5,
+      "n": 120,
+      "before_mean_ms": 10.21995068333334,
+      "after_mean_ms": 8.014929825000001,
+      "before_p95_ms": 12.116167,
+      "after_p95_ms": 9.865083,
+      "mean_reduction_pct": 21.575650672456558
+    }
+  ],
+  "before_median_of_round_means_ms": 11.32239924166667,
+  "after_median_of_round_means_ms": 8.681136516666669,
+  "mean_reduction_pct": 23.32776533157476,
+  "before_median_of_round_p95_ms": 15.5155,
+  "after_median_of_round_p95_ms": 12.756084,
+  "improved_rounds": 5
+}

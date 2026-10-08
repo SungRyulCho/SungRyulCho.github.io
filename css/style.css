@@ -137,6 +137,7 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .case-flow__actions > li + li { margin-top: .75rem; }
 .case-flow__actions strong { color: #f3f6fb; }
 .case-flow .case-flow__outcome dd { color: #f3f6fb; font-weight: 700; }
+.case-flow .case-flow__outcome .case-flow__measurement { margin-top: .75rem; color: #adb9c9; font-size: .85rem; font-weight: 400; line-height: 1.7; }
 .project__evidence { display: flex; flex-wrap: wrap; gap: .4rem 1rem; margin-top: 1rem; padding: 0; list-style: none; }
 .project__evidence a { display: inline-block; padding: .2rem 0; color: var(--color-accent); font-size: .8rem; text-decoration: underline; text-underline-offset: 4px; overflow-wrap: anywhere; }
 .project__evidence a:hover { color: white; }
