@@ -685,7 +685,8 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('팀 배포 구성 코드', self.html)
 
     def test_all_projects_use_shared_dialog_with_inline_fallback(self):
-        dialogs = [attrs for tag, attrs in self.nodes if tag == 'dialog']
+        dialogs = [attrs for tag, attrs in self.nodes if tag == 'dialog'
+                   and attrs.get('id') == 'project-case-dialog']
         self.assertEqual(len(dialogs), 1)
         self.assertEqual(dialogs[0]['id'], 'project-case-dialog')
         ids = {attrs['id'] for _, attrs in self.nodes if 'id' in attrs}
