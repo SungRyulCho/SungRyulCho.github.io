@@ -197,12 +197,12 @@
                   </ul>
                 </article>
                 <article class="project__case" id="dekk-deployment-collaboration" data-case-label="배포 협업">
-                  <h4>배포 프로그램 중지를 확인하고 초기 배포 복구</h4>
+                  <h4>배포 가이드 작성과 초기 오류 해결로 팀의 개발 기반 마련</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>초기 배포가 실패해 팀이 개발한 코드를 서버에 반영하지 못했습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>배포 요청 이후 서버에서 실제 배포를 실행하는 단계까지 확인할 필요가 있었습니다. 대상 서버의 CodeDeploy 에이전트가 동작하는지 점검해 원인을 좁혔습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>팀원이 설계한 인프라에서 서버 배포를 담당했습니다. 프라이빗 서브넷의 서버에 접속해 codedeploy-agent가 중지된 것을 확인했습니다. 에이전트를 실행한 뒤 재배포해 정상 완료를 확인했습니다.</dd></div>
-                    <div class="case-flow__outcome"><dt>성과</dt><dd>중단된 초기 배포를 복구해 팀이 개발한 코드를 서버에 반영할 수 있게 했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>배포 환경 준비가 지연되고 초기 배포가 실패하면서, 팀이 개발한 기능을 서버에 반영하지 못했습니다. 팀원들이 각자 구현한 기능을 연동하고 확인하는 작업에도 차질이 생겼습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>여러 설정이 연결되는 배포 작업을 나누어 진행하려면, 팀원이 전체 흐름과 단계별 작업 방법을 이해할 수 있어야 했습니다. 단순히 작업을 분담하기보다, 공통으로 참고할 배포 가이드를 먼저 마련하는 것이 필요하다고 판단했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>팀원이 설계한 인프라를 바탕으로 GitHub Actions·S3·CodeDeploy를 연결하는 배포 가이드를 직접 작성했습니다. 다른 팀원이 가이드를 따라 설정 작업에 참여할 수 있도록 하고, 진행 중 막히는 설정과 배포 오류는 제가 원인을 분석하고 해결했습니다.<br /><br />초기 배포 실패 때는 프라이빗 서브넷의 서버에 접속해 CodeDeploy 에이전트가 중지된 것을 확인했습니다. 에이전트를 실행하고 재배포해 정상 완료를 확인했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>배포 지연을 해소해 팀원들이 개발한 기능을 서버에서 함께 확인하고, 각자 맡은 기능 개발과 연동 작업에 집중할 수 있는 기반을 마련했습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="배포 구성 참고 코드">
                     <li><a href="https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/appspec.yml" target="_blank" rel="noopener noreferrer" aria-label="DEKK 팀 배포 구성 코드 보기 (새 탭)">팀 배포 구성 코드 ↗</a></li>

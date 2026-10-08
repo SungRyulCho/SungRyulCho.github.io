@@ -581,9 +581,11 @@ class PortfolioChecks(unittest.TestCase):
         dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<li id="project-learnflow"', 1)[0]
         for fact in ('회원 관리 기능 인수 및 인증 구조 개선', '공통 인증 정책의 수정 지점',
                      '이벤트 처리는 기존 트랜잭션에 참여하도록',
-                     '팀원이 설계한 인프라에서 서버 배포를 담당했습니다',
-                     'codedeploy-agent가 중지된 것을 확인했습니다',
-                     '에이전트를 실행한 뒤 재배포해 정상 완료'):
+                     '팀원이 설계한 인프라를 바탕으로',
+                     '배포 가이드를 직접 작성했습니다',
+                     '배포 오류는 제가 원인을 분석하고 해결했습니다',
+                     'CodeDeploy 에이전트가 중지된 것을 확인했습니다',
+                     '에이전트를 실행하고 재배포해 정상 완료'):
             self.assertIn(fact, dekk)
         for unsupported_claim in ('비동기 이벤트', '전체 인프라를 설계', '응답 속도 향상'):
             self.assertNotIn(unsupported_claim, dekk)
@@ -592,8 +594,15 @@ class PortfolioChecks(unittest.TestCase):
         case = self.html.split('id="dekk-deployment-collaboration"', 1)[1].split('</article>', 1)[0]
         problem = case.split('<dt>문제</dt><dd>', 1)[1].split('</dd>', 1)[0]
         action = case.split('<dt>해결·개선</dt><dd>', 1)[1].split('</dd>', 1)[0]
-        self.assertEqual(problem, '초기 배포가 실패해 팀이 개발한 코드를 서버에 반영하지 못했습니다.')
-        self.assertIn('팀원이 설계한 인프라에서 서버 배포를 담당했습니다.', action)
+        self.assertEqual(problem, '배포 환경 준비가 지연되고 초기 배포가 실패하면서, 팀이 개발한 기능을 서버에 반영하지 못했습니다. 팀원들이 각자 구현한 기능을 연동하고 확인하는 작업에도 차질이 생겼습니다.')
+        self.assertNotIn('팀원이 설계한', problem)
+        self.assertIn('팀원이 설계한 인프라를 바탕으로', action)
+        self.assertIn('다른 팀원이 가이드를 따라 설정 작업에 참여할 수 있도록', action)
+        self.assertIn('프라이빗 서브넷의 서버에 접속해 CodeDeploy 에이전트가 중지된 것을 확인했습니다.', action)
+        parser = SiteParser()
+        parser.feed(case)
+        links = [attrs['href'] for tag, attrs in parser.nodes if tag == 'a']
+        self.assertEqual(links, ['https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/appspec.yml'])
         self.assertNotIn('맡고 있었습니다', case)
 
     def test_auth_and_deck_separation_cases_have_independent_narratives(self):
@@ -648,7 +657,7 @@ class PortfolioChecks(unittest.TestCase):
             'learnflow-deployment-improvement': '중복 실행을 제거하고 백업을 최신 3개로 관리해, 배포 절차를 단순화하고 백업 파일 관리 부담을 줄였습니다.',
             'vench-ai-progress': '처리 단계 안내로 사용자의 진행 상황 파악을 돕고, 본문 생성 실패 시에도 인식한 원문을 제공해 기록을 다시 작성해야 하는 부담을 줄였습니다.',
             'vench-emotion-report': '대표 감정 외의 점수도 집계해, 사용자가 기록에 함께 나타난 여러 감정의 분포를 파악하도록 개선했습니다.',
-            'dekk-deployment-collaboration': '중단된 초기 배포를 복구해 팀이 개발한 코드를 서버에 반영할 수 있게 했습니다.',
+            'dekk-deployment-collaboration': '배포 지연을 해소해 팀원들이 개발한 기능을 서버에서 함께 확인하고, 각자 맡은 기능 개발과 연동 작업에 집중할 수 있는 기반을 마련했습니다.',
             'vench-audio-input': '음성 인식 전에 녹음 파일의 음량 편차를 줄였습니다.',
         }
         for case_id, text in expected.items():
