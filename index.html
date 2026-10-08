@@ -25,7 +25,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;800&display=swap" rel="stylesheet" />
-    <link rel="stylesheet" href="css/style.css?v=20261007-case-readability" />
+    <link rel="stylesheet" href="css/style.css?v=20261008-deployment-list" />
   <link rel="stylesheet" href="css/evidence-viewer.css?v=20261008" />
   <script src="src/main.js?v=20260927" defer></script>
   <script src="src/projects.js?v=20260927" defer></script>
@@ -203,7 +203,13 @@
                   <dl class="case-flow">
                     <div><dt>문제</dt><dd>배포 환경 준비가 지연되고 초기 배포가 실패하면서, 팀이 개발한 기능을 서버에 반영하지 못했습니다. 팀원들이 각자 구현한 기능을 연동하고 확인하는 작업에도 차질이 생겼습니다.</dd></div>
                     <div><dt>해결 방안 검토</dt><dd>여러 설정이 연결되는 배포 작업을 나누어 진행하려면, 팀원이 전체 흐름과 단계별 작업 방법을 이해할 수 있어야 했습니다. 단순히 작업을 분담하기보다, 공통으로 참고할 배포 가이드를 먼저 마련하는 것이 필요하다고 판단했습니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>팀원이 설계한 인프라를 바탕으로 GitHub Actions·S3·CodeDeploy를 연결하는 배포 가이드를 직접 작성해, 동료가 이를 따라 설정 작업에 참여할 수 있도록 했습니다. 진행 중 발생한 여러 설정 문제와 배포 오류는 원인을 분석해 해결했습니다.<br /><br />예를 들어 초기 배포가 실패했을 때는 프라이빗 서브넷의 서버에 접속해 CodeDeploy 에이전트가 중지된 것을 확인했습니다. 에이전트를 실행하고 재배포해 정상 완료를 확인했습니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>팀원이 설계한 인프라를 바탕으로 GitHub Actions·S3·CodeDeploy를 연결하는 배포 가이드를 직접 작성해, 동료가 이를 따라 설정 작업에 참여할 수 있도록 했습니다. 진행 중 발생한 설정·배포 문제는 다음과 같이 해결했습니다.
+                      <ul class="case-flow__actions">
+                        <li><strong>배포 중단:</strong> 프라이빗 서브넷의 서버에 접속해 중지된 CodeDeploy 에이전트를 실행하고, 재배포가 정상 완료되는 것을 확인했습니다.</li>
+                        <li><strong>배포 스크립트 수정:</strong> 실제 애플리케이션 이름에 맞춰 기존 프로세스를 조회하도록 수정했습니다. 실행 파일 탐색 조건도 SNAPSHOT 파일명에 의존하지 않도록 바꾸고, 실행 대상이 아닌 plain JAR는 제외했습니다.</li>
+                        <li><strong>운영 설정 반영:</strong> 빌드 전에 GitHub Secrets로 운영 설정 파일을 생성하도록 배포 절차를 수정하고, JWT 유효기간 등 필요한 설정을 보완했습니다.</li>
+                      </ul>
+                    </dd></div>
                     <div class="case-flow__outcome"><dt>성과</dt><dd>배포 지연을 해소해 팀원들이 개발한 기능을 서버에서 함께 확인하고, 각자 맡은 기능 개발과 연동 작업에 집중할 수 있는 기반을 마련했습니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="배포 작업 기록과 참고 코드">

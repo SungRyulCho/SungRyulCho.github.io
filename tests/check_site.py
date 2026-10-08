@@ -528,7 +528,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261007-case-readability', self.html)
+        self.assertIn('css/style.css?v=20261008-deployment-list', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'
@@ -583,9 +583,9 @@ class PortfolioChecks(unittest.TestCase):
                      '이벤트 처리는 기존 트랜잭션에 참여하도록',
                      '팀원이 설계한 인프라를 바탕으로',
                      '배포 가이드를 직접 작성해',
-                     '여러 설정 문제와 배포 오류는 원인을 분석해 해결했습니다',
-                     'CodeDeploy 에이전트가 중지된 것을 확인했습니다',
-                     '에이전트를 실행하고 재배포해 정상 완료'):
+                     '진행 중 발생한 설정·배포 문제는 다음과 같이 해결했습니다',
+                     '중지된 CodeDeploy 에이전트를 실행하고',
+                     '재배포가 정상 완료되는 것을 확인했습니다'):
             self.assertIn(fact, dekk)
         for unsupported_claim in ('비동기 이벤트', '전체 인프라를 설계', '응답 속도 향상'):
             self.assertNotIn(unsupported_claim, dekk)
@@ -598,8 +598,16 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('팀원이 설계한', problem)
         self.assertIn('팀원이 설계한 인프라를 바탕으로', action)
         self.assertIn('동료가 이를 따라 설정 작업에 참여할 수 있도록', action)
-        self.assertIn('예를 들어 초기 배포가 실패했을 때는', action)
-        self.assertIn('프라이빗 서브넷의 서버에 접속해 CodeDeploy 에이전트가 중지된 것을 확인했습니다.', action)
+        self.assertNotIn('예를 들어', action)
+        self.assertIn('프라이빗 서브넷의 서버에 접속해 중지된 CodeDeploy 에이전트를 실행하고', action)
+        self.assertIn('<ul class="case-flow__actions">', action)
+        self.assertEqual(action.count('<li>'), 3)
+        for label in ('배포 중단:', '배포 스크립트 수정:', '운영 설정 반영:'):
+            self.assertIn('<strong>' + label + '</strong>', action)
+        for fact in ('기존 프로세스를 조회하도록 수정', 'SNAPSHOT 파일명에 의존하지 않도록',
+                     'plain JAR는 제외', '빌드 전에 GitHub Secrets로 운영 설정 파일을 생성',
+                     'JWT 유효기간'):
+            self.assertIn(fact, action)
         parser = SiteParser()
         parser.feed(case)
         links = [attrs['href'] for tag, attrs in parser.nodes if tag == 'a']
