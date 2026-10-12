@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>DEKK 동시 저장 정합성 검증 | 조성률</title><style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#16191f;color:#e5eaf1}
+*{box-sizing:border-box}
+body{max-width:880px;margin:auto;padding:32px 24px 56px;line-height:1.65;word-break:keep-all;overflow-wrap:anywhere}
+a{color:#69dce8;text-underline-offset:4px}a:focus-visible{outline:2px solid #d8b77c;outline-offset:5px}
+header>a{font-size:.9rem}.eyebrow{color:#b4becd;font-size:.85rem;margin:30px 0 6px}
+h1{margin:0 0 28px;font-size:1.9rem;line-height:1.35;letter-spacing:-.03em}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:1rem}
+caption{color:#b4becd;font-size:.88rem;text-align:left;margin-bottom:10px}
+th,td{padding:16px 12px;border-bottom:1px solid #363f4a;text-align:right;vertical-align:middle}
+th:first-child{text-align:left}thead th{background:#ffffff04;color:#bdc7d5;font-weight:600}
+thead th:not(:first-child),tbody td{white-space:nowrap}
+tbody th{font-weight:550}tbody td:last-child{color:#f0d29e;font-weight:650}
+small{display:block;font-weight:400;color:#b4becd;font-size:.85rem;margin-top:4px}
+h2{margin:26px 0 8px;font-size:1rem;color:#d8b77c}
+.condition{margin:0;color:#bdc7d5;font-size:.92rem}
+footer{display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:28px;padding-top:20px;border-top:1px solid #424852;font-size:.9rem}
+@media(max-width:560px){body{padding:22px 18px 40px}h1{font-size:1.55rem;margin-bottom:24px}.eyebrow{margin-top:26px}th,td{padding:13px 7px;font-size:.9rem}small{font-size:.8rem}.condition{font-size:.88rem}footer{gap:14px 20px}}
+
+.study-setup{margin:0;font-size:.92rem}
+.study-setup>div{display:grid;grid-template-columns:88px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #363f4a}
+.study-setup dt{color:#b4becd}.study-setup dd{margin:0}
+.method{font-size:.92rem;color:#bdc7d5;margin:18px 0 0}.method strong{color:#e5eaf1;font-weight:550}
+.observations{padding-left:19px;margin:18px 0 0;font-size:.88rem;color:#bdc7d5}
+.observations li+li{margin-top:6px}.observations strong{font-weight:550;color:#e5eaf1}
+@media(max-width:560px){.study-setup>div{grid-template-columns:70px 1fr;gap:8px}.study-setup,.method{font-size:.88rem}tbody th{width:45%}tbody td small{font-size:.76rem}}
+</style></head><body>
+<header><a href="../../index.html#dekk-concurrent-save">← DEKK 사례로 돌아가기</a><p class="eyebrow">DEKK / 검증 기록</p><h1>동시 저장 정합성 검증</h1></header>
+<main><section aria-labelledby="design-heading"><h2 id="design-heading">검증 설계</h2>
+<dl class="study-setup">
+<div><dt>비교 대상</dt><dd>잠금 적용 원본과, 잠금 획득·해제만 생략한 대조군</dd></div>
+<div><dt>동일 조건</dt><dd>REQUIRES_NEW · READ COMMITTED · 같은 테스트·데이터·스키마</dd></div>
+<div><dt>실행 환경</dt><dd>로컬 Spring Boot · PostgreSQL 16.15 · Redis 7.4.9</dd></div>
+</dl>
+<p class="method">매회 보관함 데이터를 초기화하고 여러 스레드에서 저장 요청을 실행했습니다. 모든 요청이 끝난 뒤 DB의 실제 저장 수와 요청별 처리 결과를 대조해, <strong>동일 카드는 1건만 저장되는지, 보관함은 50장을 넘지 않는지</strong> 확인했습니다.</p>
+</section><section aria-labelledby="result-heading"><h2 id="result-heading">검증 결과</h2><div class="table-wrap"><table><caption>각 시나리오·변형별 30회 반복 · 요청 완료 후 DB 최종 저장 수</caption><thead><tr><th scope="col">시나리오</th><th scope="col">잠금 없음</th><th scope="col">잠금 적용</th></tr></thead><tbody><tr><th scope="row">같은 카드 동시 저장<small>빈 보관함 · 100요청 · 32스레드</small></th><td>12–32건 저장<small>중복 30 / 30회</small></td><td>1건 저장<small>중복 0 / 30회</small></td></tr><tr><th scope="row">서로 다른 카드 동시 저장<small>49장 보관함 · 새 카드 10요청 · 10스레드</small></th><td>59장 보관<small>초과 30 / 30회</small></td><td>50장 보관<small>초과 0 / 30회</small></td></tr></tbody></table></div>
+<ul class="observations" aria-label="잠금 적용 시 요청 처리 확인">
+<li><strong>같은 카드:</strong> 매회 1건 저장, 나머지 99건은 추가 저장 없이 정상 종료</li>
+<li><strong>서로 다른 카드:</strong> 매회 1건 저장, 나머지 9건은 용량 제한으로 거절</li>
+</ul></section></main>
+<footer><a href="https://github.com/potenup-dekk/DEKK-BE/blob/f20c246c353acd82a60c1619998a6a2738d22e38/src/main/java/com/dekk/global/lock/DistributedLockAop.java" target="_blank" rel="noopener noreferrer">잠금 구현 코드 ↗</a></footer></body></html>

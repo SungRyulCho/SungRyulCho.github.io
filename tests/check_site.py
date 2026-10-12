@@ -259,7 +259,7 @@ class PortfolioChecks(unittest.TestCase):
             outcome = content.split('<dt>성과</dt><dd>', 1)[1].split('</dd>', 1)[0]
             # Measured outcomes include the scope, before/after values and
             # service benefit in one sentence. Decimals are not boundaries.
-            measured_outcome = 'class="case-flow__measurement"' in content
+            measured_outcome = 'class="case-flow__measurement"' in content or bool(re.search(r'\d', outcome))
             self.assertLessEqual(len(outcome), 150 if measured_outcome else 90)
             self.assertEqual(len(re.findall(r'\.(?=\s|$)', outcome)), 1)
             self.assertNotIn('<br', outcome)
@@ -320,7 +320,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertLess(card.index('project__role-summary'), card.index('project__detail-trigger'))
         self.assertNotIn('project__outcome-summary', card)
         self.assertNotIn('project__outcome-summary', details)
-        self.assertIn('인증 정책의 일관성과 유지보수성을 높였습니다', details)
+        self.assertIn('인증 로직의 수정 부담과 누락 위험을 줄였습니다', details)
         for case in ('dekk-member-improvement', 'dekk-member-deck-separation', 'dekk-concurrent-save',
                      'dekk-query-improvement', 'dekk-deployment-collaboration'):
             self.assertIn('id="' + case + '"', details)
@@ -368,19 +368,26 @@ class PortfolioChecks(unittest.TestCase):
                      '서버의 정렬 방식을 개선하더라도', 'DB에서 보관함별로 선별',
                      '기존 집계는 유지', 'ROW_NUMBER 윈도 함수',
                      '서버의 전체 카드 정렬 코드를 제거', '데이터 처리 부담을 낮췄습니다',
+                     '카드 연결 데이터를 1,000행에서 60행으로 94% 줄여',
+                     '로컬 합성 데이터', '사용자 100명', '보관함 20개 × 카드 50장',
+                     '변경 전후 스키마와 인덱스는 동일',
                      'commit/2df04598d52b99e48f09742588ba99b82aa1227a',
                      'commit/79f83a38e8c9b143876046e1edc87b451f7c6dc6'):
             self.assertIn(fact, dekk)
-        for unsupported_comparison in ('N + N', '1 + 1', '94%', '86.8%',
-                                       '37.49ms', '4.97ms', '인덱스', '응답 시간',
-                                       'case-flow__measurement', 'evidence/performance/dekk-index'):
+        for unsupported_comparison in ('N + N', '1 + 1', '86.8%',
+                                       '37.49ms', '4.97ms', '인덱스를 적용', '응답 시간',
+                                       'evidence/performance/dekk-index'):
             self.assertNotIn(unsupported_comparison, dekk)
         learnflow = self.html.split('id="learnflow-ai-outbox"', 1)[1].split('</article>', 1)[0]
         for fact in ('강의 승인을 기다리게 하지 않는 AI 요약 작업 처리',
                      '하나의 트랜잭션', '대기, 처리 중, 완료, 실패',
                      '분석 서버가 실패를 알린 작업', '1분, 5분, 60분 뒤에',
                      '최대 3회의 재시도', 'AI 분석과 승인을 분리해 관리자의 승인 대기 부담을 줄이고',
-                     '승인과 분석 작업을 함께 저장해 작업 연결의 안정성을 높였습니다'):
+                     '승인과 분석 작업을 함께 저장해 작업 연결의 안정성을 높였습니다',
+                     '처리 중 상태에서 10분 넘게 갱신되지 않은 작업',
+                     '같은 재시도 한도 내에서는 대기 상태로 되돌리고',
+                     '로컬 테스트 워커', '일시 실패 30건과 응답 중단 10건',
+                     '매회 100건 모두 완료되고 누락은 0건'):
             self.assertIn(fact, learnflow)
 
     def test_learnflow_team_note_is_removed_without_expanding_claims(self):
@@ -637,7 +644,8 @@ class PortfolioChecks(unittest.TestCase):
         for case, facts, excluded in (
             (auth, ('사용자와 관리자 코드를 각각 수정',
                     '권한 정보는 구분하고, 동일하게 동작해야 하는 토큰 처리만 공통화',
-                    '토큰 생성과 검증을 공통화', '인증 정책의 일관성과 유지보수성을 높였습니다',
+                    '토큰 생성과 검증을 공통화', '클래스를 각각 2개에서 1개로 통합',
+                    '인증 로직의 수정 부담과 누락 위험을 줄였습니다',
                     'pull/182'), ('보관함', '트랜잭션', 'pull/180')),
             (separation, ('보관함 처리 방식이 바뀌면 회원 코드도 함께 검토',
                           '두 작업의 성공과 실패는 같은 트랜잭션으로 묶는 방식',
@@ -653,7 +661,7 @@ class PortfolioChecks(unittest.TestCase):
             for label in ('문제', '해결 방안 검토', '해결·개선', '성과'):
                 self.assertEqual(case.count('<dt>' + label + '</dt>'), 1)
             self.assertEqual(case.count('class="project__evidence"'), 1)
-            self.assertEqual(case.count('<li><a '), 1)
+            self.assertEqual(case.count('<li><a '), 2)
 
     def test_review_case_does_not_mix_in_lecture_title_feature(self):
         case = self.html.split('id="learnflow-review-query"', 1)[1].split('</article>', 1)[0]
@@ -674,10 +682,10 @@ class PortfolioChecks(unittest.TestCase):
     def test_outcomes_match_approved_benefit_statements(self):
         # Copy regression only; code evidence and narrative still need human review.
         expected = {
-            'dekk-member-improvement': '공통 토큰 정책을 한곳에서 수정하도록 통합해, 인증 정책의 일관성과 유지보수성을 높였습니다.',
-            'dekk-member-deck-separation': '보관함 처리 변경 시 회원 코드를 함께 수정해야 하는 의존성을 줄여, 기능별 유지보수성을 높였습니다.',
+            'dekk-member-improvement': 'JWT 발급·검증, 인증 필터, 보안 설정 클래스를 각각 2개에서 1개로 통합해, 사용자와 관리자에서 중복 관리하던 인증 로직의 수정 부담과 누락 위험을 줄였습니다.',
+            'dekk-member-deck-separation': '회원 서비스의 보관함 직접 호출을 2곳에서 0곳으로 줄여, 보관함 처리 변경을 회원 코드와 분리하고 기능별 유지보수성을 높였습니다.',
             'dekk-concurrent-save': '동시 요청에 따른 중복 저장과 용량 초과를 제어해, 공동 보관함 데이터의 정합성을 높였습니다.',
-            'dekk-query-improvement': '미리보기 정보를 유지하면서 불필요한 카드 조회와 서버 정렬을 줄여, 목록 조회에 필요한 데이터 처리 부담을 낮췄습니다.',
+            'dekk-query-improvement': '미리보기 정보를 유지하면서 DB에서 가져오는 카드 연결 데이터를 1,000행에서 60행으로 94% 줄여, 목록 조회에 필요한 데이터 처리 부담을 낮췄습니다.',
             'learnflow-ai-outbox': 'AI 분석과 승인을 분리해 관리자의 승인 대기 부담을 줄이고, 승인과 분석 작업을 함께 저장해 작업 연결의 안정성을 높였습니다.',
             'learnflow-review-query': '리뷰 10개 조회 처리 시간을 11.32ms에서 8.68ms로 약 23% 단축하고 SQL 실행을 24회에서 15회로 줄여, 수강 전 리뷰 확인에 필요한 서버 처리와 DB 조회 부담을 낮췄습니다.',
             'learnflow-deployment-improvement': '중복 실행을 제거하고 백업을 최신 3개로 관리해, 배포 절차를 단순화하고 백업 파일 관리 부담을 줄였습니다.',
@@ -705,7 +713,13 @@ class PortfolioChecks(unittest.TestCase):
             for attrs in evidence:
                 url = urlsplit(attrs['href'])
                 if not url.scheme:
-                    expected_reports = {'learnflow-review-query': 'learnflow-review.html'}
+                    expected_reports = {
+                        'learnflow-review-query': 'learnflow-review.html',
+                        **{case: case + '.html' for case in (
+                            'dekk-concurrent-save', 'dekk-member-improvement',
+                            'dekk-member-deck-separation', 'dekk-query-improvement',
+                            'learnflow-ai-outbox')},
+                    }
                     self.assertIn(case_id, expected_reports)
                     self.assertEqual(url.path, 'evidence/performance/' + expected_reports[case_id])
                     local = ROOT / url.path
@@ -748,9 +762,9 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_metric_conditions_and_measurement_boundaries_are_visible(self):
         case = self.html.split('id="learnflow-review-query"', 1)[1].split('</article>', 1)[0]
-        for value in ('로컬 환경', '리뷰 10개 조회 처리 시간', '전체 리뷰 1만 개',
-                      '작성자가 서로 다른 리뷰 10개', '서비스·DB 처리 및 응답 객체 조립 구간',
-                      '각 방식 120회씩 5회차', '평균의 중앙값'):
+        for value in ('로컬에 리뷰 1만 개', '리뷰 10개 조회 처리 시간',
+                      '작성자가 서로 다른 리뷰 10개', '서비스와 DB 처리 및 응답 객체 조립 시간',
+                      '각 방식당 120회씩 5회차', '회차별 평균의 중앙값'):
             self.assertIn(value, case)
         self.assertNotIn('API 응답 시간', case)
         self.assertNotIn('41.3%', case)
@@ -759,13 +773,18 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('results.json', report)
 
     def test_measurement_conditions_stay_inside_the_outcome_box(self):
-        for case_id in ('learnflow-review-query',):
+        for case_id in ('learnflow-review-query', 'dekk-query-improvement',
+                        'dekk-concurrent-save', 'learnflow-ai-outbox'):
             case = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
             outcome_box = case.split('<div class="case-flow__outcome">', 1)[1].split('</div>', 1)[0]
-            self.assertEqual(outcome_box.count('<dd class="case-flow__measurement">측정 조건:'), 1)
+            self.assertEqual(outcome_box.count('<dd class="case-flow__measurement">'), 1)
+            note = re.search(r'<dd class="case-flow__measurement">(.*?)</dd>', outcome_box).group(1)
+            self.assertTrue(note.startswith(('측정 조건:', '검증:')))
+            self.assertIn('로컬', note)
+            self.assertNotIn('·', note)
+            self.assertNotIn('ㆍ', note)
             outcome_text = outcome_box.split('<dt>성과</dt><dd>', 1)[1].split('</dd>', 1)[0]
             self.assertNotIn('로컬', outcome_text)
-            self.assertIn('<dd class="case-flow__measurement">측정 조건: 로컬 환경 ·', outcome_box)
             self.assertNotIn('project__note', case)
         css = (ROOT / 'css/style.css').read_text()
         rule = css.split('.case-flow .case-flow__outcome .case-flow__measurement {', 1)[1].split('}', 1)[0]
@@ -778,6 +797,27 @@ class PortfolioChecks(unittest.TestCase):
             self.assertEqual(report.count('<table'), 3)
             self.assertIn(f'{report_name}-results.json', report)
         self.assertNotIn('evidence/performance/index.html', self.html)
+
+    def test_new_evidence_pages_keep_reviewed_scope_and_working_return_links(self):
+        cases = ('dekk-concurrent-save', 'dekk-member-improvement',
+                 'dekk-member-deck-separation', 'dekk-query-improvement',
+                 'learnflow-ai-outbox')
+        self.assertFalse((ROOT / 'evidence/performance/overview.html').exists())
+        for case_id in cases:
+            report = (ROOT / f'evidence/performance/{case_id}.html').read_text()
+            self.assertEqual(report.count('<table>'), 1)
+            self.assertIn(f'../../index.html#{case_id}', report)
+            for private_value in ('/Users/', '127.0.0.1', 'localhost', 'overview.html', '-results.json'):
+                self.assertNotIn(private_value, report)
+            self.assertFalse((ROOT / f'evidence/performance/{case_id}-results.json').exists())
+        query = (ROOT / 'evidence/performance/dekk-query-improvement.html').read_text()
+        for fact in ('가져온 카드 연결 데이터', 'DB에서 애플리케이션으로 반환한 행',
+                     '1,000행', '60행', '94% 감소', '사용자 100명', '보관함 20개 × 카드 50장'):
+            self.assertIn(fact, query)
+        lock = (ROOT / 'evidence/performance/dekk-concurrent-save.html').read_text()
+        for fact in ('잠금 획득·해제만 생략한 대조군', 'REQUIRES_NEW', 'READ COMMITTED',
+                     '중복 30 / 30회', '중복 0 / 30회', '초과 30 / 30회', '초과 0 / 30회'):
+            self.assertIn(fact, lock)
 
     def test_all_projects_use_shared_dialog_with_inline_fallback(self):
         dialogs = [attrs for tag, attrs in self.nodes if tag == 'dialog'

@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
+<title>DEKK 인증 클래스 공통화 | 조성률</title><style>
+:root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#16191f;color:#e5eaf1}
+*{box-sizing:border-box}
+body{max-width:880px;margin:auto;padding:32px 24px 56px;line-height:1.65;word-break:keep-all;overflow-wrap:anywhere}
+a{color:#69dce8;text-underline-offset:4px}a:focus-visible{outline:2px solid #d8b77c;outline-offset:5px}
+header>a{font-size:.9rem}.eyebrow{color:#b4becd;font-size:.85rem;margin:30px 0 6px}
+h1{margin:0 0 28px;font-size:1.9rem;line-height:1.35;letter-spacing:-.03em}
+.table-wrap{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums;font-size:1rem}
+caption{color:#b4becd;font-size:.88rem;text-align:left;margin-bottom:10px}
+th,td{padding:16px 12px;border-bottom:1px solid #363f4a;text-align:right;vertical-align:middle}
+th:first-child{text-align:left}thead th{background:#ffffff04;color:#bdc7d5;font-weight:600}
+thead th:not(:first-child),tbody td{white-space:nowrap}
+tbody th{font-weight:550}tbody td:last-child{color:#f0d29e;font-weight:650}
+small{display:block;font-weight:400;color:#b4becd;font-size:.85rem;margin-top:4px}
+h2{margin:26px 0 8px;font-size:1rem;color:#d8b77c}
+.condition{margin:0;color:#bdc7d5;font-size:.92rem}
+footer{display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:28px;padding-top:20px;border-top:1px solid #424852;font-size:.9rem}
+@media(max-width:560px){body{padding:22px 18px 40px}h1{font-size:1.55rem;margin-bottom:24px}.eyebrow{margin-top:26px}th,td{padding:13px 7px;font-size:.9rem}small{font-size:.8rem}.condition{font-size:.88rem}footer{gap:14px 20px}}
+
+.study-setup{margin:0;font-size:.92rem}
+.study-setup>div{display:grid;grid-template-columns:88px 1fr;gap:12px;padding:10px 0;border-bottom:1px solid #363f4a}
+.study-setup dt{color:#b4becd}.study-setup dd{margin:0}
+.method{font-size:.92rem;color:#bdc7d5;margin:18px 0 0}.method strong{color:#e5eaf1;font-weight:550}
+.observations{padding-left:19px;margin:18px 0 0;font-size:.88rem;color:#bdc7d5}
+.observations li+li{margin-top:6px}.observations strong{font-weight:550;color:#e5eaf1}
+@media(max-width:560px){.study-setup>div{grid-template-columns:70px 1fr;gap:8px}.study-setup,.method{font-size:.88rem}tbody th{width:45%}tbody td small{font-size:.76rem}}
+
+thead th:not(:first-child){white-space:normal}
+</style></head><body>
+<header><a href="../../index.html#dekk-member-improvement">← DEKK 사례로 돌아가기</a><p class="eyebrow">DEKK / 구조 변경 기록</p><h1>인증 클래스 공통화</h1></header>
+<main><section aria-labelledby="design-heading"><h2 id="design-heading">비교 기준</h2><dl class="study-setup"><div><dt>비교 범위</dt><dd>PR #182 병합 전후 · 407503a → b800316</dd></div><div><dt>집계 대상</dt><dd>JWT 발급·검증, 인증 필터, 보안 설정을 담당하는 실제 Java 클래스 선언</dd></div></dl><p class="method">사용자용 클래스와 관리자 전용 Admin 클래스를 역할별로 묶어 수를 비교했습니다. 클래스 삭제뿐 아니라 관리자 로그인과 요청 인증이 공통 클래스를 사용하도록 변경됐는지도 확인했습니다.</p></section><section aria-labelledby="result-heading"><h2 id="result-heading">구조 변경 결과</h2><div class="table-wrap"><table><caption>역할별 클래스 수 · 각 역할 아래는 통합 후 클래스명</caption><thead><tr><th scope="col">클래스 역할</th><th scope="col">사용자·관리자 분리</th><th scope="col">공통화 후</th></tr></thead><tbody><tr><th scope="row">JWT 발급·검증<small>JwtTokenProvider</small></th><td>2개</td><td>1개</td></tr><tr><th scope="row">JWT 인증 필터<small>JwtAuthenticationFilter</small></th><td>2개</td><td>1개</td></tr><tr><th scope="row">보안 설정<small>SecurityConfig</small></th><td>2개</td><td>1개</td></tr></tbody></table></div><ul class="observations"><li>관리자 로그인도 공통 JwtTokenProvider로 토큰을 발급합니다.</li><li>관리자 요청의 역할별 접근 규칙은 공통 SecurityConfig에서 관리합니다.</li></ul></section></main>
+<footer><a href="https://github.com/potenup-dekk/DEKK-BE/pull/182" target="_blank" rel="noopener noreferrer">인증 통합 PR ↗</a></footer></body></html>
