@@ -295,7 +295,8 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('padding-left: 1.2em;', list_rule)
 
     def test_responsibilities_explain_features_before_technical_details(self):
-        self.assertIn('패션 카드를 보관함에 모으고', self.html)
+        self.assertIn('다양한 패션 코디를 둘러보고, 마음에 드는 스타일을 모아 다른 사람과 함께 고를 수 있는 서비스입니다.', self.html)
+        self.assertIn('코디에 나온 상품은 판매 사이트로 이동해 구매할 수 있습니다.', self.html)
         for role in self.html.split('<div class="project__role-summary">')[1:]:
             content = role.split('</div>', 1)[0]
             self.assertNotIn('<strong>', content)
