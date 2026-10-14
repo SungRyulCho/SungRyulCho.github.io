@@ -548,7 +548,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261008-metric-conditions', self.html)
+        self.assertIn('css/style.css?v=20261014-evidence-link-dividers', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'
@@ -844,7 +844,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertTrue(all(attrs.get('id') in ids for attrs in cases))
         # Original details and source content remain present if enhancement fails to load.
         self.assertEqual(self.html.count('<details class="project__detail">'), 3)
-        self.assertIn('<script src="src/project-dialog.js?v=20261007-header-bottom" defer></script>', self.html)
+        self.assertIn('<script src="src/project-dialog.js?v=20261014-fixed-evidence" defer></script>', self.html)
 
     def test_expanded_project_cases_have_distinct_topics_and_boundaries(self):
         learnflow = self.html.split('<li id="project-learnflow"', 1)[1].split('<li id="project-vench"', 1)[0]
@@ -914,7 +914,7 @@ class PortfolioChecks(unittest.TestCase):
         mobile = css.split('@media (max-width: 600px)', 1)[1]
         self.assertNotIn('.case-dialog__project { font-size:', mobile)
 
-    def test_evidence_stays_below_cases_with_larger_text_and_icon_only_close(self):
+    def test_evidence_is_pinned_below_scrollable_cases_with_icon_only_close(self):
         script = (ROOT / 'src/project-dialog.js').read_text()
         self.assertNotIn('project__case-header', script)
         close = self.html.split('<button class="case-dialog__close"', 1)[1].split('</button>', 1)[0]
@@ -927,15 +927,45 @@ class PortfolioChecks(unittest.TestCase):
         for value in ('width: 44px;', 'height: 44px;', 'border: 0;'):
             self.assertIn(value, close_rule)
         link_rule = css.split('.case-dialog .project__evidence a {', 1)[1].split('}', 1)[0]
-        for value in ('font-size: 1.125rem;', 'font-weight: 600;', 'min-height: 44px;'):
+        for value in ('font-size: 1.0625rem;', 'font-weight: 600;', 'min-height: 44px;',
+                      'display: inline-flex;', 'align-items: center;'):
             self.assertIn(value, link_rule)
+        capture_rule = css.split('.case-dialog__footer .evidence-trigger {', 1)[1].split('}', 1)[0]
+        self.assertIn('font-size: 1.0625rem;', capture_rule)
         evidence_rule = css.split('.case-dialog .project__evidence {', 1)[1].split('}', 1)[0]
-        self.assertIn('margin-top: 1.25rem;', evidence_rule)
+        self.assertNotIn('margin-top:', evidence_rule)
         self.assertIn('padding-left: 1rem;', evidence_rule)
         self.assertIn('border-left: 2px solid transparent;', evidence_rule)
         note_rule = css.split('.case-dialog .project__note {', 1)[1].split('}', 1)[0]
         self.assertIn('padding-left: 1rem;', note_rule)
         self.assertIn('border-left: 2px solid transparent;', note_rule)
+        self.assertIn('<footer class="case-dialog__footer" aria-label="사례 근거 자료" hidden></footer>', self.html)
+        footer_rule = css.split('.case-dialog__footer {', 1)[1].split('}', 1)[0]
+        self.assertIn('flex: 0 0 auto;', footer_rule)
+        self.assertIn('padding: .65rem 2rem;', footer_rule)
+        self.assertIn('padding: .35rem 0;', link_rule)
+        self.assertIn('border-top:', footer_rule)
+        self.assertNotIn('position: fixed', footer_rule)
+        self.assertIn('overflow-y: auto;', css.split('.case-dialog__content {', 1)[1].split('}', 1)[0])
+        self.assertIn('footer.append(links)', script)
+        self.assertIn('entry !== activeEntry || position !== index', script)
+        self.assertNotIn('cloneNode', script)
+        self.assertIn('env(safe-area-inset-bottom)', css.split('.case-dialog__footer {', 2)[2])
+        mobile_footer = css.split('.case-dialog__footer {', 2)[2].split('}', 1)[0]
+        self.assertIn('padding: .15rem 1rem max(.15rem, env(safe-area-inset-bottom));', mobile_footer)
+        short_screen = css.split('@media (max-height: 500px)', 1)[1].split('/* Education', 1)[0]
+        self.assertIn('max-height: calc(100dvh - 1rem);', short_screen)
+        self.assertIn('overflow-x: auto;', short_screen)
+        self.assertIn('flex: 0 0 auto; white-space: nowrap;', short_screen)
+
+    def test_desktop_evidence_links_have_decorative_dividers(self):
+        css = (ROOT / 'css/style.css').read_text()
+        desktop = css.split('@media (min-width: 900px)', 1)[1].split('.case-dialog .project__note', 1)[0]
+        self.assertIn('column-gap: 2rem;', desktop)
+        self.assertIn('.project__evidence > li + li::before', desktop)
+        for value in ('content: "";', 'top: 50%;', 'height: 1.1rem;',
+                      'border-left: 1px solid #596370;', 'pointer-events: none;'):
+            self.assertIn(value, desktop)
 
     def test_model_names_not_listed_as_technology_stacks(self):
         for marker in ('<p class="skill-card__tools">', '<p class="project__stack">'):

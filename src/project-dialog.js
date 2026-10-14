@@ -6,9 +6,11 @@
 
   const tablist = dialog.querySelector('[role="tablist"]');
   const content = dialog.querySelector('.case-dialog__content');
+  const footer = dialog.querySelector('.case-dialog__footer');
   const closeButton = dialog.querySelector('.case-dialog__close');
   const projectLabel = dialog.querySelector('.case-dialog__project');
   const projectMeta = dialog.querySelector('.case-dialog__meta');
+  if (!tablist || !content || !footer || !closeButton || !projectLabel || !projectMeta) return;
   const root = document.documentElement;
   let activeEntry = null;
   let savedPosition = null;
@@ -29,6 +31,16 @@
         tabs: [],
         selectedIndex: 0,
       };
+      // Keep the original nodes (and capture-viewer handlers), not copies.
+      // The inline fallback retains its links when this enhancement is unavailable.
+      entry.evidence = entry.cases.map((panel) => {
+        const links = panel.querySelector('.project__evidence');
+        if (links) {
+          links.hidden = true;
+          footer.append(links);
+        }
+        return links;
+      });
       // A repository belongs to the project, not to an individual case.
       // Move the original link so the non-JavaScript fallback stays intact.
       if (entry.repository) {
@@ -73,6 +85,11 @@
       tab.setAttribute('aria-selected', String(selected));
       tab.tabIndex = selected ? 0 : -1;
     });
+    entries.forEach((entry) => entry.evidence.forEach((links, position) => {
+      if (links) links.hidden = entry !== activeEntry || position !== index;
+    }));
+    footer.hidden = !activeEntry.evidence[index];
+    footer.setAttribute('aria-label', activeEntry.name + ' ' + cases[index].dataset.caseLabel + ' 근거 자료');
     content.scrollTop = 0;
     if (moveFocus) tabs[index].focus({preventScroll: true});
   }

@@ -6,14 +6,15 @@ const vm = require('node:vm');
 const root = path.join(__dirname, '..');
 const source = fs.readFileSync(path.join(root, 'src/evidence-viewer.js'), 'utf8');
 
-test('deployment code comes before captures, with an underline spanning the document icon', () => {
+test('deployment code comes before captures, and evidence links have no underlines', () => {
   const html = fs.readFileSync(path.join(root, 'index.html'), 'utf8');
   const deployment = html.split('id="dekk-deployment-collaboration"')[1].split('</article>')[0];
   assert.ok(deployment.indexOf('팀 배포 구성 코드 ↗') < deployment.indexOf('class="evidence-trigger"'));
   const css = fs.readFileSync(path.join(root, 'css/evidence-viewer.css'), 'utf8');
-  const underline = css.split('.evidence-trigger::after {')[1].split('}')[0];
-  assert.match(underline, /left: 0;/);
-  assert.match(underline, /right: 0;/);
+  const mainCss = fs.readFileSync(path.join(root, 'css/style.css'), 'utf8');
+  const linkRule = mainCss.split('.project__evidence a {')[1].split('}')[0];
+  assert.match(linkRule, /text-decoration: none;/);
+  assert.doesNotMatch(css + mainCss, /\.evidence-trigger::after\s*\{/);
   assert.doesNotMatch(css, /\.evidence-trigger span\s*\{[^}]*text-decoration: underline/);
 });
 

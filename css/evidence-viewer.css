@@ -2,7 +2,6 @@
 .project__evidence { align-items: center; }
 .evidence-trigger { position: relative; display: inline-flex; align-items: center; gap: .35rem; min-height: 44px; padding: .6rem 0; border: 0; background: transparent; color: var(--color-accent); font-size: 1.125rem; font-weight: 600; }
 .evidence-trigger svg { flex: 0 0 auto; }
-.evidence-trigger::after { content: ""; position: absolute; left: 0; right: 0; bottom: calc(.6rem + .2em); height: 1px; background: currentColor; pointer-events: none; }
 .evidence-trigger:hover { color: white; }
 .evidence-dialog { position: fixed; inset: 0; width: min(1360px, calc(100% - 3rem)); height: min(900px, calc(100dvh - 3rem)); max-width: none; max-height: none; margin: auto; padding: 0; border: 1px solid #465363; border-radius: 12px; background: #1b1e26; color: #edf0f5; overflow: hidden; }
 .evidence-dialog[open] { display: flex; flex-direction: column; }
