@@ -1059,5 +1059,19 @@ class PortfolioChecks(unittest.TestCase):
                 self.assertIn('noopener', attrs.get('rel', ''))
                 self.assertIn('새 탭', attrs.get('aria-label', ''))
 
+    def test_review_followup_keeps_historical_and_experimental_results_separate(self):
+        folder = ROOT / 'evidence/performance'
+        historical = (folder / 'learnflow-review.html').read_text()
+        followup = (folder / 'learnflow-review-followup.html').read_text()
+        self.assertIn('href="learnflow-review-followup.html"', historical)
+        self.assertIn('프로젝트 당시 병합된 변경이나 운영 서비스 적용 결과와는 구분', followup)
+        self.assertIn('23%와 합산하지 않습니다', followup)
+        self.assertIn('별도 진단 없음', followup)
+        self.assertIn('HTTP와 동시 부하 제외', followup)
+        self.assertIn('변경 및 검증에는 Codex를 활용', followup)
+        self.assertNotIn('35.7%', self.html)
+        self.assertNotIn('/Users/', followup)
+        self.assertTrue((folder / 'learnflow-review-followup.patch').is_file())
+
 if __name__ == '__main__':
     unittest.main(verbosity=2)
