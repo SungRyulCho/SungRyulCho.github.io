@@ -48,6 +48,19 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('Emori', self.html)
         self.assertNotIn('coupang-data', self.html)
 
+    def test_results_visible_before_case_dialog(self):
+        expected = {
+            'dekk': ('중복 저장과 50장 한도 초과 방지', '트랜잭션을 유지한 로컬'),
+            'learnflow': ('SQL 24회 → 15회', '로컬 리뷰 1만 개 중 10개'),
+            'vench': ('AI 생성 일부가 실패해도 기록 제공', '본문, 제목, 위로 문구'),
+        }
+        for project, terms in expected.items():
+            card = self.html.split(f'id="project-{project}"', 1)[1]
+            preview = card.split('<details class="project__detail">', 1)[0]
+            self.assertIn('class="project__outcome-preview"', preview)
+            for term in terms:
+                self.assertIn(term, preview)
+
     def test_share_preview_uses_a_dedicated_banner(self):
         meta = {attrs.get('property', attrs.get('name')): attrs.get('content')
                 for tag, attrs in self.nodes if tag == 'meta'}
@@ -548,7 +561,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261014-evidence-link-dividers', self.html)
+        self.assertIn('css/style.css?v=20261021-project-outcomes', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'
@@ -980,12 +993,16 @@ class PortfolioChecks(unittest.TestCase):
         self.assertEqual(about.count('<li class="major">'), 3)
         for icon in ('API', 'DB', 'OPS'):
             self.assertIn(f'aria-hidden="true">{icon}</span>', about)
-        for field in ('웹 서비스 기능과<br />API 개발', '데이터 설계와<br />안정적인 처리',
-                      '배포 자동화와<br />운영 환경 구성'):
+        for field in ('인증 구조 개선', '조회와 정합성 검증', '배포 협업',
+                      'JWT, 필터, 보안 설정 통합', '동시 저장 충돌 재현 및 제어',
+                      '동료가 따라 작업하는 가이드 작성'):
             self.assertIn(field, about)
         for technology in ('Spring Boot', 'PostgreSQL', 'Redisson', 'Docker Compose'):
             self.assertNotIn(technology, about)
-        self.assertIn('맡은 일을 끝까지 책임지고', about)
+        self.assertIn('동시 요청의 데이터 정합성을 검증하고', about)
+        intro = about.split('<p class="description">', 1)[1].split('</p>', 1)[0]
+        self.assertNotIn('<br', intro)
+        self.assertLess(len(intro), 100)
         skills = self.html.split('<section id="skills"', 1)[1].split('<section id="work"', 1)[0]
         for project_name in ('DEKK', 'LearnFlow', 'Vench AI'):
             self.assertNotIn(project_name, skills)
