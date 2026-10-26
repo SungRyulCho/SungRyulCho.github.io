@@ -54,7 +54,7 @@
       <div class="home__container">
         <img class="home__avatar" src="images/profile.png" width="220" height="220" alt="조성률 프로필 사진" />
         <h1 id="home-title" class="home__title" lang="en">Hello<br />I'm <strong class="home__title__strong">Sung Ryul Cho</strong></h1>
-        <p class="home__description">동료의 의견에 귀 기울이고, 맡은 일에 성실하게 임하는 신입 백엔드 개발자 조성률입니다.</p>
+        <p class="home__description">동료의 의견에 귀 기울이고, 맡은 일에 성실하게 임합니다.</p>
         <a class="home__contact" href="#work">프로젝트 보기</a>
         <a class="home__contact home__contact--outline" href="#contact">Contact</a>
       </div>
@@ -252,7 +252,7 @@
                   <li>서버 배포 및 오류 추적 환경 구성</li>
                 </ul>
               </div>
-              <p class="project__outcome-preview"><strong>리뷰 조회 SQL 24회 → 5회로 약 79% 감소</strong><span>로컬 리뷰 1만 개 중 10개 조회 기준. 작성자 일괄 조회와 수강 정보 조회 개선을 합친 결과입니다.</span></p>
+              <p class="project__outcome-preview"><strong>리뷰 조회 SQL 24회 → 15회로 37.5% 감소</strong><span>로컬 리뷰 1만 개 중 10개 조회 기준. 팀 저장소에 병합된 작성자 일괄 조회의 검증 결과입니다.</span></p>
               <button id="learnflow-details-open" class="project__detail-trigger" type="button" aria-label="LearnFlow 문제 해결과 성과 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 성과 보기</span><span aria-hidden="true">↗</span></button>
               <details class="project__detail"><summary>문제 해결과 성과 보기</summary><div class="project__cases">
                 <article class="project__case" id="learnflow-ai-outbox" data-case-label="AI 작업 연결">
@@ -269,13 +269,14 @@
                   </ul>
                 </article>
                 <article class="project__case" id="learnflow-review-query" data-case-label="리뷰 조회">
-                  <h4>작성자와 수강 정보의 반복 조회 제거</h4>
+                  <h4>작성자 정보의 반복 조회 제거</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>리뷰 목록을 구성하면서 작성자와 수강 정보를 리뷰마다 조회해, 리뷰 수가 늘어날수록 DB 조회도 늘어났습니다. 작성자를 일괄 조회한 뒤에도 작성자 ID를 읽는 과정에서 수강 정보의 지연 로딩이 발생했습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>작성자 정보는 현재 페이지에서 ID를 모아 일괄 조회하고, 리뷰와 단일 연관관계인 수강 정보는 리뷰 조회 시 함께 가져오기로 했습니다. 응답에 필요한 관계만 조회하면서 기존 페이징과 응답 형식을 유지할 수 있기 때문입니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>작성자 ID의 중복을 제거해 회원 정보를 일괄 조회하고, EntityGraph로 수강 정보를 함께 조회하도록 개선했습니다. 응답 내용과 총건수를 비교하고, 정렬과 페이지 경계 및 숨김 리뷰 제외 동작을 검증했습니다.</dd></div>
-                    <div class="case-flow__outcome"><dt>성과</dt><dd>리뷰 10개 조회의 SQL 실행을 24회에서 5회로 약 79% 줄여, 리뷰 목록을 구성할 때 발생하는 DB의 반복 조회 부담을 낮췄습니다.</dd><dd class="case-flow__measurement">측정 조건: 로컬 합성 리뷰 1만 개, 작성자가 서로 다른 리뷰 10개 기준. 작성자 일괄 조회 적용 후 15회, 수강 정보 조회 개선 후 5회로 확인했습니다. 수강 정보 개선은 개인 후속 검증 결과입니다.</dd></div>
+                    <div><dt>문제</dt><dd>리뷰 목록을 구성하면서 작성자 정보를 리뷰마다 조회해, 리뷰 수가 늘어날수록 DB 조회도 늘어났습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>현재 페이지의 작성자 ID를 모아 회원 정보를 일괄 조회하기로 했습니다. 기존 페이징과 응답 형식을 유지하면서 작성자를 개별 조회하는 반복을 줄일 수 있기 때문입니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>작성자 ID의 중복을 제거해 회원 정보를 일괄 조회하고, 조회한 정보를 각 리뷰의 응답에 연결했습니다. 해당 변경은 PR #28로 팀 저장소에 병합됐습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>리뷰 10개 조회의 SQL 실행을 24회에서 15회로 37.5% 줄여, 리뷰 목록을 구성할 때 발생하는 DB의 반복 조회 부담을 낮췄습니다.</dd><dd class="case-flow__measurement">측정 조건: 로컬 합성 리뷰 1만 개, 작성자가 서로 다른 리뷰 10개 기준. 작성자 일괄 조회 적용 전후를 비교했습니다. 수강 정보의 반복 조회는 이 변경에 포함되지 않습니다.</dd></div>
                   </dl>
+                  <p>개인 후속 검증 — 팀 저장소 미반영: EntityGraph로 수강 정보를 함께 조회하는 별도 변경에서 SQL 15회 → 5회를 확인했습니다. 프로젝트에 병합된 성과와 구분하며, 상세 조건은 측정 기록에 정리했습니다.</p>
                   <ul class="project__evidence" aria-label="리뷰 조회 개선 근거">
                     <li><a href="https://github.com/team-Octave/learnflow-api/pull/28" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 리뷰 조회 개선 PR 보기 (새 탭)">리뷰 조회 개선 PR ↗</a></li>
                     <li><a href="evidence/performance/learnflow-review.html" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 리뷰 조회 측정 조건과 결과 보기 (새 탭)">조회 처리 측정 기록 ↗</a></li>
