@@ -681,7 +681,7 @@ class PortfolioChecks(unittest.TestCase):
         for unrelated in ('강의 제목', '내가 작성한 리뷰', 'getMyReviews'):
             self.assertNotIn(unrelated, case)
         for relevant in ('작성자 정보를 리뷰마다 조회', '작성자 ID의 중복을 제거',
-                         '회원 정보를 일괄 조회', 'EntityGraph로 수강 정보를 함께 조회',
+                         '회원 정보를 일괄 조회',
                          'SQL 실행을 24회에서 15회'):
             self.assertIn(relevant, case)
 
@@ -775,7 +775,7 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_metric_conditions_and_measurement_boundaries_are_visible(self):
         case = self.html.split('id="learnflow-review-query"', 1)[1].split('</article>', 1)[0]
-        for value in ('로컬 합성 리뷰 1만 개', '37.5%', '작성자가 서로 다른 리뷰 10개', '개인 후속 검증', '15회', '5회'):
+        for value in ('로컬 합성 리뷰 1만 개', '37.5%', '작성자가 서로 다른 리뷰 10개', '15회'):
             self.assertIn(value, case)
         self.assertNotIn('API 응답 시간', case)
         self.assertNotIn('41.3%', case)
@@ -805,7 +805,7 @@ class PortfolioChecks(unittest.TestCase):
             report = (ROOT / f'evidence/performance/{report_name}.html').read_text()
             self.assertNotIn('<ul>', report)
             self.assertNotIn(other_project, report)
-            self.assertEqual(report.count('<table'), 4)
+            self.assertEqual(report.count('<table'), 2)
             self.assertIn(f'{report_name}-results.json', report)
         self.assertNotIn('evidence/performance/index.html', self.html)
 
@@ -1056,19 +1056,14 @@ class PortfolioChecks(unittest.TestCase):
                 self.assertIn('noopener', attrs.get('rel', ''))
                 self.assertIn('새 탭', attrs.get('aria-label', ''))
 
-    def test_review_followup_keeps_historical_and_experimental_results_separate(self):
+    def test_review_publishes_only_merged_optimization(self):
         folder = ROOT / 'evidence/performance'
-        historical = (folder / 'learnflow-review.html').read_text()
-        followup = (folder / 'learnflow-review-followup.html').read_text()
-        self.assertIn('url=learnflow-review.html', followup)
-        self.assertIn('개인 후속 검증 결과', historical)
-        self.assertIn('두 감소율을 합산하거나', historical)
-        self.assertIn('HTTP 응답 시간이 아닌', historical)
-        self.assertIn('24회', historical)
-        self.assertIn('5회', historical)
-        self.assertNotIn('변경 및 검증에는 Codex', historical + followup)
-        self.assertNotIn('/Users/', followup)
-        self.assertTrue((folder / 'learnflow-review-followup.patch').is_file())
+        report = (folder / 'learnflow-review.html').read_text()
+        self.assertIn('37.5%', report)
+        self.assertIn('HTTP 응답 시간이 아닌', report)
+        self.assertNotIn('개인 후속', self.html + report)
+        self.assertNotIn('followup', report)
+        self.assertFalse(list(folder.glob('learnflow-review-followup.*')))
 
 if __name__ == '__main__':
     unittest.main(verbosity=2)

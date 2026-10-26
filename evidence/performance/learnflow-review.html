@@ -41,11 +41,6 @@ footer { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 28px; paddi
 <table><thead><tr><th>지표</th><th>변경 전</th><th>변경 후</th></tr></thead><tbody><tr><th>SQL 실행 수</th><td>24회</td><td>15회</td></tr><tr><th>처리 시간</th><td>11.32ms</td><td>8.68ms</td></tr></tbody></table>
 <h2>측정 조건</h2>
 <table class="conditions"><tbody><tr><th>환경</th><td>Java 17.0.18, MySQL 8.4.11, 로컬 DB</td></tr><tr><th>데이터</th><td>강의 100개, 리뷰 10,000개 중 작성자가 서로 다른 리뷰 10개</td></tr><tr><th>반복</th><td>각 방식 워밍업 150회, 120회씩 5회차. 회차별 평균의 중앙값</td></tr><tr><th>검증</th><td>응답 25건 동일, SQL 진단 4건 모두 24회 → 15회</td></tr><tr><th>범위</th><td>HTTP 응답 시간이 아닌 서비스, DB 처리와 응답 객체 생성 구간</td></tr></tbody></table>
-<h2 id="personal-followup">개인 후속 검증: 수강 정보 조회 — 팀 저장소 미반영</h2>
-<p>아래는 개인 후속 검증 결과입니다. EntityGraph로 수강 정보를 함께 조회한 별도 변경이며, 팀 프로젝트에 병합된 성과가 아닙니다.</p>
-<table><thead><tr><th>지표</th><th>작성자 일괄 조회 상태</th><th>개인 변경 적용</th></tr></thead><tbody><tr><th>SQL 실행 수</th><td>15회</td><td>5회</td></tr><tr><th>처리 시간</th><td>8.51ms</td><td>5.47ms</td></tr></tbody></table>
-<table class="conditions"><tbody><tr><th>반복</th><td>각 방식 워밍업 200회, 300회씩 3회차. 실행마다 별도 JVM과 새 DB 사용</td></tr><tr><th>SQL 검증</th><td>동일 기준 코드 b6d81742 기반, 10건 조회에서 기준 24회/15회와 개인 변경 14회/5회 확인</td></tr><tr><th>기능 검증</th><td>응답 및 총건수 6개 조합 일치, 공개 리뷰와 정렬 및 페이지 경계 등 30개 조합 확인</td></tr></tbody></table>
-<p class="note">처리 시간 감소율은 각각 23.3%, 35.7%로 별도 실험 결과입니다. 두 감소율을 합산하거나 최초와 최종 시간을 교차 비교하지 않습니다.</p>
 </main>
-<footer><a href="https://github.com/team-Octave/learnflow-api/pull/28">작성자 일괄 조회 PR ↗</a><a href="learnflow-review-followup.patch">수강 정보 조회 변경 코드 ↗</a><a href="learnflow-review-results.json">작성자 조회 측정 데이터 ↗</a></footer>
+<footer><a href="https://github.com/team-Octave/learnflow-api/pull/28">작성자 일괄 조회 PR ↗</a><a href="learnflow-review-results.json">작성자 조회 측정 데이터 ↗</a></footer>
 </body></html>

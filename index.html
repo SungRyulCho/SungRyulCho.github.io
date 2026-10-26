@@ -276,7 +276,6 @@
                     <div><dt>해결·개선</dt><dd>작성자 ID의 중복을 제거해 회원 정보를 일괄 조회하고, 조회한 정보를 각 리뷰의 응답에 연결했습니다. 해당 변경은 PR #28로 팀 저장소에 병합됐습니다.</dd></div>
                     <div class="case-flow__outcome"><dt>성과</dt><dd>리뷰 10개 조회의 SQL 실행을 24회에서 15회로 37.5% 줄여, 리뷰 목록을 구성할 때 발생하는 DB의 반복 조회 부담을 낮췄습니다.</dd><dd class="case-flow__measurement">측정 조건: 로컬 합성 리뷰 1만 개, 작성자가 서로 다른 리뷰 10개 기준. 작성자 일괄 조회 적용 전후를 비교했습니다. 수강 정보의 반복 조회는 이 변경에 포함되지 않습니다.</dd></div>
                   </dl>
-                  <p>개인 후속 검증 — 팀 저장소 미반영: EntityGraph로 수강 정보를 함께 조회하는 별도 변경에서 SQL 15회 → 5회를 확인했습니다. 프로젝트에 병합된 성과와 구분하며, 상세 조건은 측정 기록에 정리했습니다.</p>
                   <ul class="project__evidence" aria-label="리뷰 조회 개선 근거">
                     <li><a href="https://github.com/team-Octave/learnflow-api/pull/28" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 리뷰 조회 개선 PR 보기 (새 탭)">리뷰 조회 개선 PR ↗</a></li>
                     <li><a href="evidence/performance/learnflow-review.html" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 리뷰 조회 측정 조건과 결과 보기 (새 탭)">조회 처리 측정 기록 ↗</a></li>
