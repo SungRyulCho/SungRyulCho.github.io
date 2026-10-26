@@ -991,9 +991,10 @@ class PortfolioChecks(unittest.TestCase):
         self.assertEqual(about.count('<li class="major">'), 3)
         for icon in ('API', 'FIX', 'TEAM'):
             self.assertIn(f'aria-hidden="true">{icon}</span>', about)
-        for field in ('백엔드 개발', '문제 해결', '협업',
-                      '서비스에 필요한 기능을 개발하고', '오류가 발생한 상황을 재현하고',
-                      '함께 작업하는 데 필요한 절차와 정보를 정리합니다.'):
+        for field in ('기본에 충실한 개발', '원인을 찾는 문제 해결', '함께하는 개발',
+                      '기능의 동작뿐 아니라 데이터의 정확성과 코드의 구조까지',
+                      '눈앞의 오류 해결에서 원인 파악과 결과 확인까지',
+                      '동료의 의견에 귀 기울이고, 함께 작업하는 데 필요한 정보를 나누는 태도'):
             self.assertIn(field, about)
         for technology in ('PostgreSQL', 'Redisson', 'Docker Compose'):
             self.assertNotIn(technology, about)
