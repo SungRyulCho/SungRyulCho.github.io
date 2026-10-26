@@ -33,34 +33,27 @@ footer { display: flex; flex-wrap: wrap; gap: 12px 24px; margin-top: 28px; paddi
   </style>
 </head>
 <body>
-  <header><a href="../../index.html#learnflow-review-query">LearnFlow 사례로 돌아가기</a><h1>LearnFlow · 리뷰 조회 성능 측정</h1><p class="note">로컬 환경 · 합성 데이터 기준</p></header>
-  <main>
-<p class="result">리뷰 10개 조회 처리 시간 약 23% 단축 · SQL 24회 → 15회</p>
-<h2>변경 전후 비교</h2>
-<div class="table-wrap"><table><caption>시간: 회차별 평균의 중앙값 · SQL: 요청당 실행 수</caption><thead><tr><th scope="col">지표</th><th scope="col">개별 조회</th><th scope="col">일괄 조회</th></tr></thead><tbody>
-<tr class="selected"><th scope="row">처리 시간</th><td>11.32ms</td><td>8.68ms</td></tr>
-<tr><th scope="row">SQL 실행 수</th><td>24회</td><td>15회</td></tr>
-</tbody></table></div>
-<h2>측정 조건</h2>
+  <header><a href="../../index.html#learnflow-review-query">LearnFlow 사례로 돌아가기</a><h1>LearnFlow 리뷰 조회 개선 검증</h1><p class="note">로컬 환경, 합성 데이터 기준</p></header>
+<main>
+<p class="result">리뷰 10개 조회 SQL 24회 → 5회, 약 79% 감소</p>
+<h2>개선 단계별 SQL 실행 수</h2>
+<div class="table-wrap"><table><thead><tr><th>최초 구현</th><th>작성자 일괄 조회</th><th>수강 정보 함께 조회</th></tr></thead><tbody><tr><td>24회</td><td>15회</td><td>5회</td></tr></tbody></table></div>
+<p class="note">작성자 일괄 조회는 PR #28에 반영한 변경이며, 수강 정보 조회 개선은 개인 후속 검증 결과입니다.</p>
+<h2>검증 조건</h2>
 <table class="conditions"><tbody>
-<tr><th scope="row">측정 구간</th><td>서비스·JPA·DB 처리 · 응답 객체 조립 · 트랜잭션 종료</td></tr>
-<tr><th scope="row">제외 항목</th><td>HTTP·인증·JSON 직렬화·네트워크·동시 부하</td></tr>
-<tr><th scope="row">환경</th><td>Java 17.0.18 · Spring Boot 3.5.8 · MySQL 8.4.11</td></tr>
-<tr><th scope="row">데이터</th><td>합성 강의 100개 · 리뷰 10,000개 · 서로 다른 작성자의 첫 페이지 리뷰 10개</td></tr>
-<tr><th scope="row">반복 횟수</th><td>각 방식 150회 워밍업 · 120회 × 5회차 (각 600회)</td></tr>
-<tr><th scope="row">통제 조건</th><td>작성자 조회 방식만 변경 · 전후 강의 조회/응답 필드 유지 · 실행 순서 교차 · 요청마다 새 트랜잭션</td></tr>
-<tr><th scope="row">캐시·집계</th><td>2차/쿼리 캐시 미사용 · 회차별 평균의 중앙값 · SQL 진단 4건은 시간 측정과 분리</td></tr>
-<tr><th scope="row">검증</th><td>응답 25건 동일 · 5회차 모두 단축 · SQL 진단 4건 모두 24회 → 15회</td></tr>
+<tr><th>환경</th><td>Java 17.0.18, MySQL 8.4.11, 로컬 DB</td></tr>
+<tr><th>데이터</th><td>강의 100개, 전체 리뷰 10,000개. 서로 다른 작성자의 리뷰 10개 조회</td></tr>
+<tr><th>변경</th><td>작성자 ID 일괄 조회, EntityGraph로 수강 정보 함께 조회</td></tr>
+<tr><th>SQL 검증</th><td>동일 기준 코드 b6d81742 기반 단계별 진단. 후속 진단의 10건 조회에서 기준 24회/15회, 수강 정보 개선 14회/5회 확인</td></tr>
+<tr><th>기능 검증</th><td>후속 개선 전후 응답 및 총건수 6개 조합 일치. 공개 리뷰, 정렬, 페이지 경계 등 30개 조합 확인</td></tr>
 </tbody></table>
-<h2>회차별 평균 처리 시간</h2>
-<div class="table-wrap"><table><caption>단위 ms · 각 방식 120회 평균</caption><thead><tr><th scope="col">회차</th><th scope="col">개별 조회</th><th scope="col">일괄 조회</th></tr></thead><tbody><tr><th scope="row">1</th><td>11.4830</td><td>9.1209</td></tr>
-<tr><th scope="row">2</th><td>14.0763</td><td>10.8189</td></tr>
-<tr><th scope="row">3</th><td>11.3224</td><td>8.6811</td></tr>
-<tr><th scope="row">4</th><td>10.3856</td><td>7.8136</td></tr>
-<tr><th scope="row">5</th><td>10.2200</td><td>8.0149</td></tr></tbody></table></div>
-<h2>남은 반복 조회의 후속 검증</h2>
-<p>작성자 일괄 조회 후에도 남은 수강 정보 조회를 별도 로컬 실험으로 확인했습니다. 기존 프로젝트 성과와 구분한 <a href="learnflow-review-followup.html">수강 정보 조회 후속 개선 기록</a>에서 변경 코드와 비교 결과를 확인할 수 있습니다.</p>
-  </main>
-  <footer><a href="learnflow-review-results.json" target="_blank" rel="noopener noreferrer">회차별 측정 데이터 JSON ↗</a><a href="https://github.com/team-Octave/learnflow-api/pull/28" target="_blank" rel="noopener noreferrer">작성자 조회 개선 PR ↗</a><a href="https://github.com/team-Octave/learnflow-api/tree/b6d81742cfb4dabb38f1355020ccccf4dc70c678" target="_blank" rel="noopener noreferrer">측정 기준 코드 ↗</a></footer>
-</body>
-</html>
+<h2>처리 시간 비교</h2>
+<div class="table-wrap"><table><thead><tr><th>비교</th><th>변경 전</th><th>변경 후</th><th>감소율</th></tr></thead><tbody>
+<tr><th>작성자 일괄 조회</th><td>11.32ms</td><td>8.68ms</td><td>23.3%</td></tr>
+<tr><th>수강 정보 함께 조회</th><td>8.51ms</td><td>5.47ms</td><td>35.7%</td></tr>
+</tbody></table></div>
+<p class="note">시간은 별도 실험의 회차별 평균 중앙값입니다. 두 감소율을 합산하거나 최초와 최종 시간을 교차 비교하지 않습니다. HTTP 응답 시간이 아닌 서비스, DB 처리와 응답 객체 생성 구간입니다.</p>
+<table class="conditions"><tbody><tr><th>작성자 실험</th><td>방식별 워밍업 150회, 120회씩 5회차 측정. 응답 25건 동일 확인</td></tr><tr><th>수강 정보 실험</th><td>방식별 워밍업 200회, 300회씩 3회차 측정. 실행마다 별도 JVM과 새 DB 사용</td></tr></tbody></table>
+</main>
+<footer><a href="https://github.com/team-Octave/learnflow-api/pull/28">작성자 일괄 조회 PR ↗</a><a href="learnflow-review-followup.patch">수강 정보 조회 변경 코드 ↗</a><a href="learnflow-review-results.json">작성자 조회 측정 데이터 ↗</a></footer>
+</body></html>

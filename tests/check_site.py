@@ -51,7 +51,7 @@ class PortfolioChecks(unittest.TestCase):
     def test_results_visible_before_case_dialog(self):
         expected = {
             'dekk': ('중복 저장과 50장 한도 초과 방지', '트랜잭션을 유지한 로컬'),
-            'learnflow': ('SQL 24회 → 15회', '로컬 리뷰 1만 개 중 10개'),
+            'learnflow': ('SQL 24회 → 5회', '로컬 리뷰 1만 개 중 10개'),
             'vench': ('AI 생성 일부가 실패해도 기록 제공', '본문, 제목, 위로 문구'),
         }
         for project, terms in expected.items():
@@ -427,10 +427,10 @@ class PortfolioChecks(unittest.TestCase):
                                    '승인된 강의의 분석 작업이 누락되는 상황을 피해야',
                                    '승인 정보와 작업 기록은 같은 트랜잭션으로 저장',
                                    'pull/117'),
-            'learnflow-review-query': ('리뷰마다 반복하던 작성자 정보 조회 개선',
-                                      '리뷰마다 회원 정보를 따로 조회',
-                                      '작성자 ID를 모아 한꺼번에 조회하는 방식을 선택',
-                                      '기존 페이지 처리를 바꾸지 않고도 같은 작성자의 정보를 여러 리뷰에서 재사용',
+            'learnflow-review-query': ('작성자와 수강 정보의 반복 조회 제거',
+                                      '작성자와 수강 정보를 리뷰마다 조회',
+                                      'ID를 모아 일괄 조회',
+                                      '기존 페이징과 응답 형식을 유지',
                                       'pull/28'),
             'learnflow-deployment-improvement': ('배포 스크립트의 중복 실행 제거와 백업 관리',
                                                 '실행을 중복으로 시도',
@@ -680,9 +680,9 @@ class PortfolioChecks(unittest.TestCase):
         case = self.html.split('id="learnflow-review-query"', 1)[1].split('</article>', 1)[0]
         for unrelated in ('강의 제목', '내가 작성한 리뷰', 'getMyReviews'):
             self.assertNotIn(unrelated, case)
-        for relevant in ('리뷰마다 회원 정보를 따로 조회', '작성자 ID를 모아 중복을 제거',
-                         '회원 정보를 일괄 조회', '조회 처리 시간을 11.32ms에서 8.68ms',
-                         'SQL 실행을 24회에서 15회'):
+        for relevant in ('작성자와 수강 정보를 리뷰마다 조회', '작성자 ID의 중복을 제거',
+                         '회원 정보를 일괄 조회', 'EntityGraph로 수강 정보를 함께 조회',
+                         'SQL 실행을 24회에서 5회'):
             self.assertIn(relevant, case)
 
     def test_emotion_case_focuses_on_omitted_scores_not_a_screen_mismatch(self):
@@ -700,7 +700,7 @@ class PortfolioChecks(unittest.TestCase):
             'dekk-concurrent-save': '동시 요청에 따른 중복 저장과 용량 초과를 제어해, 공동 보관함 데이터의 정합성을 높였습니다.',
             'dekk-query-improvement': '미리보기 정보를 유지하면서 DB에서 가져오는 카드 연결 데이터를 1,000행에서 60행으로 94% 줄여, 목록 조회에 필요한 데이터 처리 부담을 낮췄습니다.',
             'learnflow-ai-outbox': 'AI 분석과 승인을 분리해 관리자의 승인 대기 부담을 줄이고, 승인과 분석 작업을 함께 저장해 작업 연결의 안정성을 높였습니다.',
-            'learnflow-review-query': '리뷰 10개 조회 처리 시간을 11.32ms에서 8.68ms로 약 23% 단축하고 SQL 실행을 24회에서 15회로 줄여, 수강 전 리뷰 확인에 필요한 서버 처리와 DB 조회 부담을 낮췄습니다.',
+            'learnflow-review-query': '리뷰 10개 조회의 SQL 실행을 24회에서 5회로 약 79% 줄여, 리뷰 목록을 구성할 때 발생하는 DB의 반복 조회 부담을 낮췄습니다.',
             'learnflow-deployment-improvement': '중복 실행을 제거하고 백업을 최신 3개로 관리해, 배포 절차를 단순화하고 백업 파일 관리 부담을 줄였습니다.',
             'vench-ai-progress': '처리 단계 안내로 사용자의 진행 상황 파악을 돕고, 본문 생성 실패 시에도 인식한 원문을 제공해 기록을 다시 작성해야 하는 부담을 줄였습니다.',
             'vench-emotion-report': '대표 감정 외의 점수도 집계해, 사용자가 기록에 함께 나타난 여러 감정의 분포를 파악하도록 개선했습니다.',
@@ -775,14 +775,12 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_metric_conditions_and_measurement_boundaries_are_visible(self):
         case = self.html.split('id="learnflow-review-query"', 1)[1].split('</article>', 1)[0]
-        for value in ('로컬에 리뷰 1만 개', '리뷰 10개 조회 처리 시간',
-                      '작성자가 서로 다른 리뷰 10개', '서비스와 DB 처리 및 응답 객체 조립 시간',
-                      '각 방식당 120회씩 5회차', '회차별 평균의 중앙값'):
+        for value in ('로컬 합성 리뷰 1만 개', '약 79%', '작성자가 서로 다른 리뷰 10개', '개인 후속 검증', '15회', '5회'):
             self.assertIn(value, case)
         self.assertNotIn('API 응답 시간', case)
         self.assertNotIn('41.3%', case)
         report = (ROOT / 'evidence/performance/learnflow-review.html').read_text()
-        self.assertIn('HTTP·인증·JSON 직렬화·네트워크·동시 부하', report)
+        self.assertIn('HTTP 응답 시간이 아닌', report)
         self.assertIn('results.json', report)
 
     def test_measurement_conditions_stay_inside_the_outcome_box(self):
@@ -807,7 +805,7 @@ class PortfolioChecks(unittest.TestCase):
             report = (ROOT / f'evidence/performance/{report_name}.html').read_text()
             self.assertNotIn('<ul>', report)
             self.assertNotIn(other_project, report)
-            self.assertEqual(report.count('<table'), 3)
+            self.assertEqual(report.count('<table'), 4)
             self.assertIn(f'{report_name}-results.json', report)
         self.assertNotIn('evidence/performance/index.html', self.html)
 
@@ -1063,13 +1061,13 @@ class PortfolioChecks(unittest.TestCase):
         folder = ROOT / 'evidence/performance'
         historical = (folder / 'learnflow-review.html').read_text()
         followup = (folder / 'learnflow-review-followup.html').read_text()
-        self.assertIn('href="learnflow-review-followup.html"', historical)
-        self.assertIn('프로젝트 당시 병합된 변경이나 운영 서비스 적용 결과와는 구분', followup)
-        self.assertIn('23%와 합산하지 않습니다', followup)
-        self.assertIn('별도 진단 없음', followup)
-        self.assertIn('HTTP와 동시 부하 제외', followup)
-        self.assertIn('변경 및 검증에는 Codex를 활용', followup)
-        self.assertNotIn('35.7%', self.html)
+        self.assertIn('url=learnflow-review.html', followup)
+        self.assertIn('개인 후속 검증 결과', historical)
+        self.assertIn('두 감소율을 합산하거나', historical)
+        self.assertIn('HTTP 응답 시간이 아닌', historical)
+        self.assertIn('24회', historical)
+        self.assertIn('5회', historical)
+        self.assertNotIn('변경 및 검증에는 Codex', historical + followup)
         self.assertNotIn('/Users/', followup)
         self.assertTrue((folder / 'learnflow-review-followup.patch').is_file())
 

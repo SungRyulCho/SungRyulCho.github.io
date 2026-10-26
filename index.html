@@ -253,7 +253,7 @@
                   <li>서버 배포 및 오류 추적 환경 구성</li>
                 </ul>
               </div>
-              <p class="project__outcome-preview"><strong>리뷰 조회 SQL 24회 → 15회, 처리 시간 약 23% 단축</strong><span>로컬 리뷰 1만 개 중 10개 조회 기준. 서비스와 DB 처리 및 응답 객체 조립 시간을 측정했습니다.</span></p>
+              <p class="project__outcome-preview"><strong>리뷰 조회 SQL 24회 → 5회로 약 79% 감소</strong><span>로컬 리뷰 1만 개 중 10개 조회 기준. 작성자 일괄 조회와 수강 정보 조회 개선을 합친 결과입니다.</span></p>
               <button id="learnflow-details-open" class="project__detail-trigger" type="button" aria-label="LearnFlow 문제 해결과 성과 보기" aria-haspopup="dialog" aria-controls="project-case-dialog" hidden><span>문제 해결과 성과 보기</span><span aria-hidden="true">↗</span></button>
               <details class="project__detail"><summary>문제 해결과 성과 보기</summary><div class="project__cases">
                 <article class="project__case" id="learnflow-ai-outbox" data-case-label="AI 작업 연결">
@@ -270,12 +270,12 @@
                   </ul>
                 </article>
                 <article class="project__case" id="learnflow-review-query" data-case-label="리뷰 조회">
-                  <h4>리뷰마다 반복하던 작성자 정보 조회 개선</h4>
+                  <h4>작성자와 수강 정보의 반복 조회 제거</h4>
                   <dl class="case-flow">
-                    <div><dt>문제</dt><dd>리뷰 목록에 닉네임을 표시하려고 리뷰마다 회원 정보를 따로 조회했습니다. 같은 작성자의 정보도 반복해서 가져와, 리뷰가 늘어날수록 DB 조회가 함께 늘어나는 구조였습니다.</dd></div>
-                    <div><dt>해결 방안 검토</dt><dd>줄여야 할 것은 리뷰 조회 자체가 아니라, 각 리뷰에 닉네임을 붙이면서 반복되는 회원 조회였습니다. 현재 페이지의 리뷰에서 필요한 작성자 ID를 모두 알 수 있으므로, 리뷰마다 회원을 조회하는 대신 작성자 ID를 모아 한꺼번에 조회하는 방식을 선택했습니다. 기존 페이지 처리를 바꾸지 않고도 같은 작성자의 정보를 여러 리뷰에서 재사용할 수 있기 때문입니다.</dd></div>
-                    <div><dt>해결·개선</dt><dd>현재 페이지의 리뷰에서 작성자 ID를 모아 중복을 제거한 뒤 회원 정보를 일괄 조회했습니다. 조회 결과를 ID별 닉네임으로 연결해 각 리뷰의 응답을 구성했습니다.</dd></div>
-                    <div class="case-flow__outcome"><dt>성과</dt><dd>리뷰 10개 조회 처리 시간을 11.32ms에서 8.68ms로 약 23% 단축하고 SQL 실행을 24회에서 15회로 줄여, 수강 전 리뷰 확인에 필요한 서버 처리와 DB 조회 부담을 낮췄습니다.</dd><dd class="case-flow__measurement">측정 조건: 로컬에 리뷰 1만 개를 구성하고, 작성자가 서로 다른 리뷰 10개를 조회했습니다. 서비스와 DB 처리 및 응답 객체 조립 시간을 각 방식당 120회씩 5회차 측정하고, 회차별 평균의 중앙값을 비교했습니다.</dd></div>
+                    <div><dt>문제</dt><dd>리뷰 목록을 구성하면서 작성자와 수강 정보를 리뷰마다 조회해, 리뷰 수가 늘어날수록 DB 조회도 늘어났습니다. 작성자를 일괄 조회한 뒤에도 작성자 ID를 읽는 과정에서 수강 정보의 지연 로딩이 발생했습니다.</dd></div>
+                    <div><dt>해결 방안 검토</dt><dd>작성자 정보는 현재 페이지에서 ID를 모아 일괄 조회하고, 리뷰와 단일 연관관계인 수강 정보는 리뷰 조회 시 함께 가져오기로 했습니다. 응답에 필요한 관계만 조회하면서 기존 페이징과 응답 형식을 유지할 수 있기 때문입니다.</dd></div>
+                    <div><dt>해결·개선</dt><dd>작성자 ID의 중복을 제거해 회원 정보를 일괄 조회하고, EntityGraph로 수강 정보를 함께 조회하도록 개선했습니다. 응답 내용과 총건수를 비교하고, 정렬과 페이지 경계 및 숨김 리뷰 제외 동작을 검증했습니다.</dd></div>
+                    <div class="case-flow__outcome"><dt>성과</dt><dd>리뷰 10개 조회의 SQL 실행을 24회에서 5회로 약 79% 줄여, 리뷰 목록을 구성할 때 발생하는 DB의 반복 조회 부담을 낮췄습니다.</dd><dd class="case-flow__measurement">측정 조건: 로컬 합성 리뷰 1만 개, 작성자가 서로 다른 리뷰 10개 기준. 작성자 일괄 조회 적용 후 15회, 수강 정보 조회 개선 후 5회로 확인했습니다. 수강 정보 개선은 개인 후속 검증 결과입니다.</dd></div>
                   </dl>
                   <ul class="project__evidence" aria-label="리뷰 조회 개선 근거">
                     <li><a href="https://github.com/team-Octave/learnflow-api/pull/28" target="_blank" rel="noopener noreferrer" aria-label="LearnFlow 리뷰 조회 개선 PR 보기 (새 탭)">리뷰 조회 개선 PR ↗</a></li>
