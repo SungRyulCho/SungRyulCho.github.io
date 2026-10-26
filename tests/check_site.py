@@ -989,18 +989,16 @@ class PortfolioChecks(unittest.TestCase):
     def test_about_summarizes_fields_and_skills_explains_capabilities(self):
         about = self.html.split('<section id="about"', 1)[1].split('</section>', 1)[0]
         self.assertEqual(about.count('<li class="major">'), 3)
-        for icon in ('API', 'DB', 'OPS'):
+        for icon in ('API', 'FIX', 'TEAM'):
             self.assertIn(f'aria-hidden="true">{icon}</span>', about)
-        for field in ('인증 구조 개선', '조회와 정합성 검증', '배포 협업',
-                      'JWT, 필터, 보안 설정 통합', '동시 저장 충돌 재현 및 제어',
-                      '동료가 따라 작업하는 가이드 작성'):
+        for field in ('백엔드 개발', '문제 해결', '협업',
+                      '서비스에 필요한 기능을 개발하고', '오류가 발생한 상황을 재현하고',
+                      '함께 작업하는 데 필요한 절차와 정보를 정리합니다.'):
             self.assertIn(field, about)
-        for technology in ('Spring Boot', 'PostgreSQL', 'Redisson', 'Docker Compose'):
+        for technology in ('PostgreSQL', 'Redisson', 'Docker Compose'):
             self.assertNotIn(technology, about)
-        self.assertIn('동시 요청의 데이터 정합성을 검증하고', about)
-        intro = about.split('<p class="description">', 1)[1].split('</p>', 1)[0]
-        self.assertNotIn('<br', intro)
-        self.assertLess(len(intro), 100)
+        self.assertNotIn('<p class="description">', about)
+        self.assertIn('동료의 의견에 귀 기울이고, 맡은 일에 성실하게 임하는 신입 백엔드 개발자 조성률입니다.', self.html)
         skills = self.html.split('<section id="skills"', 1)[1].split('<section id="work"', 1)[0]
         for project_name in ('DEKK', 'LearnFlow', 'Vench AI'):
             self.assertNotIn(project_name, skills)
