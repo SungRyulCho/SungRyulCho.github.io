@@ -313,7 +313,7 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .project-carousel .projects { display: flex; gap: 1.25rem; margin: 0; max-width: none; }
 .project-carousel .project { flex: 0 0 calc((100% - 2.5rem) / 3); }
 @media (max-width: 1199px) { .project-carousel .project { flex-basis: calc((100% - 1.25rem) / 2); } }
-@media (max-width: 768px) { .project-carousel .project { flex-basis: 88%; } }
+@media (max-width: 768px) { .project-carousel .project { flex-basis: 100%; } }
 
 .project-carousel .projects { will-change: transform; }
 .project-carousel.is-dragging { user-select: none; cursor: grabbing; }
@@ -327,10 +327,15 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .project-carousel-arrow:hover { color: var(--color-accent); border-color: var(--color-accent); }
 .project-carousel-arrow:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
 @media (max-width: 1400px) {
-  .project-carousel-shell:has(.project-carousel-controls:not([hidden])) { padding-top: 60px; }
-  .project-carousel-arrow { top: 0; transform: none; }
-  .project-carousel-arrow--previous { left: auto; right: 56px; }
+  .project-carousel-shell { padding-inline: 56px; }
+  .project-carousel-arrow--previous { left: 0; }
   .project-carousel-arrow--next { right: 0; }
 }
 
 .project-carousel-arrow svg { display: block; flex-shrink: 0; }
+
+@media (max-width: 768px) {
+  .project-carousel-shell { padding-inline: 30px; }
+  .project-carousel-arrow { width: 26px; height: 32px; border-radius: 8px; }
+  .project-carousel-arrow svg { width: 16px; height: 16px; }
+}

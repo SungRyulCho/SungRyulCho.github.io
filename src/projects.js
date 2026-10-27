@@ -28,6 +28,8 @@
   const items = () => projects.filter(p => category === 'all' || p.dataset.type === category);
   // Measure every card together so filtering does not change card height or role alignment.
   const alignRoles = () => {
+    track.querySelectorAll('[data-loop-copy]').forEach(p => p.remove());
+    track.style.alignItems = 'flex-start';
     const fields = ['.project__period', '.project__heading', '.project__intro', '.project__stack'];
     const hidden = projects.map(p => p.hidden);
     projects.forEach(p => { p.hidden = false; p.style.minHeight = ''; fields.forEach(f => p.querySelector(f).style.minHeight = ''); });
@@ -37,6 +39,7 @@
     });
     const height = Math.max(...projects.map(p => p.getBoundingClientRect().height));
     projects.forEach((p, i) => { p.style.minHeight = height + 'px'; p.hidden = hidden[i]; });
+    track.style.alignItems = '';
   };
   const stop = () => { cancelAnimationFrame(frame); frame = 0; velocity = 0; };
   const paint = () => { track.style.transform = `translate3d(${-position}px,0,0)`; };
@@ -85,7 +88,11 @@
   };
   const advance = direction => {
     stop();
-    const distance = direction * step;
+    // Arrow clicks land on a card boundary, even after free trackpad scrolling.
+    const aligned = position < .5 || step - position < .5;
+    const distance = direction > 0
+      ? (aligned ? step : step - position)
+      : (aligned ? -step : -position);
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) { travel(distance); return; }
     let startTime, applied = 0;
     const tick = now => {
