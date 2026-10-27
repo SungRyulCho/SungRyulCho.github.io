@@ -42,24 +42,15 @@ class PortfolioChecks(unittest.TestCase):
             if source and not urlsplit(source).scheme:
                 self.assertTrue((ROOT / urlsplit(source).path).is_file(), source)
 
-    def test_only_three_requested_projects(self):
+    def test_requested_projects(self):
         projects = [attrs['id'] for _, attrs in self.nodes if 'data-type' in attrs]
-        self.assertEqual(projects, ['project-dekk', 'project-learnflow', 'project-vench'])
+        self.assertEqual(projects, ['project-dekk', 'project-learnflow', 'project-vench', 'project-itda'])
         self.assertNotIn('Emori', self.html)
         self.assertNotIn('coupang-data', self.html)
 
-    def test_results_visible_before_case_dialog(self):
-        expected = {
-            'dekk': ('중복 저장과 50장 한도 초과 방지', '트랜잭션을 유지한 로컬'),
-            'learnflow': ('SQL 24회 → 15회', '로컬 리뷰 1만 개 중 10개'),
-            'vench': ('AI 생성 일부가 실패해도 기록 제공', '본문, 제목, 위로 문구'),
-        }
-        for project, terms in expected.items():
-            card = self.html.split(f'id="project-{project}"', 1)[1]
-            preview = card.split('<details class="project__detail">', 1)[0]
-            self.assertIn('class="project__outcome-preview"', preview)
-            for term in terms:
-                self.assertIn(term, preview)
+    def test_card_outcomes_stay_in_case_details(self):
+        self.assertNotIn('<p class="project__outcome-preview">', self.html)
+        self.assertIn('class="case-flow__outcome"', self.html)
 
     def test_share_preview_uses_a_dedicated_banner(self):
         meta = {attrs.get('property', attrs.get('name')): attrs.get('content')
@@ -189,7 +180,7 @@ class PortfolioChecks(unittest.TestCase):
     def test_project_filters_share_dimensions_without_resizing_cards(self):
         filters = [attrs for tag, attrs in self.nodes
                    if tag == 'button' and 'category' in attrs.get('class', '').split()]
-        self.assertEqual([item['data-category'] for item in filters], ['all', 'backend', 'ai'])
+        self.assertEqual([item['data-category'] for item in filters], ['all', 'backend', 'ai', 'frontend'])
         css = (ROOT / 'css/style.css').read_text()
         group_rule = css.split('\n.categories {', 1)[1].split('}', 1)[0]
         button_rule = css.split('\n.category {', 1)[1].split('}', 1)[0]
@@ -294,7 +285,7 @@ class PortfolioChecks(unittest.TestCase):
             project_stack = project.split('<p class="project__stack">', 1)[1].split('</p>', 1)[0]
             self.assertIn(stack, project_stack)
         roles = self.html.split('<div class="project__role-summary">')[1:]
-        self.assertEqual(len(roles), 3)
+        self.assertEqual(len(roles), 4)
         for role in roles:
             content = role.split('</div>', 1)[0]
             self.assertEqual(content.count('<ul>'), 1)
@@ -392,7 +383,7 @@ class PortfolioChecks(unittest.TestCase):
                                        'evidence/performance/dekk-index'):
             self.assertNotIn(unsupported_comparison, dekk)
         learnflow = self.html.split('id="learnflow-ai-outbox"', 1)[1].split('</article>', 1)[0]
-        for fact in ('강의 승인을 기다리게 하지 않는 AI 요약 작업 처리',
+        for fact in ('AI 분석 완료를 기다리지 않고 강의를 승인하도록 처리 분리',
                      '하나의 트랜잭션', '대기, 처리 중, 완료, 실패',
                      '분석 서버가 실패를 알린 작업', '1분, 5분, 60분 뒤에',
                      '최대 3회의 재시도', 'AI 분석과 승인을 분리해 관리자의 승인 대기 부담을 줄이고',
@@ -422,7 +413,7 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_learnflow_cases_keep_implementation_facts_and_evidence(self):
         cases = {
-            'learnflow-ai-outbox': ('강의 승인을 기다리게 하지 않는 AI 요약 작업 처리',
+            'learnflow-ai-outbox': ('AI 분석 완료를 기다리지 않고 강의를 승인하도록 처리 분리',
                                    '관리자가 분석 완료까지 기다리는 상황',
                                    '승인된 강의의 분석 작업이 누락되는 상황을 피해야',
                                    '승인 정보와 작업 기록은 같은 트랜잭션으로 저장',
@@ -490,7 +481,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertEqual(triggers, [])
         summaries = [attrs for tag, attrs in self.nodes
                      if attrs.get('class') == 'project__role-summary']
-        self.assertEqual(len(summaries), 3)
+        self.assertEqual(len(summaries), 4)
         self.assertTrue(all('hidden' not in attrs for attrs in summaries))
         outcomes = [attrs for tag, attrs in self.nodes
                     if attrs.get('class') == 'project__outcome-summary']
@@ -503,6 +494,9 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('담당한 일 전체 보기', self.html)
         self.assertNotIn('project__tasks', self.html)
         for project in self.html.split('<li id="project-')[1:]:
+            if project.startswith('itda"'):
+                self.assertIn('https://github.com/OHNAJOO/itda-frontend', project)
+                continue
             card, details = project.split('<details class="project__detail">', 1)
             role = card.split('<div class="project__role-summary">', 1)[1].split('</div>', 1)[0]
             self.assertIn('<h4>담당 영역</h4>', role)
@@ -561,7 +555,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261021-project-outcomes', self.html)
+        self.assertIn('css/style.css?v=20261027-equal-cards', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'
@@ -612,7 +606,7 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_member_takeover_and_deployment_roles_are_explicit(self):
         dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<li id="project-learnflow"', 1)[0]
-        for fact in ('회원 관리 기능 인수 및 인증 구조 개선', '공통 인증 정책의 수정 지점',
+        for fact in ('회원 관리 기능 인수 및 인증 구조 개선', '토큰 생성·검증 로직을 공통 코드로 통합',
                      '이벤트 처리는 기존 트랜잭션에 참여하도록',
                      '팀원이 설계한 인프라를 바탕으로',
                      '배포 가이드를 직접 작성해',
@@ -657,7 +651,7 @@ class PortfolioChecks(unittest.TestCase):
         for case, facts, excluded in (
             (auth, ('사용자와 관리자 코드를 각각 수정',
                     '권한 정보는 구분하고, 동일하게 동작해야 하는 토큰 처리만 공통화',
-                    '토큰 생성과 검증을 공통화', '클래스를 각각 2개에서 1개로 통합',
+                    '토큰 생성·검증 로직을 공통 코드로 통합', '클래스를 각각 2개에서 1개로 통합',
                     '인증 로직의 수정 부담과 누락 위험을 줄였습니다',
                     'pull/182'), ('보관함', '트랜잭션', 'pull/180')),
             (separation, ('보관함 처리 방식이 바뀌면 회원 코드도 함께 검토',
@@ -885,6 +879,9 @@ class PortfolioChecks(unittest.TestCase):
     def test_repository_links_are_secondary_inside_details(self):
         self.assertNotIn('GitHub에서 코드 보기', self.html)
         for project in self.html.split('<li id="project-')[1:]:
+            if project.startswith('itda"'):
+                self.assertIn('https://github.com/OHNAJOO/itda-frontend', project)
+                continue
             metadata = project.split('<details class="project__detail">', 1)[1].split('</details>', 1)
             detail = metadata[0]
             self.assertEqual(detail.count('class="project__link"'), 1)
