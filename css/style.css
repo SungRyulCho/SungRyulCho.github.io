@@ -305,3 +305,32 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .project__heading .project__title { margin: 0; }
 .project__repository { display: inline-flex; align-items: center; transform: translateY(2px); padding: .25rem .55rem; border: 1px solid #546274; border-radius: 4px; color: #c8d2df; font-size: .875rem; line-height: 1.2; white-space: nowrap; text-decoration: none; }
 .project__repository:hover { border-color: var(--color-accent); color: white; }
+
+.project-carousel { overflow: hidden; margin-top: 2rem; touch-action: pan-y; }
+.project-carousel.is-movable { cursor: default; }
+.project-carousel.is-movable:active { cursor: grabbing; }
+.project-carousel:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 6px; }
+.project-carousel .projects { display: flex; gap: 1.25rem; margin: 0; max-width: none; }
+.project-carousel .project { flex: 0 0 calc((100% - 2.5rem) / 3); }
+@media (max-width: 1199px) { .project-carousel .project { flex-basis: calc((100% - 1.25rem) / 2); } }
+@media (max-width: 768px) { .project-carousel .project { flex-basis: 88%; } }
+
+.project-carousel .projects { will-change: transform; }
+.project-carousel.is-dragging { user-select: none; cursor: grabbing; }
+
+.project-carousel-shell { position: relative; margin-top: 2rem; }
+.project-carousel-shell .project-carousel { margin-top: 0; }
+.project-carousel-controls[hidden] { display: none; }
+.project-carousel-arrow { position: absolute; top: 50%; transform: translateY(-50%); display: grid; place-items: center; width: 44px; height: 44px; border-radius: 50%; border: 1px solid #455362; color: #cbd5df; background: #18212b; padding: 0; line-height: 1; touch-action: none; user-select: none; }
+.project-carousel-arrow--previous { left: -60px; }
+.project-carousel-arrow--next { right: -60px; }
+.project-carousel-arrow:hover { color: var(--color-accent); border-color: var(--color-accent); }
+.project-carousel-arrow:focus-visible { outline: 2px solid var(--color-accent); outline-offset: 3px; }
+@media (max-width: 1400px) {
+  .project-carousel-shell:has(.project-carousel-controls:not([hidden])) { padding-top: 60px; }
+  .project-carousel-arrow { top: 0; transform: none; }
+  .project-carousel-arrow--previous { left: auto; right: 56px; }
+  .project-carousel-arrow--next { right: 0; }
+}
+
+.project-carousel-arrow svg { display: block; flex-shrink: 0; }

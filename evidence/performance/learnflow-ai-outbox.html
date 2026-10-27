@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>LearnFlow 실패·중단 작업 복구 검증 | 조성률</title><style>
+<title>LearnFlow 실패 및 중단 작업 복구 검증 | 조성률</title><style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#16191f;color:#e5eaf1}
 *{box-sizing:border-box}
 body{max-width:880px;margin:auto;padding:32px 24px 56px;line-height:1.65;word-break:keep-all;overflow-wrap:anywhere}
@@ -30,6 +30,6 @@ footer{display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:28px;padding-top:20p
 
 @media(max-width:560px){tbody th{width:68%}}
 </style></head><body>
-<header><a href="../../index.html#learnflow-ai-outbox">← LearnFlow 사례로 돌아가기</a><p class="eyebrow">LearnFlow / 검증 기록</p><h1>실패·중단 작업 복구 검증</h1></header>
-<main><section aria-labelledby="design-heading"><h2 id="design-heading">검증 설계</h2><dl class="study-setup"><div><dt>검증 대상</dt><dd>PR #117의 Outbox 작업 등록·재시도·중단 작업 복구 로직</dd></div><div><dt>실패 조건</dt><dd>100건 중 첫 시도 실패 30건 · 결과 응답 중단 10건. 재할당 후에는 정상 응답</dd></div><div><dt>실행 환경</dt><dd>로컬 Spring Boot · MySQL 8.4.11 · 실제 AI 호출을 대체한 테스트 워커</dd></div></dl><p class="method">재시도 예약 시각을 과거로, 중단 작업의 갱신 시각을 11분 전으로 바꿔 재시도·복구를 실행했습니다. 재할당 이력을 추적한 뒤, DB의 작업 ID·최종 상태·요약 저장 건수를 대조했습니다.</p></section><section aria-labelledby="result-heading"><h2 id="result-heading">검증 결과</h2><div class="table-wrap"><table><caption>작업 100건씩 독립 실행 · 3회 모두 같은 결과</caption><thead><tr><th scope="col">검증 항목</th><th scope="col">결과</th></tr></thead><tbody><tr><th scope="row">최종 완료<small>등록한 작업 ID별 COMPLETED 확인</small></th><td>100 / 100건</td></tr><tr><th scope="row">작업 누락<small>등록 대상과 최종 작업 ID 대조</small></th><td>0건</td></tr><tr><th scope="row">중복 요약<small>레슨마다 요약 1건만 저장됐는지 확인</small></th><td>0건</td></tr></tbody></table></div><ul class="observations"><li>일시 실패 30건과 응답 중단 10건 모두 한 번씩 재할당된 뒤 완료됐습니다.</li></ul></section></main>
+<header><a href="../../index.html#learnflow-ai-outbox">← LearnFlow 사례로 돌아가기</a><p class="eyebrow">LearnFlow / 검증 기록</p><h1>실패 및 중단 작업 복구 검증</h1></header>
+<main><section aria-labelledby="design-heading"><h2 id="design-heading">검증 설계</h2><dl class="study-setup"><div><dt>검증 대상</dt><dd>PR #117의 Outbox 작업 등록, 재시도, 중단 작업 복구 로직</dd></div><div><dt>실패 조건</dt><dd>100건 중 첫 시도 실패 30건 / 결과 응답 중단 10건. 재할당 후에는 정상 응답</dd></div><div><dt>실행 환경</dt><dd>로컬 Spring Boot / MySQL 8.4.11 / 실제 AI 호출을 대체한 테스트 워커</dd></div></dl><p class="method">재시도 예약 시각을 과거로, 중단 작업의 갱신 시각을 11분 전으로 바꿔 재시도와 복구를 실행했습니다. 재할당 이력을 추적한 뒤, DB의 작업 ID, 최종 상태, 요약 저장 건수를 대조했습니다.</p></section><section aria-labelledby="result-heading"><h2 id="result-heading">검증 결과</h2><div class="table-wrap"><table><caption>작업 100건씩 독립 실행 / 3회 모두 같은 결과</caption><thead><tr><th scope="col">검증 항목</th><th scope="col">결과</th></tr></thead><tbody><tr><th scope="row">최종 완료<small>등록한 작업 ID별 COMPLETED 확인</small></th><td>100 / 100건</td></tr><tr><th scope="row">작업 누락<small>등록 대상과 최종 작업 ID 대조</small></th><td>0건</td></tr><tr><th scope="row">중복 요약<small>레슨마다 요약 1건만 저장됐는지 확인</small></th><td>0건</td></tr></tbody></table></div><ul class="observations"><li>일시 실패 30건과 응답 중단 10건 모두 한 번씩 재할당된 뒤 완료됐습니다.</li></ul></section></main>
 <footer><a href="https://github.com/team-Octave/learnflow-api/pull/117" target="_blank" rel="noopener noreferrer">작업 처리 구현 PR ↗</a></footer></body></html>

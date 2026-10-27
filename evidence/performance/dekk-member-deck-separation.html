@@ -1,6 +1,6 @@
 <!doctype html>
 <html lang="ko"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="robots" content="noindex">
-<title>DEKK 회원·보관함 의존관계 분리 | 조성률</title><style>
+<title>DEKK 회원과 보관함 의존관계 분리 | 조성률</title><style>
 :root{color-scheme:dark;font-family:system-ui,-apple-system,sans-serif;background:#16191f;color:#e5eaf1}
 *{box-sizing:border-box}
 body{max-width:880px;margin:auto;padding:32px 24px 56px;line-height:1.65;word-break:keep-all;overflow-wrap:anywhere}
@@ -28,6 +28,6 @@ footer{display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:28px;padding-top:20p
 .observations li+li{margin-top:6px}.observations strong{font-weight:550;color:#e5eaf1}
 @media(max-width:560px){.study-setup>div{grid-template-columns:70px 1fr;gap:8px}.study-setup,.method{font-size:.88rem}tbody th{width:45%}tbody td small{font-size:.76rem}}
 </style></head><body>
-<header><a href="../../index.html#dekk-member-deck-separation">← DEKK 사례로 돌아가기</a><p class="eyebrow">DEKK / 구조 변경 기록</p><h1>회원·보관함 의존관계 분리</h1></header>
-<main><section aria-labelledby="design-heading"><h2 id="design-heading">비교 기준</h2><dl class="study-setup"><div><dt>비교 범위</dt><dd>PR #180 병합 전후 · fc8af93 → 407503a</dd></div><div><dt>집계 대상</dt><dd>UserCommandService의 보관함 서비스 직접 호출과 이벤트 발행 지점</dd></div></dl><p class="method">가입·탈퇴 메서드의 호출을 비교하고, 발행한 이벤트가 보관함 측 UserEventHandler로 연결되는지 추적했습니다. 이벤트는 동기로 처리하며 기존 트랜잭션에 참여하는 REQUIRED 설정을 유지했습니다.</p></section><section aria-labelledby="result-heading"><h2 id="result-heading">구조 변경 결과</h2><div class="table-wrap"><table><thead><tr><th scope="col">구분</th><th scope="col">변경 전</th><th scope="col">변경 후</th></tr></thead><tbody><tr><th scope="row">회원 → 보관함 직접 호출</th><td>2곳</td><td>0곳</td></tr><tr><th scope="row">회원 이벤트 발행<small>가입·탈퇴 처리 연결</small></th><td>0곳</td><td>2곳</td></tr></tbody></table></div><ul class="observations"><li>가입: UserOnboardedEvent → 보관함 이벤트 처리기 → 기본 보관함 생성</li><li>탈퇴: UserDeletedEvent → 보관함 이벤트 처리기 → 보관함 탈퇴 처리</li></ul></section></main>
+<header><a href="../../index.html#dekk-member-deck-separation">← DEKK 사례로 돌아가기</a><p class="eyebrow">DEKK / 구조 변경 기록</p><h1>회원과 보관함 의존관계 분리</h1></header>
+<main><section aria-labelledby="design-heading"><h2 id="design-heading">비교 기준</h2><dl class="study-setup"><div><dt>비교 범위</dt><dd>PR #180 병합 전후 / fc8af93 → 407503a</dd></div><div><dt>집계 대상</dt><dd>UserCommandService의 보관함 서비스 직접 호출과 이벤트 발행 지점</dd></div></dl><p class="method">가입 및 탈퇴 메서드의 호출을 비교하고, 발행한 이벤트가 보관함 측 UserEventHandler로 연결되는지 추적했습니다. 이벤트는 동기로 처리하며 기존 트랜잭션에 참여하는 REQUIRED 설정을 유지했습니다.</p></section><section aria-labelledby="result-heading"><h2 id="result-heading">구조 변경 결과</h2><div class="table-wrap"><table><thead><tr><th scope="col">구분</th><th scope="col">변경 전</th><th scope="col">변경 후</th></tr></thead><tbody><tr><th scope="row">회원 → 보관함 직접 호출</th><td>2곳</td><td>0곳</td></tr><tr><th scope="row">회원 이벤트 발행<small>가입 및 탈퇴 처리 연결</small></th><td>0곳</td><td>2곳</td></tr></tbody></table></div><ul class="observations"><li>가입: UserOnboardedEvent → 보관함 이벤트 처리기 → 기본 보관함 생성</li><li>탈퇴: UserDeletedEvent → 보관함 이벤트 처리기 → 보관함 탈퇴 처리</li></ul></section></main>
 <footer><a href="https://github.com/potenup-dekk/DEKK-BE/pull/180" target="_blank" rel="noopener noreferrer">의존관계 개선 PR ↗</a></footer></body></html>

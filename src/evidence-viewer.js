@@ -7,9 +7,9 @@
   const base = 'images/evidence/dekk-deployment/';
   const captureUrl = (file) => base + file + '?v=20261008-clean';
   const captures = [
-    {file: 'guide.webp', title: '배포 가이드', width: 1330, alt: '노션 DEKK 인프라 & CI/CD 자동 배포 6단계 문서 제목과 도메인·DNS 설정 단계'},
-    {file: 'dns-records.webp', title: '도메인·DNS', width: 1900, alt: '도메인 구매, Route 53, 네임서버 설정 절차와 Sung Ryul Cho의 3월 3일 완료 댓글'},
-    {file: 'network-records.webp', title: '인증서·ALB', width: 1900, alt: 'SSL 인증서, ALB, 보안 그룹 설정 절차와 Sung Ryul Cho의 3월 3일 완료 댓글'},
+    {file: 'guide.webp', title: '배포 가이드', width: 1330, alt: '노션 DEKK 인프라 & CI/CD 자동 배포 6단계 문서 제목과 도메인 및 DNS 설정 단계'},
+    {file: 'dns-records.webp', title: '도메인 및 DNS', width: 1900, alt: '도메인 구매, Route 53, 네임서버 설정 절차와 Sung Ryul Cho의 3월 3일 완료 댓글'},
+    {file: 'network-records.webp', title: '인증서 및 ALB', width: 1900, alt: 'SSL 인증서, ALB, 보안 그룹 설정 절차와 Sung Ryul Cho의 3월 3일 완료 댓글'},
     {file: 'server-setup.webp', title: '서버 환경 설정', width: 1900, alt: 'Java와 CodeDeploy Agent 설치 가이드 및 재웅 정의 3월 3일 작업 완료 댓글'},
     {file: 'pipeline.webp', title: '자동 배포 연결', width: 1330, alt: 'GitHub Actions와 S3, CodeDeploy 연결 단계 및 GitHub Secrets 등록 항목 안내'},
     {file: 'script-fix.webp', title: '배포 오류 수정', width: 1340, alt: '트러블슈팅 문서의 배포 스크립트 수정 기록: 파일명 대소문자, JAR 탐색 패턴, 프로세스 조회 옵션 변경'},
@@ -41,7 +41,7 @@
     image.alt = capture.alt;
     image.src = captureUrl(capture.file);
     stage.style.setProperty('--capture-width', capture.width + 'px');
-    caption.textContent = capture.title + ' · ' + (index + 1) + ' / ' + captures.length;
+    caption.textContent = capture.title + ' / ' + (index + 1) + ' / ' + captures.length;
     setZoom(false);
     thumbnails.forEach((button, position) => button.setAttribute('aria-pressed', String(position === index)));
     if (focus) {

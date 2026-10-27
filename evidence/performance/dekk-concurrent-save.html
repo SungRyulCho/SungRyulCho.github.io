@@ -31,12 +31,12 @@ footer{display:flex;flex-wrap:wrap;gap:14px 24px;margin-top:28px;padding-top:20p
 <header><a href="../../index.html#dekk-concurrent-save">← DEKK 사례로 돌아가기</a><p class="eyebrow">DEKK / 검증 기록</p><h1>동시 저장 정합성 검증</h1></header>
 <main><section aria-labelledby="design-heading"><h2 id="design-heading">검증 설계</h2>
 <dl class="study-setup">
-<div><dt>비교 대상</dt><dd>잠금 적용 원본과, 잠금 획득·해제만 생략한 대조군</dd></div>
-<div><dt>동일 조건</dt><dd>REQUIRES_NEW · READ COMMITTED · 같은 테스트·데이터·스키마</dd></div>
-<div><dt>실행 환경</dt><dd>로컬 Spring Boot · PostgreSQL 16.15 · Redis 7.4.9</dd></div>
+<div><dt>비교 대상</dt><dd>잠금 적용 원본과, 잠금 획득과 해제만 생략한 대조군</dd></div>
+<div><dt>동일 조건</dt><dd>REQUIRES_NEW / READ COMMITTED / 같은 테스트, 데이터, 스키마</dd></div>
+<div><dt>실행 환경</dt><dd>로컬 Spring Boot / PostgreSQL 16.15 / Redis 7.4.9</dd></div>
 </dl>
 <p class="method">매회 보관함 데이터를 초기화하고 여러 스레드에서 저장 요청을 실행했습니다. 모든 요청이 끝난 뒤 DB의 실제 저장 수와 요청별 처리 결과를 대조해, <strong>동일 카드는 1건만 저장되는지, 보관함은 50장을 넘지 않는지</strong> 확인했습니다.</p>
-</section><section aria-labelledby="result-heading"><h2 id="result-heading">검증 결과</h2><div class="table-wrap"><table><caption>각 시나리오·변형별 30회 반복 · 요청 완료 후 DB 최종 저장 수</caption><thead><tr><th scope="col">시나리오</th><th scope="col">잠금 없음</th><th scope="col">잠금 적용</th></tr></thead><tbody><tr><th scope="row">같은 카드 동시 저장<small>빈 보관함 · 100요청 · 32스레드</small></th><td>12–32건 저장<small>중복 30 / 30회</small></td><td>1건 저장<small>중복 0 / 30회</small></td></tr><tr><th scope="row">서로 다른 카드 동시 저장<small>49장 보관함 · 새 카드 10요청 · 10스레드</small></th><td>59장 보관<small>초과 30 / 30회</small></td><td>50장 보관<small>초과 0 / 30회</small></td></tr></tbody></table></div>
+</section><section aria-labelledby="result-heading"><h2 id="result-heading">검증 결과</h2><div class="table-wrap"><table><caption>각 시나리오와 변형별 30회 반복 / 요청 완료 후 DB 최종 저장 수</caption><thead><tr><th scope="col">시나리오</th><th scope="col">잠금 없음</th><th scope="col">잠금 적용</th></tr></thead><tbody><tr><th scope="row">같은 카드 동시 저장<small>빈 보관함 / 100요청 / 32스레드</small></th><td>12–32건 저장<small>중복 30 / 30회</small></td><td>1건 저장<small>중복 0 / 30회</small></td></tr><tr><th scope="row">서로 다른 카드 동시 저장<small>49장 보관함 / 새 카드 10요청 / 10스레드</small></th><td>59장 보관<small>초과 30 / 30회</small></td><td>50장 보관<small>초과 0 / 30회</small></td></tr></tbody></table></div>
 <ul class="observations" aria-label="잠금 적용 시 요청 처리 확인">
 <li><strong>같은 카드:</strong> 매회 1건 저장, 나머지 99건은 추가 저장 없이 정상 종료</li>
 <li><strong>서로 다른 카드:</strong> 매회 1건 저장, 나머지 9건은 용량 제한으로 거절</li>

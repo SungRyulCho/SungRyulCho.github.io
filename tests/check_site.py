@@ -130,7 +130,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertIn('scroll-snap-type: x mandatory;', css)
 
     def test_resume_statuses_are_explicit(self):
-        for value in ('컴퓨터공학과 · 졸업', '정보처리기사 필기 합격', '실기 준비 중', '수강 중', '960시간', '420시간', '2026.08.28'):
+        for value in ('컴퓨터공학과 / 졸업', '정보처리기사 필기 합격', '실기 준비 중', '수강 중', '960시간', '420시간', '2026.08.28'):
             self.assertIn(value, self.html)
         self.assertNotIn('졸업 예정', self.html)
 
@@ -235,7 +235,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('min-height: 6.8em;', css)
 
     def test_concise_sections_and_consistent_skill_cards(self):
-        for subtitle in ('프로젝트에서 이렇게 사용했습니다', '교육 · 자격 · 수상',
+        for subtitle in ('프로젝트에서 이렇게 사용했습니다', '교육 / 자격 / 수상',
                          '서비스의 흐름과 안정성을 고민한 세 가지 프로젝트', 'AI Pipeline'):
             self.assertNotIn(subtitle, self.html)
         cards = [attrs for _, attrs in self.nodes if 'skill-card' in attrs.get('class', '').split()]
@@ -257,8 +257,8 @@ class PortfolioChecks(unittest.TestCase):
             content = case.split('</dl>', 1)[0]
             self.assertEqual(content.count('<dt>'), 4)
             self.assertLess(content.index('<dt>문제</dt>'), content.index('<dt>해결 방안 검토</dt>'))
-            self.assertLess(content.index('<dt>해결 방안 검토</dt>'), content.index('<dt>해결·개선</dt>'))
-            self.assertLess(content.index('<dt>해결·개선</dt>'), content.index('<dt>성과</dt>'))
+            self.assertLess(content.index('<dt>해결 방안 검토</dt>'), content.index('<dt>해결 및 개선</dt>'))
+            self.assertLess(content.index('<dt>해결 및 개선</dt>'), content.index('<dt>성과</dt>'))
             self.assertEqual(content.count('class="case-flow__outcome"'), 1)
             outcome = content.split('<dt>성과</dt><dd>', 1)[1].split('</dd>', 1)[0]
             # Measured outcomes include the scope, before/after values and
@@ -278,9 +278,9 @@ class PortfolioChecks(unittest.TestCase):
         self.assertNotIn('height', rule)
 
     def test_backend_project_mapping_and_clear_responsibilities(self):
-        for project_id, stack in (('dekk', 'Java · Spring Boot'),
-                                  ('learnflow', 'Java · Spring Boot'),
-                                  ('vench', 'Python · FastAPI')):
+        for project_id, stack in (('dekk', 'Java / Spring Boot'),
+                                  ('learnflow', 'Java / Spring Boot'),
+                                  ('vench', 'Python / FastAPI')):
             project = self.html.split('<li id="project-' + project_id + '"', 1)[1]
             project_stack = project.split('<p class="project__stack">', 1)[1].split('</p>', 1)[0]
             self.assertIn(stack, project_stack)
@@ -433,7 +433,7 @@ class PortfolioChecks(unittest.TestCase):
                 case = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
                 for fact in facts:
                     self.assertIn(fact, case)
-                for label in ('문제', '해결 방안 검토', '해결·개선', '성과'):
+                for label in ('문제', '해결 방안 검토', '해결 및 개선', '성과'):
                     self.assertEqual(case.count('<dt>' + label + '</dt>'), 1)
                 self.assertEqual(case.count('class="project__evidence"'), 1)
 
@@ -444,7 +444,7 @@ class PortfolioChecks(unittest.TestCase):
                                   '진행 안내를 DB에 기록',
                                   '일기 본문 생성 중 예외가 발생하면',
                                   'diary_task.py', 'diary_generation_service.py'),
-            'vench-audio-input': ('음성 인식 오류에 대응한 전처리·모델 설정 변경',
+            'vench-audio-input': ('음성 인식 오류에 대응한 전처리 및 모델 설정 변경',
                                   '기존 16kHz 모노 WAV 변환 과정에 음량 정규화를 추가',
                                   'small에서 medium으로 변경',
                                   'commit/d964e6577fe6ed542e3f490bc778b2c9c519c4f6'),
@@ -458,7 +458,7 @@ class PortfolioChecks(unittest.TestCase):
                 case = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
                 for fact in facts:
                     self.assertIn(fact, case)
-                for label in ('문제', '해결 방안 검토', '해결·개선', '성과'):
+                for label in ('문제', '해결 방안 검토', '해결 및 개선', '성과'):
                     self.assertEqual(case.count('<dt>' + label + '</dt>'), 1)
                 self.assertEqual(case.count('class="project__evidence"'), 1)
 
@@ -606,11 +606,11 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_member_takeover_and_deployment_roles_are_explicit(self):
         dekk = self.html.split('<li id="project-dekk"', 1)[1].split('<li id="project-learnflow"', 1)[0]
-        for fact in ('회원 관리 기능 인수 및 인증 구조 개선', '토큰 생성·검증 로직을 공통 코드로 통합',
+        for fact in ('회원 관리 기능 인수 및 인증 구조 개선', '토큰 생성 및 검증 로직을 공통 코드로 통합',
                      '이벤트 처리는 기존 트랜잭션에 참여하도록',
                      '팀원이 설계한 인프라를 바탕으로',
                      '배포 가이드를 직접 작성해',
-                     '진행 중 발생한 설정·배포 문제는 다음과 같이 해결했습니다',
+                     '진행 중 발생한 설정 및 배포 문제는 다음과 같이 해결했습니다',
                      '중지된 CodeDeploy 에이전트를 실행하고',
                      '재배포가 정상 완료되는 것을 확인했습니다'):
             self.assertIn(fact, dekk)
@@ -620,7 +620,7 @@ class PortfolioChecks(unittest.TestCase):
     def test_deployment_problem_keeps_role_context_in_action(self):
         case = self.html.split('id="dekk-deployment-collaboration"', 1)[1].split('</article>', 1)[0]
         problem = case.split('<dt>문제</dt><dd>', 1)[1].split('</dd>', 1)[0]
-        action = case.split('<dt>해결·개선</dt><dd>', 1)[1].split('</dd>', 1)[0]
+        action = case.split('<dt>해결 및 개선</dt><dd>', 1)[1].split('</dd>', 1)[0]
         self.assertEqual(problem, '배포 환경 준비가 지연되고 초기 배포가 실패하면서, 팀이 개발한 기능을 서버에 반영하지 못했습니다. 팀원들이 각자 구현한 기능을 연동하고 확인하는 작업에도 차질이 생겼습니다.')
         self.assertNotIn('팀원이 설계한', problem)
         self.assertIn('팀원이 설계한 인프라를 바탕으로', action)
@@ -651,7 +651,7 @@ class PortfolioChecks(unittest.TestCase):
         for case, facts, excluded in (
             (auth, ('사용자와 관리자 코드를 각각 수정',
                     '권한 정보는 구분하고, 동일하게 동작해야 하는 토큰 처리만 공통화',
-                    '토큰 생성·검증 로직을 공통 코드로 통합', '클래스를 각각 2개에서 1개로 통합',
+                    '토큰 생성 및 검증 로직을 공통 코드로 통합', '클래스를 각각 2개에서 1개로 통합',
                     '인증 로직의 수정 부담과 누락 위험을 줄였습니다',
                     'pull/182'), ('보관함', '트랜잭션', 'pull/180')),
             (separation, ('보관함 처리 방식이 바뀌면 회원 코드도 함께 검토',
@@ -665,7 +665,7 @@ class PortfolioChecks(unittest.TestCase):
             for unrelated in (*excluded, 'Codex', '26개', '로그인 사용자 정보를 전달',
                               '9f33a9e229412b5b0e6e3ff3472356481fed2cb9'):
                 self.assertNotIn(unrelated, case)
-            for label in ('문제', '해결 방안 검토', '해결·개선', '성과'):
+            for label in ('문제', '해결 방안 검토', '해결 및 개선', '성과'):
                 self.assertEqual(case.count('<dt>' + label + '</dt>'), 1)
             self.assertEqual(case.count('class="project__evidence"'), 1)
             self.assertEqual(case.count('<li><a '), 2)
@@ -689,7 +689,7 @@ class PortfolioChecks(unittest.TestCase):
     def test_outcomes_match_approved_benefit_statements(self):
         # Copy regression only; code evidence and narrative still need human review.
         expected = {
-            'dekk-member-improvement': 'JWT 발급·검증, 인증 필터, 보안 설정 클래스를 각각 2개에서 1개로 통합해, 사용자와 관리자에서 중복 관리하던 인증 로직의 수정 부담과 누락 위험을 줄였습니다.',
+            'dekk-member-improvement': 'JWT 발급 및 검증, 인증 필터, 보안 설정 클래스를 각각 2개에서 1개로 통합해, 사용자와 관리자에서 중복 관리하던 인증 로직의 수정 부담과 누락 위험을 줄였습니다.',
             'dekk-member-deck-separation': '회원 서비스의 보관함 직접 호출을 2곳에서 0곳으로 줄여, 보관함 처리 변경을 회원 코드와 분리하고 기능별 유지보수성을 높였습니다.',
             'dekk-concurrent-save': '동시 요청에 따른 중복 저장과 용량 초과를 제어해, 공동 보관함 데이터의 정합성을 높였습니다.',
             'dekk-query-improvement': '미리보기 정보를 유지하면서 DB에서 가져오는 카드 연결 데이터를 1,000행에서 60행으로 94% 줄여, 목록 조회에 필요한 데이터 처리 부담을 낮췄습니다.',
@@ -820,7 +820,7 @@ class PortfolioChecks(unittest.TestCase):
                      '1,000행', '60행', '94% 감소', '사용자 100명', '보관함 20개 × 카드 50장'):
             self.assertIn(fact, query)
         lock = (ROOT / 'evidence/performance/dekk-concurrent-save.html').read_text()
-        for fact in ('잠금 획득·해제만 생략한 대조군', 'REQUIRES_NEW', 'READ COMMITTED',
+        for fact in ('잠금 획득과 해제만 생략한 대조군', 'REQUIRES_NEW', 'READ COMMITTED',
                      '중복 30 / 30회', '중복 0 / 30회', '초과 30 / 30회', '초과 0 / 30회'):
             self.assertIn(fact, lock)
 
@@ -843,7 +843,7 @@ class PortfolioChecks(unittest.TestCase):
             self.assertIn('문제 해결 및 개선 보기', trigger['aria-label'])
         cases = [attrs for tag, attrs in self.nodes if 'data-case-label' in attrs]
         self.assertEqual([attrs['data-case-label'] for attrs in cases],
-                         ['인증 공통화', '회원·보관함 분리', '동시 저장', '조회 개선', '배포 협업',
+                         ['인증 공통화', '회원과 보관함 분리', '동시 저장', '조회 개선', '배포 협업',
                           'AI 작업 연결', '리뷰 조회', '배포 개선',
                           '진행 및 실패 대응', '음성 입력', '감정 통계', '저장 실패 대응', '출력 전 확인', '조회 재사용'])
         self.assertTrue(all(attrs.get('id') in ids for attrs in cases))
@@ -946,7 +946,7 @@ class PortfolioChecks(unittest.TestCase):
                 stack = block.split('</p>', 1)[0]
                 self.assertNotIn('EXAONE', stack)
                 self.assertNotIn('mDeBERTa', stack)
-        self.assertIn('Faster-Whisper · Transformers · llama.cpp', self.html)
+        self.assertIn('Faster-Whisper / Transformers / llama.cpp', self.html)
 
     def test_about_summarizes_fields_and_skills_explains_capabilities(self):
         about = self.html.split('<section id="about"', 1)[1].split('</section>', 1)[0]
@@ -971,7 +971,7 @@ class PortfolioChecks(unittest.TestCase):
     def test_coupang_is_described_as_operations_not_development(self):
         about = self.html.split('<section id="about"', 1)[1].split('</section>', 1)[0]
         coupang = about.split('images/jobs/coupang.png', 1)[1].split('</li>', 1)[0]
-        for fact in ('쿠팡 COE Team · 상품 데이터 운영', '2024.01 – 2024.12',
+        for fact in ('쿠팡 COE Team / 상품 데이터 운영', '2024.01 – 2024.12',
                      '데이터 운영 경력', '상품 데이터 검수', '운영 보고서 작성', '유관부서와의 데이터 변경 협의 및 오류 해결'):
             self.assertIn(fact, coupang)
         for old_copy in ('Grocery Category Owner', '주 3회', '백엔드 개발로 이어가고'):
