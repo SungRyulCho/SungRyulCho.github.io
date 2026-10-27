@@ -180,7 +180,7 @@ class PortfolioChecks(unittest.TestCase):
     def test_project_filters_share_dimensions_without_resizing_cards(self):
         filters = [attrs for tag, attrs in self.nodes
                    if tag == 'button' and 'category' in attrs.get('class', '').split()]
-        self.assertEqual([item['data-category'] for item in filters], ['all', 'backend', 'ai', 'frontend'])
+        self.assertEqual([item['data-category'] for item in filters], ['all', 'backend', 'frontend'])
         css = (ROOT / 'css/style.css').read_text()
         group_rule = css.split('\n.categories {', 1)[1].split('}', 1)[0]
         button_rule = css.split('\n.category {', 1)[1].split('}', 1)[0]
