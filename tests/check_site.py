@@ -221,7 +221,7 @@ class PortfolioChecks(unittest.TestCase):
         trigger = css.split('\n.project__detail-trigger {', 1)[1].split('}', 1)[0]
         fallback = css.split('\n.project__detail summary {', 1)[1].split('}', 1)[0]
         for rule in (trigger, fallback):
-            self.assertIn('font-size: 1.125rem;', rule)
+            self.assertIn('font-size: 1rem;', rule)
             self.assertIn('font-weight: 700;', rule)
 
     def test_project_cards_use_three_two_and_one_columns(self):
@@ -555,7 +555,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261027-filter-only', self.html)
+        self.assertIn('css/style.css?v=20261027-detail-size', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'
