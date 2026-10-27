@@ -250,9 +250,9 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_project_cases_show_problem_decision_improvement_and_outcome(self):
         self.assertNotIn('문제 해결과 검증', self.html)
-        self.assertEqual(self.html.count('<summary>문제 해결 및 개선 보기</summary>'), 3)
+        self.assertEqual(self.html.count('<summary>문제 해결 및 개선 보기</summary>'), 4)
         cases = self.html.split('<dl class="case-flow">')[1:]
-        self.assertEqual(len(cases), 11)
+        self.assertEqual(len(cases), 14)
         for case in cases:
             content = case.split('</dl>', 1)[0]
             self.assertEqual(content.count('<dt>'), 4)
@@ -487,7 +487,7 @@ class PortfolioChecks(unittest.TestCase):
                     if attrs.get('class') == 'project__outcome-summary']
         self.assertEqual(outcomes, [])
         self.assertNotIn('대표 개선', self.html)
-        self.assertEqual(self.html.count('<span>문제 해결 및 개선 보기</span>'), 3)
+        self.assertEqual(self.html.count('<span>문제 해결 및 개선 보기</span>'), 4)
         disclosures = [attrs for tag, attrs in self.nodes
                        if tag == 'details' and attrs.get('class') == 'project__responsibilities']
         self.assertEqual(disclosures, [])
@@ -555,12 +555,12 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261027-detail-size', self.html)
+        self.assertIn('css/style.css?v=20261027-case-title', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'
                  and 'project__case' in attrs.get('class', '').split()]
-        self.assertEqual(len(cases), 11)
+        self.assertEqual(len(cases), 14)
         self.assertNotIn('readability-preview', self.html)
         css = (ROOT / 'css/style.css').read_text()
         self.assertNotIn('readability-preview', css)
@@ -710,7 +710,7 @@ class PortfolioChecks(unittest.TestCase):
     def test_each_case_links_to_specific_public_evidence(self):
         cases = [attrs['id'] for tag, attrs in self.nodes if tag == 'article'
                  and 'project__case' in attrs.get('class', '').split()]
-        self.assertEqual(len(cases), 11)
+        self.assertEqual(len(cases), 14)
         for case_id in cases:
             content = self.html.split('id="' + case_id + '"', 1)[1].split('</article>', 1)[0]
             parser = SiteParser()
@@ -835,7 +835,7 @@ class PortfolioChecks(unittest.TestCase):
         triggers = [attrs for tag, attrs in self.nodes
                     if attrs.get('class') == 'project__detail-trigger']
         self.assertEqual([attrs['id'] for attrs in triggers],
-                         ['dekk-details-open', 'learnflow-details-open', 'vench-details-open'])
+                         ['dekk-details-open', 'learnflow-details-open', 'vench-details-open', 'itda-details-open'])
         for trigger in triggers:
             self.assertEqual(trigger['aria-haspopup'], 'dialog')
             self.assertEqual(trigger['aria-controls'], dialogs[0]['id'])
@@ -845,10 +845,10 @@ class PortfolioChecks(unittest.TestCase):
         self.assertEqual([attrs['data-case-label'] for attrs in cases],
                          ['인증 공통화', '회원·보관함 분리', '동시 저장', '조회 개선', '배포 협업',
                           'AI 작업 연결', '리뷰 조회', '배포 개선',
-                          '진행 및 실패 대응', '음성 입력', '감정 통계'])
+                          '진행 및 실패 대응', '음성 입력', '감정 통계', '저장 실패 대응', '출력 전 확인', '조회 재사용'])
         self.assertTrue(all(attrs.get('id') in ids for attrs in cases))
         # Original details and source content remain present if enhancement fails to load.
-        self.assertEqual(self.html.count('<details class="project__detail">'), 3)
+        self.assertEqual(self.html.count('<details class="project__detail">'), 4)
         self.assertIn('<script src="src/project-dialog.js?v=20261027-repo-badges" defer></script>', self.html)
 
     def test_expanded_project_cases_have_distinct_topics_and_boundaries(self):
