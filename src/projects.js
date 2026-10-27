@@ -4,7 +4,6 @@
   const buttons = [...filters.querySelectorAll('[data-category]')];
   const projects = [...document.querySelectorAll('.project')];
   const status = document.querySelector('#project-status');
-  const categoryLinks = [];
   // Match the content above the role heading within each visible card row.
   const alignRoles = () => {
     const selectors = ['.project__period', '.project__heading', '.project__intro', '.project__stack'];
@@ -38,7 +37,6 @@
         ? project.dataset.featured !== 'true'
         : project.dataset.type !== category;
     });
-    categoryLinks.forEach((link) => { link.hidden = category !== 'all'; });
     alignRoles();
     if (announce) status.textContent = projects.filter((project) => !project.hidden).length + '개 프로젝트를 표시합니다.';
   };
@@ -47,23 +45,6 @@
     const count = projects.filter((project) => category === 'all'
       ? project.dataset.featured === 'true' : project.dataset.type === category).length;
     button.querySelector('.category__count').textContent = count;
-  });
-  projects.filter((project) => project.dataset.featured === 'true').forEach((project) => {
-    const category = project.dataset.type;
-    const tab = buttons.find((button) => button.dataset.category === category);
-    const label = tab.firstChild.textContent.trim();
-    const count = projects.filter((item) => item.dataset.type === category).length;
-    const link = document.createElement('button');
-    link.type = 'button';
-    link.className = 'project__category-link';
-    link.textContent = `${label} 프로젝트 ${count}개 보기 →`;
-    link.addEventListener('click', () => {
-      filter(category);
-      tab.focus({preventScroll: true});
-      filters.scrollIntoView({block: 'center'});
-    });
-    project.querySelector('.project__metadata').append(link);
-    categoryLinks.push(link);
   });
   filters.hidden = false;
   filter('all', false);

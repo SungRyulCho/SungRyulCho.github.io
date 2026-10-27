@@ -555,7 +555,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261027-repo-badges', self.html)
+        self.assertIn('css/style.css?v=20261027-filter-only', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'

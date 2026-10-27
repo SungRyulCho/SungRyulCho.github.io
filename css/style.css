@@ -296,8 +296,6 @@ section[id],li[id] { scroll-margin-top: 1rem; }
   html { scroll-behavior: auto; }
 }
 
-.project__category-link { display: block; width: 100%; margin-top: 1rem; padding: .75rem 0 0; color: #adb9c9; font-size: .875rem; text-align: left; }
-.project__category-link:hover { color: var(--color-accent); }
 
 /* Keep card actions aligned while allowing copy to grow naturally. */
 .project__metadata > .project__detail-trigger { margin-top: auto; }
@@ -308,5 +306,3 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .project__heading .project__title { margin: 0; }
 .project__repository { display: inline-flex; align-items: center; padding: .15rem .4rem; border: 1px solid #546274; border-radius: 4px; color: #c8d2df; font-size: .75rem; line-height: 1.2; white-space: nowrap; text-decoration: none; }
 .project__repository:hover { border-color: var(--color-accent); color: white; }
-.project__metadata > .project__category-link { margin-top: auto; }
-.project__metadata > .project__detail-trigger:not([hidden]) ~ .project__category-link { margin-top: 1rem; }
