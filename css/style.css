@@ -303,3 +303,10 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 .project__metadata > .project__detail-trigger { margin-top: auto; }
 .project__metadata > .project__role-summary { margin-bottom: 1.25rem; }
 .project__metadata > .project__outcome-preview { margin-top: 0; margin-bottom: 1.25rem; }
+
+.project__heading { display: flex; align-items: center; flex-wrap: wrap; gap: .6rem; margin: .25rem 0 .75rem; }
+.project__heading .project__title { margin: 0; }
+.project__repository { display: inline-flex; align-items: center; padding: .15rem .4rem; border: 1px solid #546274; border-radius: 4px; color: #c8d2df; font-size: .75rem; line-height: 1.2; white-space: nowrap; text-decoration: none; }
+.project__repository:hover { border-color: var(--color-accent); color: white; }
+.project__metadata > .project__category-link { margin-top: auto; }
+.project__metadata > .project__detail-trigger:not([hidden]) ~ .project__category-link { margin-top: 1rem; }

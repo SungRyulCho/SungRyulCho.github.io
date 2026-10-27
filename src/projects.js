@@ -7,7 +7,7 @@
   const categoryLinks = [];
   // Match the content above the role heading within each visible card row.
   const alignRoles = () => {
-    const selectors = ['.project__period', '.project__title', '.project__intro', '.project__stack'];
+    const selectors = ['.project__period', '.project__heading', '.project__intro', '.project__stack'];
     projects.forEach(project => selectors.forEach(selector => {
       project.querySelector(selector).style.minHeight = '';
     }));

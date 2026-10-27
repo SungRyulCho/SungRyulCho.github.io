@@ -250,7 +250,7 @@ class PortfolioChecks(unittest.TestCase):
 
     def test_project_cases_show_problem_decision_improvement_and_outcome(self):
         self.assertNotIn('문제 해결과 검증', self.html)
-        self.assertEqual(self.html.count('<summary>문제 해결과 성과 보기</summary>'), 3)
+        self.assertEqual(self.html.count('<summary>문제 해결 및 개선 보기</summary>'), 3)
         cases = self.html.split('<dl class="case-flow">')[1:]
         self.assertEqual(len(cases), 11)
         for case in cases:
@@ -487,7 +487,7 @@ class PortfolioChecks(unittest.TestCase):
                     if attrs.get('class') == 'project__outcome-summary']
         self.assertEqual(outcomes, [])
         self.assertNotIn('대표 개선', self.html)
-        self.assertEqual(self.html.count('<span>문제 해결과 성과 보기</span>'), 3)
+        self.assertEqual(self.html.count('<span>문제 해결 및 개선 보기</span>'), 3)
         disclosures = [attrs for tag, attrs in self.nodes
                        if tag == 'details' and attrs.get('class') == 'project__responsibilities']
         self.assertEqual(disclosures, [])
@@ -555,7 +555,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261027-equal-cards', self.html)
+        self.assertIn('css/style.css?v=20261027-repo-badges', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'
@@ -840,7 +840,7 @@ class PortfolioChecks(unittest.TestCase):
             self.assertEqual(trigger['aria-haspopup'], 'dialog')
             self.assertEqual(trigger['aria-controls'], dialogs[0]['id'])
             self.assertIn('hidden', trigger)
-            self.assertIn('문제 해결과 성과 보기', trigger['aria-label'])
+            self.assertIn('문제 해결 및 개선 보기', trigger['aria-label'])
         cases = [attrs for tag, attrs in self.nodes if 'data-case-label' in attrs]
         self.assertEqual([attrs['data-case-label'] for attrs in cases],
                          ['인증 공통화', '회원·보관함 분리', '동시 저장', '조회 개선', '배포 협업',
@@ -849,7 +849,7 @@ class PortfolioChecks(unittest.TestCase):
         self.assertTrue(all(attrs.get('id') in ids for attrs in cases))
         # Original details and source content remain present if enhancement fails to load.
         self.assertEqual(self.html.count('<details class="project__detail">'), 3)
-        self.assertIn('<script src="src/project-dialog.js?v=20261014-fixed-evidence" defer></script>', self.html)
+        self.assertIn('<script src="src/project-dialog.js?v=20261027-repo-badges" defer></script>', self.html)
 
     def test_expanded_project_cases_have_distinct_topics_and_boundaries(self):
         learnflow = self.html.split('<li id="project-learnflow"', 1)[1].split('<li id="project-vench"', 1)[0]
@@ -876,51 +876,16 @@ class PortfolioChecks(unittest.TestCase):
         css = (ROOT / 'css/style.css').read_text()
         self.assertIn('repeat(var(--case-count, 4), minmax(0, 9rem))', css)
 
-    def test_repository_links_are_secondary_inside_details(self):
-        self.assertNotIn('GitHub에서 코드 보기', self.html)
+    def test_repository_links_are_on_every_project_heading(self):
+        self.assertEqual(self.html.count('class="project__repository"'), 4)
+        self.assertNotIn('class="project__link"', self.html)
+        self.assertNotIn('project__source-link', self.html)
         for project in self.html.split('<li id="project-')[1:]:
-            if project.startswith('itda"'):
-                self.assertIn('https://github.com/OHNAJOO/itda-frontend', project)
-                continue
-            metadata = project.split('<details class="project__detail">', 1)[1].split('</details>', 1)
-            detail = metadata[0]
-            self.assertEqual(detail.count('class="project__link"'), 1)
-            self.assertIn('전체 GitHub 저장소 ↗', detail)
-            self.assertNotIn('class="project__link"', metadata[1].split('</div>', 1)[0])
-        css = (ROOT / 'css/style.css').read_text()
-        trigger_rule = css.split('\n.project__detail-trigger {', 1)[1].split('}', 1)[0]
-        self.assertIn('justify-content: flex-start', trigger_rule)
-        self.assertIn('gap: .35rem', trigger_rule)
-
-    def test_repository_links_move_to_project_header_for_case_views(self):
-        self.assertIn('<div class="case-dialog__meta"><h2 id="case-dialog-project"', self.html)
-        self.assertNotIn('case-dialog-title', self.html)
+            heading = project.split('<div class="project__heading">', 1)[1].split('</div>', 1)[0]
+            self.assertIn('class="project__repository"', heading)
+            self.assertIn('target="_blank"', heading)
         script = (ROOT / 'src/project-dialog.js').read_text()
-        self.assertIn("repository: body.querySelector('.project__link')", script)
-        self.assertIn('projectMeta.append(entry.repository)', script)
-        self.assertIn("entry.repository.textContent = 'GitHub ↗'", script)
-        self.assertIn('if (item.repository) item.repository.hidden = item !== entry', script)
-        css = (ROOT / 'css/style.css').read_text()
-        self.assertIn('.case-dialog__meta { display: flex; flex-wrap: wrap;', css)
-        self.assertIn('.case-dialog .case-dialog__repository', css)
-        self.assertNotIn('.case-dialog .project__link {', css)
-        link_rule = css.split('.case-dialog .case-dialog__repository {', 1)[1].split('}', 1)[0]
-        meta_rule = css.split('.case-dialog__meta {', 1)[1].split('}', 1)[0]
-        self.assertIn('align-items: flex-end;', meta_rule)
-        self.assertNotIn('--project-ink-overhang', css)
-        self.assertNotIn('projectMeta.dataset.project', script)
-        self.assertIn('transform: translateY(2px);', link_rule)
-        for affordance in ('height: 20px;', 'line-height: 1;', 'border: 1px solid', 'background: transparent;', 'font-size: .75rem;', 'font-weight: 500;'):
-            self.assertIn(affordance, link_rule)
-        project_rule = css.split('.case-dialog__project {', 1)[1].split('}', 1)[0]
-        self.assertIn('font-size: 1.5rem;', project_rule)
-        self.assertIn('font-weight: 700;', project_rule)
-        for alignment in ('display: block;', 'line-height: 1;', 'text-box-trim: trim-end;', 'text-box-edge: cap alphabetic;'):
-            self.assertIn(alignment, project_rule)
-        self.assertNotIn('min-height:', project_rule)
-        self.assertNotIn('min-height:', link_rule)
-        mobile = css.split('@media (max-width: 600px)', 1)[1]
-        self.assertNotIn('.case-dialog__project { font-size:', mobile)
+        self.assertNotIn('projectMeta.append(entry.repository)', script)
 
     def test_evidence_is_pinned_below_scrollable_cases_with_icon_only_close(self):
         script = (ROOT / 'src/project-dialog.js').read_text()

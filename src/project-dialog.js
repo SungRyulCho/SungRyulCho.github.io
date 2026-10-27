@@ -27,7 +27,6 @@
         project, trigger, body,
         name: project.querySelector('.project__title').textContent,
         cases: [...body.querySelectorAll('.project__case')],
-        repository: body.querySelector('.project__link'),
         tabs: [],
         selectedIndex: 0,
       };
@@ -41,14 +40,6 @@
         }
         return links;
       });
-      // A repository belongs to the project, not to an individual case.
-      // Move the original link so the non-JavaScript fallback stays intact.
-      if (entry.repository) {
-        entry.repository.classList.add('case-dialog__repository');
-        entry.repository.textContent = 'GitHub ↗';
-        entry.repository.hidden = true;
-        projectMeta.append(entry.repository);
-      }
       if (entry.cases.length > 1) {
         entry.tabs = entry.cases.map((panel, index) => {
           const tab = document.createElement('button');
@@ -109,7 +100,6 @@
     activeEntry = entry;
     entries.forEach((item) => {
       item.body.hidden = item !== entry;
-      if (item.repository) item.repository.hidden = item !== entry;
       item.tabs.forEach((tab) => { tab.hidden = item !== entry; });
     });
     projectLabel.textContent = entry.name;
