@@ -339,3 +339,16 @@ section[id],li[id] { scroll-margin-top: 1rem; }
   .project-carousel-arrow { width: 26px; height: 32px; border-radius: 8px; }
   .project-carousel-arrow svg { width: 16px; height: 16px; }
 }
+
+/* Original icon interaction, with stable card text. */
+.major__icon { transform-origin: center; transition: transform 300ms ease; }
+.major__icon svg { display: block; width: 64px; height: 64px; margin: 0 auto; }
+@media (hover: hover) {
+  .major:hover .major__icon { transform: rotate(-15deg) scale(1.2); }
+}
+.major--reacting .major__icon { transform: rotate(-15deg) scale(1.2); }
+@media (max-width: 768px) { .major__icon svg { width: 48px; height: 48px; } }
+@media (prefers-reduced-motion: reduce) {
+  .major:hover .major__icon, .major--reacting .major__icon { transform: none; }
+  .major__icon { transition: none; }
+}

@@ -555,7 +555,7 @@ class PortfolioChecks(unittest.TestCase):
         flow = rule(desktop, '.case-dialog .case-flow')
         self.assertIn('padding-left: 0;', flow)
         self.assertIn('border-left: 0;', flow)
-        self.assertIn('css/style.css?v=20261027-mobile-arrows', self.html)
+        self.assertIn('css/style.css?v=20261027-about-icons', self.html)
 
     def test_all_cases_share_approved_readability_styles(self):
         cases = [attrs for tag, attrs in self.nodes if tag == 'article'
@@ -951,12 +951,11 @@ class PortfolioChecks(unittest.TestCase):
     def test_about_summarizes_fields_and_skills_explains_capabilities(self):
         about = self.html.split('<section id="about"', 1)[1].split('</section>', 1)[0]
         self.assertEqual(about.count('<li class="major">'), 3)
-        for icon in ('API', 'FIX', 'TEAM'):
-            self.assertIn(f'aria-hidden="true">{icon}</span>', about)
+        self.assertEqual(about.count('class="major__icon" aria-hidden="true"><svg'), 3)
         for field in ('기본에 충실한 개발', '원인을 찾는 문제 해결', '함께하는 개발',
-                      '기능의 동작뿐 아니라 데이터의 정확성과 코드의 구조까지',
-                      '눈앞의 오류 해결에서 원인 파악과 결과 확인까지',
-                      '동료의 의견에 귀 기울이고, 함께 작업하는 데 필요한 정보를 나누는 태도'):
+                      '기능이 제대로 동작하는지 살피고, 데이터의 정확성과 코드 구조도 함께 고민합니다.',
+                      '오류가 발생한 원인을 찾고, 수정한 내용이 제대로 동작하는지 확인합니다.',
+                      '동료의 의견에 귀 기울이고, 함께 작업하는 데 필요한 정보를 나눕니다.'):
             self.assertIn(field, about)
         for technology in ('PostgreSQL', 'Redisson', 'Docker Compose'):
             self.assertNotIn(technology, about)
