@@ -336,6 +336,8 @@ section[id],li[id] { scroll-margin-top: 1rem; }
 
 @media (max-width: 768px) {
   .project-carousel-shell { padding-inline: 30px; }
+  .project-carousel-arrow--previous { left: calc(2px - .75rem); }
+  .project-carousel-arrow--next { right: calc(2px - .75rem); }
   .project-carousel-arrow { width: 26px; height: 32px; border-radius: 8px; }
   .project-carousel-arrow svg { width: 16px; height: 16px; }
 }
