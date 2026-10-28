@@ -25,6 +25,7 @@
   let frame = 0;
   let velocity = 0;
   let step = 1;
+  let movable = false;
   const items = () => projects.filter(p => category === 'all' || p.dataset.type === category);
   // Measure every card together so filtering does not change card height or role alignment.
   const alignRoles = () => {
@@ -47,11 +48,15 @@
     track.querySelectorAll('[data-loop-copy]').forEach(p => p.remove());
     const selected = items();
     projects.forEach(p => { p.hidden = !selected.includes(p); });
+    const gap = parseFloat(getComputedStyle(track).gap) || 0;
+    const cardWidth = selected[0].getBoundingClientRect().width;
+    movable = selected.length * cardWidth + (selected.length - 1) * gap > viewport.clientWidth + 1;
+    if (!movable) { stop(); offset = 0; position = 0; }
     const ordered = selected.slice(offset).concat(selected.slice(0, offset));
     ordered.forEach(p => track.append(p));
     step = ordered[0].getBoundingClientRect().width + parseFloat(getComputedStyle(track).gap);
     // Only the trailing edge needs visual copies; all full cards are original nodes.
-    if (selected.length > 1) ordered.slice(0, 3).forEach(p => {
+    if (movable) ordered.slice(0, 3).forEach(p => {
       const copy = p.cloneNode(true);
       copy.dataset.loopCopy = p.id;
       copy.removeAttribute('id');
@@ -61,13 +66,13 @@
       copy.querySelectorAll('button').forEach((button, i) => button.addEventListener('click', () => p.querySelectorAll('button')[i]?.click()));
       track.append(copy);
     });
-    controls.hidden = selected.length < 2;
-    viewport.classList.toggle('is-movable', selected.length > 1);
+    controls.hidden = !movable;
+    viewport.classList.toggle('is-movable', movable);
     paint();
   };
   const travel = distance => {
     const count = items().length;
-    if (count < 2) return;
+    if (!movable) return;
     position += distance;
     let changed = false;
     while (position >= step) { position -= step; offset = (offset + 1) % count; changed = true; }
@@ -141,7 +146,7 @@
     render();
   };
   viewport.addEventListener('keydown', e => {
-    if (e.target !== viewport || !['ArrowRight','ArrowLeft'].includes(e.key)) return;
+    if (!movable || e.target !== viewport || !['ArrowRight','ArrowLeft'].includes(e.key)) return;
     e.preventDefault(); stop();
     if (matchMedia('(prefers-reduced-motion: reduce)').matches) travel(e.key === 'ArrowRight' ? step : -step);
     else { velocity = (e.key === 'ArrowRight' ? 1 : -1) * step / 220; coast(); }
@@ -149,7 +154,7 @@
   let pointer = null;
   let dragged = false;
   viewport.addEventListener('pointerdown', e => {
-    if (e.pointerType === 'mouse' || e.button !== 0 || items().length < 2 || e.target.closest('a, button, summary, .project__gallery')) return;
+    if (e.pointerType === 'mouse' || e.button !== 0 || !movable || e.target.closest('a, button, summary, .project__gallery')) return;
     stop(); dragged = false;
     pointer = {x:e.clientX, y:e.clientY, lastX:e.clientX, time:performance.now()};
     viewport.setPointerCapture(e.pointerId);
@@ -175,7 +180,7 @@
   viewport.addEventListener('pointercancel', () => { pointer = null; stop(); viewport.classList.remove('is-dragging'); });
   viewport.addEventListener('click', e => { if (dragged) { e.preventDefault(); e.stopPropagation(); dragged = false; } }, true);
   viewport.addEventListener('wheel', e => {
-    if (pointer || Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.target.closest('.project__gallery') || items().length < 2) return;
+    if (pointer || Math.abs(e.deltaX) <= Math.abs(e.deltaY) || e.target.closest('.project__gallery') || !movable) return;
     e.preventDefault(); stop();
     // Trackpads already supply momentum. Preserve every delta without snapping.
     travel(e.deltaX * (e.deltaMode === 1 ? 16 : e.deltaMode === 2 ? viewport.clientWidth : 1));
